@@ -44,15 +44,6 @@ class Vector:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def getX(self):
-        return self.x
-
-    def getY(self):
-        return self.y
-
-    def getZ(self):
-        return self.z
-
     def getTuple(self):
         return (self.x, self.y, self.z)
     
@@ -113,9 +104,9 @@ class Vector:
         return self.dot(v) == 0
 
     def cross(self, v):
-        newX = self.y * v.z - z * v.y;
-        newY = self.z * v.x - x * v.z;
-        newZ = self.x * v.y - y * v.x;
+        newX = self.y * v.z - self.z * v.y;
+        newY = self.z * v.x - self.x * v.z;
+        newZ = self.x * v.y - self.y * v.x;
         return Vector(newX, newY, newZ)
     
     # with amount = 0, returns this vector
@@ -145,20 +136,20 @@ class Vector:
             return self
 
     def normalize(self):
-        return setMagnitude(1.0)
+        return self.setMagnitude(1.0)
     
     def distanceTo(self, v):
-        return magnitude(self - v)
-    
-    def direction2(self):
-        n = math.atan2(self.y, self.x)
-        return fixRotation(n)
-        
-    def direction2Towards(self, v):
-        return (v - self).direction2()
+        return (self - v).magnitude()
 
     def angleBetween(self, v):
         return math.acos( self.dot(v) / (self.magnitude() * v.magnitude()) )
+    
+    def direction2(self):
+        n = math.atan2(self.y, self.x)
+        return Vector.fixRotation(n)
+        
+    def direction2Towards(self, v):
+        return (v - self).direction2()
     
     def rotate2(self, amount):
         sinX = math.sin(amount)
@@ -171,12 +162,119 @@ class Vector:
     
     # amount is a 2d vector describing movement
     def move2(self, direction, amount):
-        amount = amount.rotate(direction)
+        amount = amount.rotate2(direction)
         return self + amount
+
+    # get the direction of this 3d vector as a Rotation
+    # the rotation will not have a "roll" or x-rotation component
+    def rotation(self):
+        xy = Vector(self.x, self.y)
+        xyz = Vector(xy.magnitude(), self.z)
+        yRot = xyz.direction2()
+        zRot = xy.direction2()
+        return Rotation(0, yRot, zRot);
 
     # return the direction towards another vector, as a unit-vector
     def directionTowards(self, v):
         return (v - self).normalize()
+
+    def rotate(self, amount):
+        v = self
+
+        # roll (x)
+        xRot = Vector(v.y, v.z)
+        xRot = xRot.rotate2(amount.x)
+        v = Vector(v.x, xRot.x, xRot.y)
+
+        # pitch (y)
+        yRot = Vector(v.x, v.z)
+        yRot = yRot.rotate2(amount.y)
+        v = Vector(yRot.x, v.y, yRot.y)
+
+        # yaw (z)
+        zRot = Vector(v.x, v.y)
+        zRot = zRot.rotate2(amount.z)
+        v = Vector(zRot.x, zRot.y, v.z)
+
+        return v
+        
+    def rotateAround(self, amount, center):
+        return (self - center).rotate(amount) + center
+    
+    # amount is a 3d vector describing movement
+    def move(self, direction, amount):
+        amount = amount.rotate(direction)
+        return self + amount
+
+class Rotate:
+    
+    def __init__(self, x, y, z):
+        self.x = Vector.fixRotation(x)
+        self.y = Vector.fixRotation(y)
+        self.z = Vector.fixRotation(z)
+    
+    def __repr__(self):
+        return '(' + str(self.x) + ', ' + str(self.y) + ', ' + str(self.z) + ')'
+    
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.x == other.x and self.y == other.y and self.z == other.z
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def getTuple(self):
+        return (self.x, self.y, self.z)
+    
+    def isZero(self):
+        return self.x == 0 and self.y == 0 and self.z == 0
+    
+    def setX(self, newX):
+        return Rotate(newX, self.y, self.z)
+        
+    def setY(self, newY):
+        return Rotate(self.x, newY, self.z)
+        
+    def setZ(self, newZ):
+        return Rotate(self.x, self.y, newZ)
+    
+    def __neg__(self):
+        return Rotate(-self.x, -self.y, -self.z)
+    
+    def __add__(self, v):
+        return Rotate(self.x + v.x, self.y + v.y, self.z + v.z)
+    
+    def __radd__(self, other):
+        if other == 0:
+            return self
+        else:
+            return self.__add__(other)
+    
+    def __sub__(self, v):
+        return Vector(self.x - v.x, self.y - v.y, self.z - v.z)
+            
+    def __mul__(self, v):
+        if isinstance(v, numbers.Number):
+            return Rotate(self.x * v, self.y * v, self.z * v)
+        else:
+            return Rotate(self.x * v.x, self.y * v.y, self.z * v.z)
+
+    def __rmul__(self, v):
+        return self.__mul__(v)
+        
+    def __truediv__(self, v):
+        if isinstance(v, numbers.Number):
+            return Rotate(self.x / v, self.y / v, self.z / v)
+        else:
+            return Rotate(self.x / v.x, self.y / v.y, self.z / v.z)
+    
+    def __rtruediv__(self, v):
+        if isinstance(v, numbers.Number):
+            return Rotate(v / self.x, v / self.y, v / self.z)
+        else:
+            return Rotate(v.x / self.x, v.y / self.y, v.z / self.z / v.z)
 
     
 ZERO_V = Vector(0, 0, 0)
@@ -189,3 +287,5 @@ DOWN_V = Vector(0, 0, -1)
 UP_V = Vector(0, 0, 1)
 
 BASE_ROTATION_V = Vector(1, 0, 0)
+
+ZERO_R = Rotate(0, 0, 0)
