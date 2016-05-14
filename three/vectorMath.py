@@ -7,18 +7,20 @@ import math
     
 CIRCLE = math.pi*2
 
-class Vector:
-    
-    # limit rotation to be between 0 and 2pi
-    def fixRotation(n):
-        if n < 0:
-            circles = math.ceil(-n / CIRCLE)
-            n += circles * CIRCLE
+# limit rotation to be between 0 and 2pi
+def fixRotation(n):
+    n = float(n)
+    if n < 0:
+        circles = math.ceil(-n / CIRCLE)
+        n += circles * CIRCLE
         n = n % CIRCLE
-        return n
+    return n
+
+class Vector:
         
     # computes the normal unit-vector of a triangle, with vertices in
     # counter-clockwise order
+    @staticmethod
     def normal(v1, v2, v3):
         a = v2 - v1
         b = v3 - v1
@@ -28,9 +30,9 @@ class Vector:
     
 
     def __init__(self, x, y, z = 0):
-        self.x = x
-        self.y = y
-        self.z = z
+        self.x = float(x)
+        self.y = float(y)
+        self.z = float(z)
         
     def __repr__(self):
         return '(' + str(self.x) + ', ' + str(self.y) + ', ' + str(self.z) + ')'
@@ -142,11 +144,12 @@ class Vector:
         return (self - v).magnitude()
 
     def angleBetween(self, v):
-        return math.acos( self.dot(v) / (self.magnitude() * v.magnitude()) )
+        return fixRotation(
+            math.acos( self.dot(v) / (self.magnitude() * v.magnitude()) ) )
     
     def direction2(self):
         n = math.atan2(self.y, self.x)
-        return Vector.fixRotation(n)
+        return fixRotation(n)
         
     def direction2Towards(self, v):
         return (v - self).direction2()
@@ -209,9 +212,9 @@ class Vector:
 class Rotate:
     
     def __init__(self, x, y, z):
-        self.x = Vector.fixRotation(x)
-        self.y = Vector.fixRotation(y)
-        self.z = Vector.fixRotation(z)
+        self.x = fixRotation(x)
+        self.y = fixRotation(y)
+        self.z = fixRotation(z)
     
     def __repr__(self):
         return '(' + str(self.x) + ', ' + str(self.y) + ', ' + str(self.z) + ')'

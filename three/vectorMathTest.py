@@ -1,3 +1,5 @@
+__author__ = "vantjac"
+
 from vectorMath import Vector
 from vectorMath import Rotate
 import math
@@ -26,8 +28,8 @@ b = Vector(1, 2, 3)
 c = 5 * (-a + b)
 assert c.x == -15 and c.y == -15 and c.z == -15
 
-c *= a
-c /= b
+c = c * a
+c = c / b
 assert c.x == -60 and c.y == -37.5 and c.z == -30
 
 # test vector math
@@ -71,7 +73,7 @@ assert math.degrees(b.angleBetween(a)) == 90
 # test 2d directions / rotations
 
 a = Vector(3**.5, 1)
-assert round(math.degrees(a.direction2())) == 30
+assert round(math.degrees(a.direction2())) == 30.0 
 b = Vector(5, 7, 9)
 a = a + b
 assert round(math.degrees(b.direction2Towards(a))) == 30
