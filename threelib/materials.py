@@ -45,7 +45,6 @@ class Material:
                 print("Not a valid BMP file!")
                 return
             dataPos = struct.unpack('<I', fBytes[10:14])[0]
-            imageSize = struct.unpack('<I', fBytes[34:38])[0]
             bitsPerPixel = struct.unpack('<H', fBytes[28:30])[0]
 
             if bitsPerPixel != 24 and bitsPerPixel != 32:
@@ -53,8 +52,6 @@ class Material:
                 return
             self.xLen = struct.unpack('<I', fBytes[18:22])[0]
             self.yLen = struct.unpack('<I', fBytes[22:26])[0]
-            if imageSize == 0:
-                imageSize = self.xLen * self.yLen * (bitsPerPixel / 8)
             if dataPos == 0:
                 dataPos = 54
             
@@ -72,11 +69,3 @@ class Material:
                else:
                    self.texture.append(255)
                    index += int(bitsPerPixel / 8)
-                
-def readBytesAsInt(b, index, numBytes):
-    value = 0
-    for i in range(index, index + numBytes):
-        value = value << 8
-        value += b[i]
-        
-    return value
