@@ -1,6 +1,8 @@
 __author__ = "vantjac"
 
-from vectorMath import *
+from threelib.vectorMath import *
+from threelib.mesh import Mesh
+from threelib import scripts
 
 class Entity:
     
@@ -40,3 +42,27 @@ class Entity:
 
     def readyToDelete():
         return False
+
+
+# there are no functions to edit the properties
+# values can just be accessed directly
+class MeshObject(Entity):
+    
+    def __init__(self, position = ZERO_V, rotation = ZERO_R, mesh = Mesh()):
+        Entity.__init__(self, position, rotation)
+        self.mesh = mesh
+        
+        self.generateRenderMesh = True
+        self.blockUseables = True
+        self.useEnabled = False
+        self.useAction = scripts.EMPTY_SCRIPT
+        
+        self.generateWalls = True
+        self.wallCollideAction = scripts.EMPTY_SCRIPT
+        
+        self.generateFloor = True
+        self.floorCollideAction = scripts.EMPTY_SCRIPT
+        
+        self.generateVolume = True
+        self.volumeStartTouchAction = scripts.EMPTY_SCRIPT
+        self.volumeEndTouchAction = scripts.EMPTY_SCRIPT
