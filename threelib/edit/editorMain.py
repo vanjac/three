@@ -1,6 +1,6 @@
 __author__ = "vantjac"
 
-import editor
+from threelib.edit import editor
 
 from OpenGL.GL import *
 from OpenGL.GLUT import *

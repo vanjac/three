@@ -4,6 +4,7 @@ __name__ = "__main__"
 import sys
 from pathlib import Path
 from threelib import files
+from threelib.edit import editorMain
 
 THREE_VERSION = 0
 
@@ -51,5 +52,6 @@ except ValueError: # mapName is not a number
 print("Map path: " + str(files.getCurrentMap()))
 if editorMode:
     print("Edit mode.")
+    editorMain.main()
 else:
     print("Run mode.")
