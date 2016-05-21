@@ -1,40 +1,57 @@
 __author__ = "vantjac"
 
+import editor
+
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
 # based on PyOpenGl NeHe tutorial
 
-# Number of the glut window.
-# Will be set when the window is created
+# Number of the glut window - will be set when the window is created
 window = 0
+
+# Global projection settings
+# Call resetProjection() if any of these are changed
+aspect = 1 # aspect ratio of the window (width / height)
+fov = 60 # field of view
+nearClip = 0.1
+farClip = 100.0
+
+# Mouse info
+mouseButtonPressed = [ False for i in range(0, 6) ]
 
 # General OpenGL initialization function.
 def initGL(width, height):
+    global aspect
+    
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glClearDepth(1.0) # enables clearing of depth buffer
     glDepthFunc(GL_LESS) # type of depth test to use
     glEnable(GL_DEPTH_TEST) # enable depth testing
     glShadeModel(GL_SMOOTH) # enable smooth color shading
     
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity() # reset projection matrix
-    # calculate aspect ratio of window
-    gluPerspective(45.0, float(width)/float(height), 0.1, 100.0)
-    
-    glMatrixMode(GL_MODELVIEW)
+    aspect = float(width) / float(height)
+    resetProjection()
     
 # Called when window is resized
-def resizeGL(Width, Height):
-    if Height == 0: # prevent divide by zero error 
-        Height = 1
-        
+def resizeGL(width, height):
+    global aspect
+    if height == 0: # prevent divide by zero error 
+        height = 1
+    
     # reset the current viewport and perspective transformation
-    glViewport(0, 0, Width, Height) 
+    glViewport(0, 0, width, height) 
+    aspect = float(width) / float(height)
+    resetProjection()
+
+# should be called if any settings that could affect projection, like aspect
+# ratio, fov, near/far clip planes, have changed.
+def resetProjection():
+    global aspect, fov, nearClip, farClip
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(45.0, float(Width)/float(Height), 0.1, 100.0)
+    gluPerspective(fov, aspect, nearClip, farClip)
     glMatrixMode(GL_MODELVIEW)
     
 # The main drawing function. 
@@ -42,40 +59,26 @@ def drawGL():
     # clear screen and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity() # reset the view 
-    
-    glTranslate(0, 0, -5)
-    glRotate(30, 0, 1, 0)
-    
-    
-    glBegin(GL_TRIANGLES)
-    glColor(1.0, 0.0, 0.0)
-    glVertex(0.0, 1.0, 0.0)
-    glColor(0.0, 1.0, 0.0)
-    glVertex(1.0, -1.0, 0.0)
-    glColor(0.0, 0.0, 1.0)
-    glVertex(-1.0, -1.0, 0.0)
-    glEnd()
-    
+    editor.draw()
     #  double buffered - swap the buffers to display what just got drawn. 
     glutSwapBuffers()
-
-
-# info passed as tuple: (key, mouseX, mouseY)  
-def keyPressed(*args):
-    print(args)
-    if args[0] == b'q':
-        sys.exit()
 
 # info passed as tuple: (button, eventType, mouseX, mouseY)
 # button: left=0, middle=1, right=2, 
 #   scroll-up=3, scroll-down=4, scroll-left=5, scroll-right=6
 # eventType: mousePressed=0, mouseReleased=1
 def mouseEvent(*args):
-    print(args)
+    global mouseButtonPressed
+    button = args[0]
+    pressed = args[1] == 0
+    mouseButtonPressed[button] = pressed
+    if pressed:
+        editor.mousePressed(button, args[2], args[3])
+    else:
+        editor.mouseReleased(button, args[2], args[3])
 
-# info passed as tuple: (mouseX, mouseY)
-def mouseMoved(*args):
-    print(args)
+def mousePressed(button=0):
+    return mouseButtonPressed[button]
 
 def main():
     global window
@@ -106,15 +109,16 @@ def main():
     glutDisplayFunc(drawGL)
     glutIdleFunc(drawGL)
     glutReshapeFunc(resizeGL)
-    glutKeyboardFunc(keyPressed)
+    glutKeyboardFunc(editor.keyPressed)
+    glutKeyboardUpFunc(editor.keyReleased)
     glutMouseFunc(mouseEvent)
-    glutPassiveMotionFunc(mouseMoved)
+    glutPassiveMotionFunc(editor.mouseMoved)
     
     # Initialize our window. 
     initGL(640, 480)
     
     # Start Event Processing Engine	
     glutMainLoop()
-    
-main()
-		
+
+if __name__=="__main__":
+    main()
