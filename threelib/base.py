@@ -70,15 +70,3 @@ class MeshObject(Entity):
         self.volumeStartTouchAction = scripts.EMPTY_SCRIPT
         self.volumeEndTouchAction = scripts.EMPTY_SCRIPT
 
-
-class Map:
-    
-    def __init__(self, name):
-        self.mapName = name
-        
-        self.scriptEntityCreators = [ ]
-        self.meshObjects = [ ]
-        self.camera = None
-        self.materials = [ ]
-        self.script = scripts.EMPTY_SCRIPT
-        self.globalScripts = [ ] # list of file names for script
