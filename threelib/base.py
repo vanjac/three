@@ -76,7 +76,7 @@ class Map:
     def __init__(self, name):
         self.mapName = name
         
-        self.entities = [ ]
+        self.scriptEntityCreators = [ ]
         self.meshObjects = [ ]
         self.camera = None
         self.materials = [ ]
