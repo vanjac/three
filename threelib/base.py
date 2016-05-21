@@ -12,6 +12,9 @@ class Entity:
         self.parent = None
         self.children = [ ]
 
+    def setMap(self, gameMap):
+        self.gameMap = gameMap
+        
     def getPosition(self):
         return self.position
 
@@ -66,3 +69,16 @@ class MeshObject(Entity):
         self.generateVolume = True
         self.volumeStartTouchAction = scripts.EMPTY_SCRIPT
         self.volumeEndTouchAction = scripts.EMPTY_SCRIPT
+
+
+class Map:
+    
+    def __init__(self, name):
+        self.mapName = name
+        
+        self.entities = [ ]
+        self.meshObjects = [ ]
+        self.camera = None
+        self.materials = [ ]
+        self.script = scripts.EMPTY_SCRIPT
+        self.globalScripts = [ ] # list of file names for script
