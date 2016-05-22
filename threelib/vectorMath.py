@@ -13,7 +13,7 @@ def fixRotation(n):
     if n < 0:
         circles = math.ceil(-n / CIRCLE)
         n += circles * CIRCLE
-        n = n % CIRCLE
+    n = n % CIRCLE
     return n
 
 class Vector:
