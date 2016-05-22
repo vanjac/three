@@ -104,16 +104,13 @@ class EditorMain:
         #  Alpha components supported 
         #  Depth buffer
         glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
-        
-        # get a 640 x 480 window 
-        glutInitWindowSize(640, 480)
-        
-        # the window starts at the upper left corner of the screen 
+
+        glutInitWindowSize(1024, 736)
         glutInitWindowPosition(0, 0)
         
         # Retain window id to use when closing
         # global variable
-        window = glutCreateWindow("Test Window")
+        window = glutCreateWindow("three editor")
         
         # Uncomment this line to get full screen.
         #glutFullScreen()
@@ -128,7 +125,7 @@ class EditorMain:
         glutPassiveMotionFunc(EditorMain.mouseMovement)
         
         # Initialize our window. 
-        EditorMain.initGL(640, 480)
+        EditorMain.initGL(1028, 736)
         
         # Start Event Processing Engine	
         glutMainLoop()

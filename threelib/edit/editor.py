@@ -15,51 +15,57 @@ class Editor:
     def __init__(self, editorMain):
         self.state = EditorState()
         self.editorMain = editorMain
+        self.currentCommand = ""
         self.movingCamera = False
         self.lookSpeed = 1.0/100.0
         self.flySpeed = 1.0/10.0
         self.fly = Vector(0, 0, 0) # each component can be 0, 1, or -1
 
     def keyPressed(self, key, mouseX, mouseY):
-        if key == b'w':
-            if self.movingCamera:
+        if key[0] == 27: # escape
+            print("Escape")
+            self.currentCommand = ""
+            self.movingCamera = False
+            self.fly = Vector(0, 0, 0)
+        elif self.movingCamera:
+            if key == b'w':
                 self.fly = self.fly.setX(-1)
-        if key == b's':
-            if self.movingCamera:
+            if key == b's':
                 self.fly = self.fly.setX(1)
-        if key == b'a':
-            if self.movingCamera:
+            if key == b'a':
                 self.fly = self.fly.setY(-1)
-        if key == b'd':
-            if self.movingCamera:
+            if key == b'd':
                 self.fly = self.fly.setY(1)
-        if key == b'q':
-            if self.movingCamera:
+            if key == b'q':
                 self.fly = self.fly.setZ(-1)
-        if key == b'e':
-            if self.movingCamera:
+            if key == b'e':
                 self.fly = self.fly.setZ(1)
-        
+        else:
+            self.currentCommand += chr(key[0])
+            if self.evaluateCommand(self.currentCommand):
+                self.currentCommand = ""
 
     def keyReleased(self, key, mouseX, mouseY):
-        if key == b'w':
-            if self.movingCamera:
+        if self.movingCamera:
+            if key == b'w':
                 self.fly = self.fly.setX(0)
-        if key == b's':
-            if self.movingCamera:
+            if key == b's':
                 self.fly = self.fly.setX(0)
-        if key == b'a':
-            if self.movingCamera:
+            if key == b'a':
                 self.fly = self.fly.setY(0)
-        if key == b'd':
-            if self.movingCamera:
+            if key == b'd':
                 self.fly = self.fly.setY(0)
-        if key == b'q':
-            if self.movingCamera:
+            if key == b'q':
                 self.fly = self.fly.setZ(0)
-        if key == b'e':
-            if self.movingCamera:
+            if key == b'e':
                 self.fly = self.fly.setZ(0)
+
+    # return True to clear current command
+    def evaluateCommand(self, c):
+        
+        # if no match
+        print("Unrecognized command " + c)
+        return True
         
     # mouse buttons: left=0, middle=1, right=2, 
     #   scroll-up=3, scroll-down=4, scroll-left=5, scroll-right=6
