@@ -1,0 +1,5 @@
+PyOpenGL
+PyOpenGL_accelerate
+python3-xlib
+pillow
+pyautogui (requires scrot, python3-tk, python3-dev packages)

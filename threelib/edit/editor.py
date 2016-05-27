@@ -17,7 +17,7 @@ class Editor:
         self.editorMain = editorMain
         self.currentCommand = ""
         self.movingCamera = False
-        self.lookSpeed = 1.0/100.0
+        self.lookSpeed = .005
         self.flySpeed = 1.0/10.0
         self.fly = Vector(0, 0, 0) # each component can be 0, 1, or -1
 
@@ -27,6 +27,7 @@ class Editor:
             self.currentCommand = ""
             self.movingCamera = False
             self.fly = Vector(0, 0, 0)
+            self.editorMain.unlockMouse()
         elif self.movingCamera:
             if key == b'w':
                 self.fly = self.fly.setX(-1)
@@ -74,8 +75,10 @@ class Editor:
             if self.movingCamera:
                 self.movingCamera = False
                 self.fly = Vector(0, 0, 0)
+                self.editorMain.unlockMouse()
             else:
                 self.movingCamera = True
+                self.editorMain.lockMouse()
         pass
         
     def mouseReleased(self, button, mouseX, mouseY):
