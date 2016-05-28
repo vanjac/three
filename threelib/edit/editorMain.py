@@ -138,6 +138,10 @@ class EditorMain:
 
     def main():
         global window, editor
+
+        width = 1024
+        height = 736
+        
         editor = threelib.edit.editor.Editor(EditorMain)
         # pass arguments to init
         glutInit(sys.argv)
@@ -149,7 +153,7 @@ class EditorMain:
         #  Depth buffer
         glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
 
-        glutInitWindowSize(1024, 736)
+        glutInitWindowSize(width, height)
         glutInitWindowPosition(0, 0)
         
         # Retain window id to use when closing
@@ -169,7 +173,7 @@ class EditorMain:
         glutPassiveMotionFunc(EditorMain.mouseMovement)
         
         # Initialize our window. 
-        EditorMain.initGL(1028, 736)
+        EditorMain.initGL(width, height)
         
         # Start Event Processing Engine	
         glutMainLoop()
