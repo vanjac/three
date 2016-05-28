@@ -95,7 +95,10 @@ class Editor:
             else:
                 self.movingCamera = True
                 self.editorMain.lockMouse()
-        pass
+        if button == 3:
+            self.flySpeed *= 1.1
+        if button == 4:
+            self.flySpeed /= 1.1
         
     def mouseReleased(self, button, mouseX, mouseY):
         pass
