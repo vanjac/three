@@ -21,8 +21,10 @@ class Editor:
         self.flySpeed = 1.0/10.0
         self.fly = Vector(0, 0, 0) # each component can be 0, 1, or -1
 
+        # test code
         testObject = TestObject()
         self.state.objects.append(testObject)
+        self.state.selectedObjects.append(testObject)
 
     def keyPressed(self, key, mouseX, mouseY):
         if key[0] == 27: # escape
@@ -67,6 +69,17 @@ class Editor:
     # return True to clear current command
     def evaluateCommand(self, c):
         
+        if c[0] == '\b':
+            if len(self.state.selectedObjects) == 0:
+                print("No objects selected")
+            else:
+                print("Delete selected")
+                for o in self.state.selectedObjects:
+                    o.removeFromParent()
+                    self.state.objects.remove(o)
+                self.state.selectedObjects = [ ]
+            return True
+
         # if no match
         print("Unrecognized command " + c)
         return True

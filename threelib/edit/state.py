@@ -76,14 +76,17 @@ class EditorObject:
         return self.children
 
     def addChild(self, child):
-        if child.getParent() != None:
-            child.getParent().removeChild(child)
+        child.removeFromParent()
         child.setParent(self)
         self.children.append(child)
 
     def removeChild(self, child):
         child.setParent(None)
         self.children.remove(child)
+
+    def removeFromParent(self):
+        if self.parent != None:
+            self.parent().removeChild(self)
             
 
 class EditorState:
