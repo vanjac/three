@@ -133,6 +133,13 @@ class EditorState:
             self.selectedObjects.remove(editorObject)
         editorObject.setSelected(False)
 
+    # for object select mode only
+
+    def selectAll(self):
+        for o in self.objects:
+            o.setSelected(True)
+        self.selectedObjects = list(self.objects)
+        
     def deselectAll(self):
         for o in self.selectedObjects:
             o.setSelected(False)
@@ -191,13 +198,13 @@ class RotateAdjustor:
 
 
 class FaceSelection:
-    
+    # face is a MeshFace
     def __init__(self, editorObject, face):
         self.editorObject = editorObject
         self.face = face
 
 class VertexSelection:
-    
+    # vertex is a MeshVertex
     def __init__(self, editorObject, vertex):
         self.editorObject = editorObject
         self.vertex = vertex

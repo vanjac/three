@@ -111,17 +111,51 @@ class Editor:
                 print("Object select mode")
                 self.state.selectMode = EditorState.SELECT_OBJECTS
                 self.state.deselectAll()
+                self.state.selectedVertices = [ ]
+                self.state.selectedFaces = [ ]
                 return True
             if c[1] == 'f':
                 print("Face select mode")
                 self.state.selectMode = EditorState.SELECT_FACES
                 self.state.deselectAll()
+                self.state.selectedVertices = [ ]
+                self.state.selectedFaces = [ ]
                 return True
             if c[1] == 'v':
                 print("Vertex select mode")
                 self.state.selectMode = EditorState.SELECT_VERTICES
                 self.state.deselectAll()
+                self.state.selectedVertices = [ ]
+                self.state.selectedFaces = [ ]
                 return True
+
+        if c[0] == 'a':
+            print("(de)Select all")
+            if self.state.selectMode == EditorState.SELECT_OBJECTS:
+                if len(self.state.selectedObjects) == 0:
+                    self.state.selectAll()
+                else:
+                    self.state.deselectAll()
+            elif self.state.selectMode == EditorState.SELECT_FACES:
+                if len(self.state.selectedFaces) == 0:
+                    for o in self.state.objects:
+                        if o.getMesh() != None:
+                            for f in o.getMesh.getFaces():
+                                self.state.selectedFaces.append(
+                                    FaceSelection(o, f))
+                else:
+                    self.state.selectedFaces = [ ]
+            elif self.state.selectMode == EditorState.SELECT_VERTICES:
+                if len(self.state.selectedVertices) == 0:
+                    for o in self.state.objects:
+                        if o.getMesh() != None:
+                            for v in o.getMesh.getVertices():
+                                self.state.selectedVertices.append(
+                                    VertexSelection(o, v))
+                else:
+                    self.state.selectedVertices = [ ]
+            
+            return True
 
         # if no match
         print("Unrecognized command " + c)
