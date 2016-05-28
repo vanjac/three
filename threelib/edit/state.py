@@ -116,12 +116,42 @@ class EditorState:
 class Adjustor:
     
     # should return a tuple of 3 Vectors -- the current values of the axes
+    # these are absolute values
     def getAxes(self):
         pass
 
     # set the values of the axes, with a tuple
     def setAxes(self, values):
         pass
+
+
+class TranslateAdjustor:
+
+    def __init__(self, editorObject):
+        self.editorObject = editorObject
+
+    def getAxes(self):
+        return self.editorObject.getPosition().getTuple()
+
+    def setAxes(self, values):
+        self.editorObject.setPosition(Vector(values[0], values[1], values[2]))
+
+# rotate adjustor doesn't use absolute rotations provided by the editorObject
+# because some objects don't use those
+class RotateAdjustor:
+
+    def __init__(self, editorObject):
+        self.editorObject = editorObject
+        self.currentRotation = self.editorObject.getRotation()
+
+    def getAxes(self):
+        return self.currentRotation.getTuple()
+
+    def setAxes(self, values):
+        nextRotation = Rotate(values[0], values[1], values[2])
+        diff = nextRotation - self.currentRotation
+        self.editorObject.setRotation(self.editorObject.getRotation() + diff)
+        self.currentRotation = nextRotation
 
 
 class FaceSelection:
