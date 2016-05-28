@@ -86,10 +86,22 @@ class EditorObject:
         self.children.remove(child)
             
 
-
 class EditorState:
     
     def __init__(self):
         self.cameraPosition = Vector(0, 0, 0)
         self.cameraRotation = Rotate(0, 0, 0)
         self.objects = [ ]
+
+
+# used for adjusting an objects position, rotation, etc using the mouse
+# an abstract class
+class Adjustor:
+    
+    # should return a tuple of 3 Vectors -- the current values of the axes
+    def getAxes(self):
+        pass
+
+    # set the values of the axes, with a tuple
+    def setAxes(self, values):
+        pass
