@@ -70,15 +70,38 @@ class Editor:
     def evaluateCommand(self, c):
         
         if c[0] == '\b':
-            if len(self.state.selectedObjects) == 0:
-                print("No objects selected")
+            if self.state.selectMode == EditorState.SELECT_FACES:
+                print("Faces cannot be deleted")
+            elif self.state.selectMode == EditorState.SELECT_VERTICES:
+                print("Vertices cannot be deleted")
+            elif len(self.state.selectedObjects) == 0:
+                print("Nothing selected")
             else:
-                print("Delete selected")
+                print("Delete selected objects")
                 for o in self.state.selectedObjects:
                     o.removeFromParent()
                     self.state.objects.remove(o)
                 self.state.selectedObjects = [ ]
             return True
+
+        if c[0] == 'm':
+            if len(c) == 1:
+                return False
+            if c[1] == 'o':
+                print("Object select mode")
+                self.state.selectMode = EditorState.SELECT_OBJECTS
+                self.state.selectedObjects = [ ]
+                return True
+            if c[1] == 'f':
+                print("Face select mode")
+                self.state.selectMode = EditorState.SELECT_FACES
+                self.state.selectedFaces = [ ]
+                return True
+            if c[1] == 'v':
+                print("Vertex select mode")
+                self.state.selectMode = EditorState.SELECT_VERTICES
+                self.state.selectedVertices = [ ]
+                return True
 
         # if no match
         print("Unrecognized command " + c)
