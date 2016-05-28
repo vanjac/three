@@ -40,13 +40,13 @@ try:
     mapNumber = int(mapName) - 1
     files.setCurrentMap(files.getMapNumber(mapNumber))
     if files.getCurrentMap() == None:
-        print("Map not found")
+        print("Map number", mapNumber + 1, "not found")
         exit()
 except ValueError: # mapName is not a number
     try:
         files.setCurrentMap(files.getMap(mapName))
     except FileNotFoundError:
-        print("Map not found")
+        print("Map", mapName, "not found")
         exit()
 
 print("Map path: " + str(files.getCurrentMap()))

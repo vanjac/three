@@ -35,16 +35,21 @@ def getMap(name):
     return (getMapDir() / name).resolve()
 
 def getMapNumber(number):
-    if number <= 0:
+    if number < 0:
+        print("Map number out of range!")
         return None
     try:
         with getMapList().open() as f:
             lines = f.readlines()
             try:
-                return getMap(lines[number].strip())
+                mapName = lines[number].strip()
+                print("Map name:", mapName)
+                return getMap(mapName)
             except IndexError:
+                print("Map number out of range!")
                 return None
     except FileNotFoundError:
+        print("File not found!")
         return None
 
 def getMaterialDir():
