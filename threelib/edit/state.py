@@ -113,7 +113,6 @@ class EditorState:
         self.selectedVertices = [ ]
 
         # adjustor state
-        self.adjustorOriginalValue = (0.0, 0.0, 0.0)
         self.relativeCoordinatesEnabled = True
         self.snapEnabled = True
         self.axisLockEnabled = False

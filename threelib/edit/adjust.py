@@ -20,6 +20,21 @@ class NoOpAdjustor(Adjustor):
     def gridType(self):
         return self.gridType
 
+class TestAdjustor(Adjustor):
+
+    def __init__(self, initialValue = (0, 0, 0)):
+        self.value = initialValue
+
+    def getAxes(self):
+        return self.value
+
+    def setAxes(self, values):
+        print("TestAdjustor moved to", values)
+        self.value = values
+
+    def gridType(self):
+        return Adjustor.TRANSLATE
+
 
 class TranslateAdjustor(Adjustor):
 

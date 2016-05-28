@@ -6,6 +6,7 @@ from threelib.edit.state import EditorState
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 from threelib.edit.objects import *
+from threelib.edit.adjust import *
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -32,6 +33,10 @@ stipplePattern = [
 
 class Editor:
 
+    X = 0
+    Y = 1
+    Z = 0
+    
     def __init__(self, editorMain):
         self.state = EditorState()
         self.editorMain = editorMain
@@ -41,6 +46,13 @@ class Editor:
         self.flySpeed = 1.0/10.0
         self.fly = Vector(0, 0, 0) # each component can be 0, 1, or -1
 
+        # adjust mode
+        self.inAdjustMode = False
+        self.adjustor = None
+        self.adjustorOriginalValue = (0.0, 0.0, 0.0)
+        self.selectedAxes = (Editor.X, Editor.Y)
+        self.adjustMouseMovement = (0, 0)
+        
         # test code
         testObject = TestObject()
         self.state.objects.append(testObject)
