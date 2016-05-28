@@ -118,6 +118,10 @@ class EditorState:
 # an abstract class
 class Adjustor:
     
+    TRANSLATE = 0
+    ROTATE = 1
+    SCALE = 2
+    
     # should return a tuple of 3 Vectors -- the current values of the axes
     # these are absolute values
     def getAxes(self):
@@ -125,6 +129,11 @@ class Adjustor:
 
     # set the values of the axes, with a tuple
     def setAxes(self, values):
+        pass
+
+    # return the type of grid the adjustor snaps to
+    # one of the constants above
+    def gridType(self):
         pass
 
 
