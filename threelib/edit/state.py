@@ -5,10 +5,18 @@ from threelib.vectorMath import Rotate
 
 # abstract class
 class EditorObject:
+    
+    def __init__(self):
+        self.name = ""
+        self.children = [ ]
+        self.parent = None
 
     # return a string
     def getName(self):
-        pass
+        return self.name
+
+    def setName(self, name):
+        self.name = name
 
     # string describing the EditorObject
     def getType(self):
@@ -57,11 +65,26 @@ class EditorObject:
 
     # return another EditorObject
     def getParent(self):
-        pass
+        return self.parent
+
+    # should only be called by other EditorObjects
+    def setParent(self, parent):
+        self.parent = parent
 
     # return a list of EditorObjects
     def getChildren(self):
-        pass
+        return self.children
+
+    def addChild(self, child):
+        if child.getParent() != None:
+            child.getParent().removeChild(child)
+        child.setParent(self)
+        self.children.append(child)
+
+    def removeChild(self, child):
+        child.setParent(None)
+        self.children.remove(child)
+            
 
 
 class EditorState:
@@ -69,3 +92,4 @@ class EditorState:
     def __init__(self):
         self.cameraPosition = Vector(0, 0, 0)
         self.cameraRotation = Rotate(0, 0, 0)
+        self.objects = [ ]

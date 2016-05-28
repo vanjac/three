@@ -5,9 +5,9 @@ import math
 from threelib.edit.state import EditorState
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
+from threelib.edit.objects import *
 
 from OpenGL.GL import *
-from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
 class Editor:
@@ -20,6 +20,9 @@ class Editor:
         self.lookSpeed = .005
         self.flySpeed = 1.0/10.0
         self.fly = Vector(0, 0, 0) # each component can be 0, 1, or -1
+
+        testObject = TestObject()
+        self.state.objects.append(testObject)
 
     def keyPressed(self, key, mouseX, mouseY):
         if key[0] == 27: # escape
@@ -102,12 +105,13 @@ class Editor:
         self.state.cameraPosition += (-self.fly * self.flySpeed).rotate(
             -self.state.cameraRotation)
         
-        glTranslate(0, 0, -5)
-        glBegin(GL_TRIANGLES)
-        glColor(1.0, 0.0, 0.0)
-        glVertex(0.0, 1.0, 0.0)
-        glColor(0.0, 1.0, 0.0)
-        glVertex(1.0, -1.0, 0.0)
-        glColor(0.0, 0.0, 1.0)
-        glVertex(-1.0, -1.0, 0.0)
-        glEnd()
+        for o in self.state.objects:
+            glPushMatrix()
+            oTranslate = o.getPosition()
+            oRotate = o.getRotation()
+            glTranslate(oTranslate.y, oTranslate.z, oTranslate.x)
+            glRotate(math.degrees(oRotate.z), 0, 1, 0)
+            glRotate(math.degrees(oRotate.y), -1, 0, 0)
+            glRotate(math.degrees(oRotate.x), 0, 0, 1)
+            o.drawObject()
+            glPopMatrix()
