@@ -10,6 +10,26 @@ from threelib.edit.objects import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+
+stipplePattern = [
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55 ]
+
+
 class Editor:
 
     def __init__(self, editorMain):
@@ -24,7 +44,7 @@ class Editor:
         # test code
         testObject = TestObject()
         self.state.objects.append(testObject)
-        self.state.selectedObjects.append(testObject)
+        self.state.select(testObject)
 
     def keyPressed(self, key, mouseX, mouseY):
         if key[0] == 27: # escape
@@ -81,7 +101,7 @@ class Editor:
                 for o in self.state.selectedObjects:
                     o.removeFromParent()
                     self.state.objects.remove(o)
-                self.state.selectedObjects = [ ]
+                self.state.deselectAll()
             return True
 
         if c[0] == 'm':
@@ -90,17 +110,17 @@ class Editor:
             if c[1] == 'o':
                 print("Object select mode")
                 self.state.selectMode = EditorState.SELECT_OBJECTS
-                self.state.selectedObjects = [ ]
+                self.state.deselectAll()
                 return True
             if c[1] == 'f':
                 print("Face select mode")
                 self.state.selectMode = EditorState.SELECT_FACES
-                self.state.selectedFaces = [ ]
+                self.state.deselectAll()
                 return True
             if c[1] == 'v':
                 print("Vertex select mode")
                 self.state.selectMode = EditorState.SELECT_VERTICES
-                self.state.selectedVertices = [ ]
+                self.state.deselectAll()
                 return True
 
         # if no match
@@ -133,6 +153,9 @@ class Editor:
                               float(mouseX - pmouseX) * self.lookSpeed)
             self.state.cameraRotation += movement
 
+    def init(self):
+        glPolygonStipple(stipplePattern)
+
     def draw(self):
         rotate = self.state.cameraRotation
         translate = self.state.cameraPosition
@@ -152,5 +175,11 @@ class Editor:
             glRotate(math.degrees(oRotate.z), 0, 1, 0)
             glRotate(math.degrees(oRotate.y), -1, 0, 0)
             glRotate(math.degrees(oRotate.x), 0, 0, 1)
+            
+            select = o.isSelected()
+            if select:
+                glEnable(GL_POLYGON_STIPPLE)
             o.drawObject()
+            if select:
+                glDisable(GL_POLYGON_STIPPLE)
             glPopMatrix()

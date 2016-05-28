@@ -10,6 +10,7 @@ class EditorObject:
         self.name = ""
         self.children = [ ]
         self.parent = None
+        self.selected = False
 
     # return a string
     def getName(self):
@@ -87,7 +88,13 @@ class EditorObject:
     def removeFromParent(self):
         if self.parent != None:
             self.parent().removeChild(self)
-            
+    
+    def isSelected(self):
+        return self.selected
+
+    def setSelected(self, selected):
+        self.selected = selected
+
 
 class EditorState:
 
@@ -113,6 +120,23 @@ class EditorState:
         self.translateGridSize = 16
         self.rotateGridSize = 15 # in degrees
         self.scaleGridSize = 0.1
+
+    # only required for objects -- faces and vertices just have to be added to
+    # the list
+    def select(self, editorObject):
+        if editorObject not in self.selectedObjects:
+            self.selectedObjects.append(editorObject)
+        editorObject.setSelected(True)
+
+    def deselect(self, editorObject):
+        if editorObject in self.selectedObjects:
+            self.selectedObjects.remove(editorObject)
+        editorObject.setSelected(False)
+
+    def deselectAll(self):
+        for o in self.selectedObjects:
+            o.setSelected(False)
+        self.selectedObjects = [ ]
 
 # used for adjusting an objects position, rotation, etc using the mouse
 # an abstract class

@@ -48,6 +48,8 @@ class EditorMain:
         windowWidth = width
         windowHeight = height
         EditorMain.resetProjection()
+
+        editor.init()
     
     # Called when window is resized
     def resizeGL(width, height):
