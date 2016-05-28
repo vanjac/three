@@ -87,12 +87,29 @@ class EditorObject:
             
 
 class EditorState:
-    
+
+    SELECT_OBJECTS = 0
+    SELECT_FACES = 1
+    SELECT_VERTICES = 2
+
     def __init__(self):
         self.cameraPosition = Vector(0, 0, 0)
         self.cameraRotation = Rotate(0, 0, 0)
         self.objects = [ ]
+        
+        self.selectMode = EditorState.SELECT_OBJECTS
+        self.selectedObjects = [ ]
+        self.selectedFaces = [ ]
+        self.selectedVertices = [ ]
 
+        # adjustor state
+        self.adjustorOriginalValue = (0.0, 0.0, 0.0)
+        self.relativeCoordinatesEnabled = True
+        self.snapEnabled = True
+        self.axisLockEnabled = False
+        self.translateGridSize = 16
+        self.rotateGridSize = 15 # in degrees
+        self.scaleGridSize = 0.1
 
 # used for adjusting an objects position, rotation, etc using the mouse
 # an abstract class
@@ -105,3 +122,17 @@ class Adjustor:
     # set the values of the axes, with a tuple
     def setAxes(self, values):
         pass
+
+
+class FaceSelection:
+    
+    def __init__(self, editorObject, face):
+        self.editorObject = editorObject
+        self.face = face
+
+class VertexSelection:
+    
+    def __init__(self, editorObject, vertex):
+        self.editorObject = editorObject
+        self.vertex = vertex
+
