@@ -53,6 +53,8 @@ class MeshFace:
     def getVertices(self):
         return self.vertices
 
+    # return this MeshFace
+    # for easy chaining of addVertex commands
     def addVertex(self, meshVertex, textureVertex=Vector(0,0), index=None):
         v = MeshFaceVertex(vertex=meshVertex, textureVertex=textureVertex)
         if index == None:
@@ -60,6 +62,7 @@ class MeshFace:
         else:
             self.vertices.insert(index, v)
         meshVertex.addReference(self)
+        return self
 
     def removeVertex(self, meshFaceVertex):
         if meshFaceVertex in self.vertices:

@@ -44,6 +44,9 @@ class EditorMain:
         glDepthFunc(GL_LESS) # type of depth test to use
         glEnable(GL_DEPTH_TEST) # enable depth testing
         glShadeModel(GL_SMOOTH) # enable smooth color shading
+
+        glEnable(GL_CULL_FACE)
+        glCullFace(GL_BACK)
     
         windowWidth = width
         windowHeight = height

@@ -142,12 +142,13 @@ class Editor:
                 return True
 
         if c[0] == 'a':
-            print("(de)Select all")
             if self.state.selectMode == EditorState.SELECT_OBJECTS:
                 if len(self.state.selectedObjects) == 0:
                     self.state.selectAll()
+                    print("Select", len(self.state.selectedObjects), "objects")
                 else:
                     self.state.deselectAll()
+                    print("Select none")
             elif self.state.selectMode == EditorState.SELECT_FACES:
                 if len(self.state.selectedFaces) == 0:
                     for o in self.state.objects:
@@ -155,8 +156,10 @@ class Editor:
                             for f in o.getMesh().getFaces():
                                 self.state.selectedFaces.append(
                                     FaceSelection(o, f))
+                    print("Select", len(self.state.selectedFaces), "faces")
                 else:
                     self.state.selectedFaces = [ ]
+                    print("Select none")
             elif self.state.selectMode == EditorState.SELECT_VERTICES:
                 if len(self.state.selectedVertices) == 0:
                     for o in self.state.objects:
@@ -164,8 +167,11 @@ class Editor:
                             for v in o.getMesh().getVertices():
                                 self.state.selectedVertices.append(
                                     VertexSelection(o, v))
+                    print("Select", len(self.state.selectedVertices),
+                          "vertices")
                 else:
                     self.state.selectedVertices = [ ]
+                    print("Select none")
             
             return True
 
@@ -201,7 +207,6 @@ class Editor:
 
     def init(self):
         glPolygonStipple(stipplePattern)
-        glPointSize(8)
 
     def draw(self):
         rotate = self.state.cameraRotation
@@ -218,12 +223,7 @@ class Editor:
         
         for o in self.state.objects:
             glPushMatrix()
-            oTranslate = o.getPosition()
-            oRotate = o.getRotation()
-            glTranslate(oTranslate.y, oTranslate.z, oTranslate.x)
-            glRotate(math.degrees(oRotate.z), 0, 1, 0)
-            glRotate(math.degrees(oRotate.y), -1, 0, 0)
-            glRotate(math.degrees(oRotate.x), 0, 0, 1)
+            self.transformObject(o)
             
             select = o.isSelected()
             if select:
@@ -234,6 +234,7 @@ class Editor:
 
             if drawVertices and o.getMesh != None:
                 glColor(1.0, 0.0, 0.0)
+                glPointSize(8)
                 glBegin(GL_POINTS)
                 for v in o.getMesh().getVertices():
                     pos = v.getPosition()
@@ -241,3 +242,37 @@ class Editor:
                 glEnd()
 
             glPopMatrix()
+
+        if drawVertices:
+            glColor(1.0, 1.0, 1.0)
+            glPointSize(10)
+            for vSelect in self.state.selectedVertices:
+                glPushMatrix()
+                self.transformObject(vSelect.editorObject)
+                pos = vSelect.vertex.getPosition()
+                glBegin(GL_POINTS)
+                glVertex(pos.y, pos.z, pos.x)
+                glEnd()
+                glPopMatrix()
+
+        if self.state.selectMode == EditorState.SELECT_FACES:
+            glColor(0.0, 0.0, 1.0)
+            glEnable(GL_POLYGON_STIPPLE)
+            for fSelect in self.state.selectedFaces:
+                glPushMatrix()
+                self.transformObject(fSelect.editorObject)
+                glBegin(GL_POLYGON)
+                for vertex in fSelect.face.getVertices():
+                    pos = vertex.vertex.getPosition()
+                    glVertex(pos.y, pos.z, pos.x)
+                glEnd()
+                glPopMatrix()
+            glDisable(GL_POLYGON_STIPPLE)
+            
+    def transformObject(self, editorObject):
+        oTranslate = editorObject.getPosition()
+        oRotate = editorObject.getRotation()
+        glTranslate(oTranslate.y, oTranslate.z, oTranslate.x)
+        glRotate(math.degrees(oRotate.z), 0, 1, 0)
+        glRotate(math.degrees(oRotate.y), -1, 0, 0)
+        glRotate(math.degrees(oRotate.x), 0, 0, 1)
