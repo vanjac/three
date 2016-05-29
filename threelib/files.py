@@ -1,6 +1,8 @@
 __author__ = "vantjac"
 
 from pathlib import Path
+import os.path
+import pickle
 
 gameDirPath = None
 mapPath = None
@@ -31,8 +33,12 @@ def getMapDir():
 def getMapList():
     return getGameDir() / "maps.txt"
 
+# create map if it doesn't exist
 def getMap(name):
-    return (getMapDir() / name).resolve()
+    try:
+        return (getMapDir() / name).resolve()
+    except FileNotFoundError:
+        open(os.path.join(str(getMapDir()), name), 'a')
 
 def getMapNumber(number):
     if number < 0:
@@ -59,3 +65,8 @@ def getMaterial(name):
     return (getMaterialDir() / name).resolve()
 
 
+# path is a Path to the map file
+# state is an EditorState object
+def saveMapState(path, state):
+    with path.open('wb') as f:
+        pickle.dump(state, f, protocol=4)

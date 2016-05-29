@@ -8,6 +8,8 @@ from threelib.vectorMath import Rotate
 from threelib.edit.objects import *
 from threelib.edit.adjust import *
 
+from threelib import files
+
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
@@ -100,6 +102,12 @@ class Editor:
 
     # return True to clear current command
     def evaluateCommand(self, c):
+
+        if c[0] == '`': #save
+            print("Saving map... ", end="")
+            files.saveMapState(files.getCurrentMap(), self.state)
+            print("Done")
+            return True
         
         if c[0] == '\b':
             if self.state.selectMode == EditorState.SELECT_FACES:
