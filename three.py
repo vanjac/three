@@ -45,6 +45,9 @@ try:
 except ValueError: # mapName is not a number
     try:
         files.setCurrentMap(files.getMap(mapName))
+        if files.getCurrentMap() == None:
+            print("Map", mapName, "not found")
+            exit()
     except FileNotFoundError:
         print("Map", mapName, "not found")
         exit()
@@ -52,6 +55,6 @@ except ValueError: # mapName is not a number
 print("Map path: " + str(files.getCurrentMap()))
 if editorMode:
     print("Edit mode.")
-    EditorMain.main()
+    EditorMain.main(files.loadMapState(files.getCurrentMap()))
 else:
     print("Run mode.")

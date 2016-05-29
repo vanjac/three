@@ -141,13 +141,15 @@ class EditorMain:
         pmouseX = mouseX
         pmouseY = mouseY
 
-    def main():
+    # pass in an EditorState to initialize the Editor with that state
+    def main(state=None):
         global window, editor
 
         width = 1024
         height = 736
         
-        editor = threelib.edit.editor.Editor(EditorMain)
+        editor = threelib.edit.editor.Editor(EditorMain, state)
+        
         # pass arguments to init
         glutInit(sys.argv)
         

@@ -39,8 +39,11 @@ class Editor:
     Y = 1
     Z = 0
     
-    def __init__(self, editorMain):
-        self.state = EditorState()
+    def __init__(self, editorMain, state=None):
+        if state == None:
+            self.state = EditorState()
+        else:
+            self.state = state
         self.editorMain = editorMain
         self.currentCommand = ""
         self.movingCamera = False
@@ -56,9 +59,10 @@ class Editor:
         self.adjustMouseMovement = (0, 0)
         
         # test code
-        testObject = TestObject()
-        self.state.objects.append(testObject)
-        self.state.select(testObject)
+        if len(self.state.objects) == 0:
+            testObject = TestObject()
+            self.state.objects.append(testObject)
+            self.state.select(testObject)
 
     def keyPressed(self, key, mouseX, mouseY):
         if key[0] == 27: # escape

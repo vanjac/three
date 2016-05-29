@@ -39,6 +39,7 @@ def getMap(name):
         return (getMapDir() / name).resolve()
     except FileNotFoundError:
         open(os.path.join(str(getMapDir()), name), 'a')
+        return (getMapDir() / name).resolve()
 
 def getMapNumber(number):
     if number < 0:
@@ -70,3 +71,11 @@ def getMaterial(name):
 def saveMapState(path, state):
     with path.open('wb') as f:
         pickle.dump(state, f, protocol=4)
+
+# return an EditorState object, or None
+def loadMapState(path):
+    try:
+        with path.open('rb') as f:
+            return pickle.load(f)
+    except EOFError: # map is empty
+        return None
