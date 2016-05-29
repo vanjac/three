@@ -2,7 +2,7 @@ __author__ = "vantjac"
 
 import math
 
-from threelib.edit.state import EditorState
+from threelib.edit.state import *
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 from threelib.edit.objects import *
@@ -152,7 +152,7 @@ class Editor:
                 if len(self.state.selectedFaces) == 0:
                     for o in self.state.objects:
                         if o.getMesh() != None:
-                            for f in o.getMesh.getFaces():
+                            for f in o.getMesh().getFaces():
                                 self.state.selectedFaces.append(
                                     FaceSelection(o, f))
                 else:
@@ -161,7 +161,7 @@ class Editor:
                 if len(self.state.selectedVertices) == 0:
                     for o in self.state.objects:
                         if o.getMesh() != None:
-                            for v in o.getMesh.getVertices():
+                            for v in o.getMesh().getVertices():
                                 self.state.selectedVertices.append(
                                     VertexSelection(o, v))
                 else:
@@ -201,6 +201,7 @@ class Editor:
 
     def init(self):
         glPolygonStipple(stipplePattern)
+        glPointSize(8)
 
     def draw(self):
         rotate = self.state.cameraRotation
@@ -212,6 +213,8 @@ class Editor:
 
         self.state.cameraPosition += (-self.fly * self.flySpeed).rotate(
             -self.state.cameraRotation)
+        
+        drawVertices = self.state.selectMode == EditorState.SELECT_VERTICES
         
         for o in self.state.objects:
             glPushMatrix()
@@ -228,4 +231,13 @@ class Editor:
             o.drawObject()
             if select:
                 glDisable(GL_POLYGON_STIPPLE)
+
+            if drawVertices and o.getMesh != None:
+                glColor(1.0, 0.0, 0.0)
+                glBegin(GL_POINTS)
+                for v in o.getMesh().getVertices():
+                    pos = v.getPosition()
+                    glVertex(pos.y, pos.z, pos.x)
+                glEnd()
+
             glPopMatrix()
