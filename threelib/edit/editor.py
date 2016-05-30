@@ -263,8 +263,8 @@ class Editor:
                 print("Relative coordinates on")
                 self.state.relativeCoordinatesEnabled = True
             return True
-        if c[0].isdigit():
-            if c[-1].isdigit() or c[-1] == '.':
+        if c[0].isdigit() or c[0] == '.' or c[0] == '-':
+            if c[-1].isdigit() or c[-1] == '.' or c[-1] == '-':
                 return False
             axisChar = c[-1].lower()
             try:
