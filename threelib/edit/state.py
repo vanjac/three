@@ -143,6 +143,23 @@ class EditorState:
         for o in self.selectedObjects:
             o.setSelected(False)
         self.selectedObjects = [ ]
+    
+    def getGridSize(self, gridType):
+        if gridType == Adjustor.TRANSLATE:
+            return self.translateGridSize
+        if gridType == Adjustor.ROTATE:
+            return self.rotateGridSize
+        if gridType == Adjustor.SCALE:
+            return self.scaleGridSize
+        return None
+
+    def setGridSize(self, gridType, value):
+        if gridType == Adjustor.TRANSLATE:
+            self.translateGridSize = value
+        if gridType == Adjustor.ROTATE:
+            self.rotateGridSize = value
+        if gridType == Adjustor.SCALE:
+            self.scaleGridSize = value
 
 
 # used for adjusting an objects position, rotation, etc using the mouse

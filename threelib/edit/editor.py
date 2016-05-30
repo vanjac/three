@@ -34,10 +34,10 @@ stipplePattern = [
 
 
 class Editor:
-
+    
     X = 0
     Y = 1
-    Z = 0
+    Z = 2
     
     def __init__(self, editorMain, state=None):
         if state == None:
@@ -57,6 +57,7 @@ class Editor:
         self.adjustorOriginalValue = (0.0, 0.0, 0.0)
         self.selectedAxes = (Editor.X, Editor.Y)
         self.adjustMouseMovement = (0, 0)
+        self.adjustMouseGrid = 16 # number of pixels per grid line
         
         # test code
         if len(self.state.objects) == 0:
@@ -71,6 +72,9 @@ class Editor:
             self.movingCamera = False
             self.fly = Vector(0, 0, 0)
             self.editorMain.unlockMouse()
+            if self.inAdjustMode:
+                self.adjustor.setAxes(self.adjustorOriginalValue)
+                self.inAdjustMode = False
         elif self.movingCamera:
             if key == b'w':
                 self.fly = self.fly.setX(-1)
@@ -86,7 +90,12 @@ class Editor:
                 self.fly = self.fly.setZ(1)
         else:
             self.currentCommand += chr(key[0])
-            if self.evaluateCommand(self.currentCommand):
+            clearCommand = False
+            if self.inAdjustMode:
+                clearCommand = self.evaluateAdjustCommand(self.currentCommand)
+            else:
+                clearCommand = self.evaluateCommand(self.currentCommand)
+            if clearCommand:
                 self.currentCommand = ""
 
     def keyReleased(self, key, mouseX, mouseY):
@@ -187,18 +196,70 @@ class Editor:
             
             return True
 
+        if c[0] == 'g':
+            print("Grab")
+            self.setupAdjustMode(TestAdjustor())
+            return True
+            
+
         # if no match
         print("Unrecognized command " + c)
         return True
+
+    def evaluateAdjustCommand(self, c):
+        
+        if c[0] == 'x':
+            print("Select X axis")
+            self.selectedAxes = (self.selectedAxes[1], Editor.X)
+            return True
+        if c[0] == 'y':
+            print("Select Y axis")
+            self.selectedAxes = (self.selectedAxes[1], Editor.Y)
+            return True
+        if c[0] == 'z':
+            print("Select Z axis")
+            self.selectedAxes = (self.selectedAxes[1], Editor.Z)
+            return True
+
+        if c[0] == '[':
+            gridType = self.adjustor.gridType()
+            self.state.setGridSize(gridType, \
+                                   self.state.getGridSize(gridType) / 2.0)
+            print("Grid size:", self.state.getGridSize(gridType))
+            return True
+        if c[0] == ']':
+            gridType = self.adjustor.gridType()
+            self.state.setGridSize(gridType, \
+                                   self.state.getGridSize(gridType) * 2.0)
+            print("Grid size:", self.state.getGridSize(gridType))
+            return True
+        
+
+        # if no match
+        print("Unrecognized command " + c)
+        return True
+
+    def setupAdjustMode(self, adjustor):
+        self.inAdjustMode = True
+        self.adjustor = adjustor
+        self.adjustorOriginalValue = adjustor.getAxes()
+        self.adjustMouseMovement = (0, 0)
+        self.editorMain.lockMouse()
         
     # mouse buttons: left=0, middle=1, right=2, 
     #   scroll-up=3, scroll-down=4, scroll-left=5, scroll-right=6
     def mousePressed(self, button, mouseX, mouseY):
+        if button == 0:
+            if self.inAdjustMode:
+                self.inAdjustMode = False
+                print("Confirm adjust")
+                self.editorMain.unlockMouse()
         if button == 2:
             if self.movingCamera:
                 self.movingCamera = False
                 self.fly = Vector(0, 0, 0)
-                self.editorMain.unlockMouse()
+                if not self.inAdjustMode:
+                    self.editorMain.unlockMouse()
             else:
                 self.movingCamera = True
                 self.editorMain.lockMouse()
@@ -216,6 +277,20 @@ class Editor:
                               -float(mouseY - pmouseY) * self.lookSpeed,
                               float(mouseX - pmouseX) * self.lookSpeed)
             self.state.cameraRotation += movement
+        elif self.inAdjustMode:
+            grid = float(self.state.getGridSize(self.adjustor.gridType()))
+            mouseXChange = float(mouseX - pmouseX) \
+                           / float(self.adjustMouseGrid) * grid
+            mouseYChange = float(mouseY - pmouseY) \
+                           / float(self.adjustMouseGrid) * grid
+            axes = self.selectedAxes
+            if axes[0] > axes[1]: # put axes in order
+                axes = (axes[1], axes[0])
+            value = list(self.adjustor.getAxes())
+            value[axes[0]] += mouseXChange
+            value[axes[1]] += mouseYChange
+            self.adjustor.setAxes(tuple(value))
+
 
     def init(self):
         glPolygonStipple(stipplePattern)
