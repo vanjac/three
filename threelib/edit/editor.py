@@ -242,7 +242,51 @@ class Editor:
                 self.state.snapEnabled = True
                 self.adjustMouseMovement = (0, 0)
             return True
-
+        if c[0] == 'a':
+            print("Snap to grid")
+            axes = self.selectedAxes
+            value = list(self.adjustor.getAxes())
+            grid = self.state.getGridSize(self.adjustor.gridType())
+            value[axes[0]] = round(value[axes[0]] / grid) * grid
+            value[axes[1]] = round(value[axes[1]] / grid) * grid
+            self.adjustor.setAxes(tuple(value))
+            return True
+        if c[0] == 'o':
+            print("To origin")
+            self.adjustor.setAxes((0.0, 0.0, 0.0))
+            return True
+        if c[0] == 'r':
+            if self.state.relativeCoordinatesEnabled:
+                print("Relative coordinates off")
+                self.state.relativeCoordinatesEnabled = False
+            else:
+                print("Relative coordinates on")
+                self.state.relativeCoordinatesEnabled = True
+            return True
+        if c[0].isdigit():
+            if c[-1].isdigit() or c[-1] == '.':
+                return False
+            axisChar = c[-1].lower()
+            try:
+                number = float(c[:-1])
+            except ValueError:
+                print("Invalid command", c)
+                return True
+            value = list(self.adjustor.getAxes())
+            origin = (0, 0, 0)
+            if self.state.relativeCoordinatesEnabled:
+                origin = self.adjustorOriginalValue
+            if axisChar == 'x':
+                value[0] = number + origin[0]
+            elif axisChar == 'y':
+                value[1] = number + origin[1]
+            elif axisChar == 'z':
+                value[2] = number + origin[2]
+            else:
+                print("Invalid command", c)
+                return True
+            self.adjustor.setAxes(tuple(value))
+            return True
         # if no match
         print("Unrecognized command " + c)
         return True
