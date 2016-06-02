@@ -45,7 +45,7 @@ class TranslateAdjustor(Adjustor):
         return self.editorObject.getPosition().getTuple()
 
     def setAxes(self, values):
-        self.editorObject.setPosition(Vector(values[0], values[1], values[2]))
+        self.editorObject.setPosition(Vector.fromTuple(values))
 
     def gridType(self):
         return Adjustor.TRANSLATE
@@ -59,7 +59,37 @@ class VertexTranslateAdjustor(Adjustor):
         return self.vertex.getPosition().getTuple()
 
     def setAxes(self, values):
-        self.vertex.setPosition(Vector(values[0], values[1], values[2]))
+        self.vertex.setPosition(Vector.fromTuple(values))
+
+    def gridType(self):
+        return Adjustor.TRANSLATE
+
+class MultiTranslateAdjustor(Adjustor):
+
+    def __init__(self, adjustors):
+        self.adjustors = list(adjustors)
+
+        # calculate the average initial position
+        self.average = Vector(0.0, 0.0, 0.0)
+        for a in adjustors:
+            self.average += Vector.fromTuple(a.getAxes())
+        self.average /= float(len(adjustors))
+
+        # calculate each adjustor's offset from the average
+        self.offsets = [ ] # array of Vectors for each adjustor
+        for a in adjustors:
+            offset = Vector.fromTuple(a.getAxes()) - self.average
+            self.offsets.append(offset)
+
+    def getAxes(self):
+        return self.average.getTuple()
+
+    def setAxes(self, values):
+        self.average = Vector.fromTuple(values)
+        i = 0
+        for a in self.adjustors:
+            a.setAxes((self.average + self.offsets[i]).getTuple())
+            i += 1
 
     def gridType(self):
         return Adjustor.TRANSLATE
@@ -76,7 +106,7 @@ class RotateAdjustor(Adjustor):
         return self.currentRotation.getTuple()
 
     def setAxes(self, values):
-        nextRotation = Rotate(values[0], values[1], values[2])
+        nextRotation = Rotate.fromTuple(values)
         diff = nextRotation - self.currentRotation
         self.editorObject.setRotation(self.editorObject.getRotation() + diff)
         self.currentRotation = nextRotation

@@ -210,10 +210,16 @@ class Editor:
             elif self.state.selectMode == EditorState.SELECT_VERTICES:
                 if len(self.state.selectedVertices) == 0:
                     print("Nothing selected")
-                else:
+                elif len(self.state.selectedVertices) == 1:
                     print("Translate vertex")
                     self.setupAdjustMode(VertexTranslateAdjustor(
                         self.state.selectedVertices[0].vertex))
+                else:
+                    print("Translate vertices")
+                    adjustors = [ ]
+                    for v in self.state.selectedVertices:
+                        adjustors.append(VertexTranslateAdjustor(v.vertex))
+                    self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
             elif self.state.selectMode == EditorState.SELECT_FACES:
                 print("Not implemented yet!")
             return True

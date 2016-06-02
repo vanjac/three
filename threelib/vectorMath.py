@@ -27,6 +27,10 @@ class Vector:
         unit = a.cross(b)
         unit = unit.normalize()
         return unit
+
+    @staticmethod
+    def fromTuple(t):
+        return Vector(t[0], t[1], t[2])
     
 
     def __init__(self, x, y, z = 0):
@@ -211,6 +215,10 @@ class Vector:
 
 class Rotate:
     
+    @staticmethod
+    def fromTuple(t):
+        return Rotate(t[0], t[1], t[2])
+
     def __init__(self, x, y, z):
         self.x = fixRotation(x)
         self.y = fixRotation(y)
