@@ -64,6 +64,9 @@ class Editor:
             testObject = TestObject()
             self.state.objects.append(testObject)
             self.state.select(testObject)
+            testObject2 = TestObject()
+            testObject2.setPosition(Vector(-100, 0, 0))
+            self.state.objects.append(testObject2)
 
     def keyPressed(self, key, mouseX, mouseY):
         if key[0] == 27: # escape
@@ -206,7 +209,10 @@ class Editor:
                         self.state.selectedObjects[0]))
                 else:
                     print("Translate objects")
-                    print("Not implemented yet!")
+                    adjustors = [ ]
+                    for o in self.state.selectedObjects:
+                        adjustors.append(TranslateAdjustor(o))
+                    self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
             elif self.state.selectMode == EditorState.SELECT_VERTICES:
                 if len(self.state.selectedVertices) == 0:
                     print("Nothing selected")
@@ -221,7 +227,15 @@ class Editor:
                         adjustors.append(VertexTranslateAdjustor(v.vertex))
                     self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
             elif self.state.selectMode == EditorState.SELECT_FACES:
-                print("Not implemented yet!")
+                if len(self.state.selectedFaces) == 0:
+                    print("Nothing selected")
+                else:
+                    print("Translate face(s)")
+                    adjustors = [ ]
+                    for f in self.state.selectedFaces:
+                        for v in f.face.getVertices():
+                            adjustors.append(VertexTranslateAdjustor(v.vertex))
+                    self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
             return True
             
 
