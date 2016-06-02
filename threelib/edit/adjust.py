@@ -50,6 +50,20 @@ class TranslateAdjustor(Adjustor):
     def gridType(self):
         return Adjustor.TRANSLATE
 
+class VertexTranslateAdjustor(Adjustor):
+
+    def __init__(self, meshVertex):
+        self.vertex = meshVertex
+
+    def getAxes(self):
+        return self.vertex.getPosition().getTuple()
+
+    def setAxes(self, values):
+        self.vertex.setPosition(Vector(values[0], values[1], values[2]))
+
+    def gridType(self):
+        return Adjustor.TRANSLATE
+
 # rotate adjustor doesn't use absolute rotation values provided by the
 # editorObject because some objects don't use those
 class RotateAdjustor(Adjustor):

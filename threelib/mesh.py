@@ -18,7 +18,7 @@ class MeshVertex:
         return self.v
 
     def setPosition(self, position):
-        self.position = position
+        self.v = position
 
     # reference methods shouldn't be called directly
 
