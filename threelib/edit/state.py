@@ -41,7 +41,7 @@ class EditorObject:
     def setRotation(self, rotation):
         pass
 
-    def setScale(self, scale):
+    def scale(self, factor):
         pass
 
     def getMesh(self):

@@ -257,10 +257,10 @@ class Editor:
             return True
         if c[0] == 'r':
             if self.state.relativeCoordinatesEnabled:
-                print("Relative coordinates off")
+                print("Absolute coordinates")
                 self.state.relativeCoordinatesEnabled = False
             else:
-                print("Relative coordinates on")
+                print("Relative coordinates")
                 self.state.relativeCoordinatesEnabled = True
             return True
         if c[0].isdigit() or c[0] == '.' or c[0] == '-':
@@ -286,9 +286,10 @@ class Editor:
                 print("Invalid command", c)
                 return True
             self.adjustor.setAxes(tuple(value))
+            print(c)
             return True
         # if no match
-        print("Unrecognized command " + c)
+        print("Unrecognized command", c)
         return True
 
     def setupAdjustMode(self, adjustor):
@@ -304,7 +305,7 @@ class Editor:
         if button == 0:
             if self.inAdjustMode:
                 self.inAdjustMode = False
-                print("Confirm adjust")
+                print("Complete adjust")
                 self.editorMain.unlockMouse()
         if button == 2:
             if self.movingCamera:

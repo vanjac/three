@@ -56,7 +56,7 @@ class TestObject(EditorObject):
     def setRotation(self, rotation):
         self.rotation = rotation
 
-    def setScale(self, scale):
+    def scale(self, factor):
         pass
 
     def getMesh(self):

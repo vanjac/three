@@ -69,3 +69,4 @@ class RotateAdjustor(Adjustor):
 
     def gridType(self):
         return Adjustor.ROTATE
+
