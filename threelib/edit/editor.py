@@ -48,7 +48,7 @@ class Editor:
         self.currentCommand = ""
         self.movingCamera = False
         self.lookSpeed = .005
-        self.flySpeed = 1.0/10.0
+        self.flySpeed = 1.0
         self.fly = Vector(0, 0, 0) # each component can be 0, 1, or -1
 
         # adjust mode
@@ -197,8 +197,18 @@ class Editor:
             return True
 
         if c[0] == 'g':
-            print("Grab")
-            self.setupAdjustMode(TestAdjustor())
+            if self.state.selectMode == EditorState.SELECT_OBJECTS:
+                if len(self.state.selectedObjects) == 0:
+                    print("Nothing selected")
+                elif len(self.state.selectedObjects) == 1:
+                    print("Translate object")
+                    self.setupAdjustMode(TranslateAdjustor(
+                        self.state.selectedObjects[0]))
+                else:
+                    print("Translate objects")
+                    print("Not implemented yet!")
+            else:
+                print("Not implemented yet!")
             return True
             
 

@@ -65,11 +65,11 @@ class TestObject(EditorObject):
     def drawObject(self):
         glBegin(GL_TRIANGLES)
         glColor(1.0, 0.0, 0.0)
-        glVertex(0.0, 1.0, 0.0)
+        glVertex(0.0, 16.0, 0.0)
         glColor(0.0, 1.0, 0.0)
-        glVertex(-1.0, -1.0, 0.0)
+        glVertex(-16.0, -16.0, 0.0)
         glColor(0.0, 0.0, 1.0)
-        glVertex(1.0, -1.0, 0.0)
+        glVertex(16.0, -16.0, 0.0)
         glEnd()
     
     def drawSelectHull(self, color):

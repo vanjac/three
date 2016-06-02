@@ -22,8 +22,8 @@ aspect = 1 # aspect ratio of the window (width / height)
 windowWidth = 1
 windowHeight = 1
 fov = 60 # field of view
-nearClip = 0.1
-farClip = 100.0
+nearClip = 0.5
+farClip = 1000.0
 
 # Mouse info
 mouseButtonPressed = [ False for i in range(0, 7) ]
