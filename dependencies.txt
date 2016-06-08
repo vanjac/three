@@ -1,5 +1,9 @@
+Python 3.4
+
+Pip packages:
+
 PyOpenGL
 PyOpenGL_accelerate
 python3-xlib
 pillow
-pyautogui (requires scrot, python3-tk, python3-dev packages)
+pyautogui (requires scrot, python3-tk, python3-dev packages on Linux)
