@@ -62,6 +62,7 @@ class Editor:
         # test code
         if len(self.state.objects) == 0:
             testObject = TestObject()
+            testObject.setPosition(Vector(-10, 0, 0))
             self.state.objects.append(testObject)
             self.state.select(testObject)
             testObject2 = TestObject()
@@ -238,6 +239,21 @@ class Editor:
                     self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
             return True
             
+        if c[0] == 'r':
+            if self.state.selectMode == EditorState.SELECT_OBJECTS:
+                if len(self.state.selectedObjects) == 0:
+                    print("Nothing selected")
+                elif len(self.state.selectedObjects) == 1:
+                    print("Rotate object")
+                    self.setupAdjustMode(RotateAdjustor(
+                        self.state.selectedObjects[0]))
+                else:
+                    print("Not implemented yet")
+            elif self.state.selectMode == EditorState.SELECT_VERTICES:
+                print("Not implemented yet")
+            elif self.state.selectMode == EditorState.SELECT_FACES:
+                print("Not implemented yet")
+            return True
 
         # if no match
         print("Unrecognized command " + c)

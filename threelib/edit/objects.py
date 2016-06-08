@@ -14,8 +14,8 @@ class TestObject(EditorObject):
     def __init__(self):
         EditorObject.__init__(self)
         self.name = "Test"
-        self.position = Vector(-5, 0, 0)
-        self.rotation = Rotate(0, math.radians(30), math.radians(30))
+        self.position = Vector(0, 0, 0)
+        self.rotation = Rotate(0, 0, 0)
         self.mesh = Mesh()
         a = self.mesh.addVertex(MeshVertex(Vector(-8, -8, -8)))
         b = self.mesh.addVertex(MeshVertex(Vector( 8, -8, -8)))

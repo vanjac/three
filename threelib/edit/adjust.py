@@ -1,5 +1,6 @@
 __author__ = "vantjac"
 
+import math
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 from threelib.edit.state import Adjustor
@@ -103,10 +104,14 @@ class RotateAdjustor(Adjustor):
         self.currentRotation = self.editorObject.getRotation()
 
     def getAxes(self):
-        return self.currentRotation.getTuple()
+        t = self.currentRotation.getTuple()
+        return (math.degrees(t[0]), math.degrees(t[1]), math.degrees(t[2]))
 
     def setAxes(self, values):
-        nextRotation = Rotate.fromTuple(values)
+        nextRotation = Rotate.fromTuple((
+            math.radians(values[0]),
+            math.radians(values[1]),
+            math.radians(values[2])))
         diff = nextRotation - self.currentRotation
         self.editorObject.setRotation(self.editorObject.getRotation() + diff)
         self.currentRotation = nextRotation
