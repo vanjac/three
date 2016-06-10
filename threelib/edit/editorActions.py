@@ -210,7 +210,6 @@ class EditorActions:
         self.editorMain.lockMouse()
 
     def selectAtCursor(self, multiple=False):
-        print("Select", multiple)
         self.selectAtCursorOnDraw = True
         self.selectMultiple = multiple
 

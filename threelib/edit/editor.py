@@ -277,7 +277,13 @@ class Editor(EditorActions):
                                   1, 1, # width, height
                                   GL_RGB, GL_UNSIGNED_BYTE)
             index = self.colorToObjectIndex( (pixels[0], pixels[1], pixels[2]) )
-            print(index)
+            if self.state.selectMode == EditorState.SELECT_OBJECTS:
+                if not self.selectMultiple:
+                    self.state.deselectAll()
+                if index != -1:
+                    self.state.select(self.state.objects[index])
+            else:
+                print("Not supported yet")
             # do stuff
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
