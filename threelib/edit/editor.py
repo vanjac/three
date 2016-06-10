@@ -282,7 +282,11 @@ class Editor(EditorActions):
                 if not self.selectMultiple:
                     self.state.deselectAll()
                 if index != -1:
-                    self.state.select(self.state.objects[index])
+                    o = self.state.objects[index]
+                    if o in self.state.selectedObjects:
+                        self.state.deselect(o)
+                    else:
+                        self.state.select(o)
             elif self.state.selectMode == EditorState.SELECT_VERTICES:
                 objectIndex, vertexIndex = self.colorToSubObjectIndex(color)
                 if not self.selectMultiple:
@@ -290,8 +294,15 @@ class Editor(EditorActions):
                 if objectIndex != -1:
                     editorObject = self.state.objects[objectIndex]
                     vertex = editorObject.getMesh().getVertices()[vertexIndex]
-                    self.state.selectedVertices.append(
-                        VertexSelection(editorObject, vertex))
+                    alreadySelected = False
+                    for v in self.state.selectedVertices:
+                        if v.vertex == vertex:
+                            alreadySelected = True
+                            self.state.selectedVertices.remove(v)
+                            break
+                    if not alreadySelected:
+                        self.state.selectedVertices.append(
+                            VertexSelection(editorObject, vertex))
             elif self.state.selectMode == EditorState.SELECT_FACES:
                 objectIndex, faceIndex = self.colorToSubObjectIndex(color)
                 if not self.selectMultiple:
@@ -299,8 +310,15 @@ class Editor(EditorActions):
                 if objectIndex != -1:
                     editorObject = self.state.objects[objectIndex]
                     face = editorObject.getMesh().getFaces()[faceIndex]
-                    self.state.selectedFaces.append(
-                        FaceSelection(editorObject, face))
+                    alreadySelected = False
+                    for f in self.state.selectedFaces:
+                        if f.face == face:
+                            alreadySelected = True
+                            self.state.selectedFaces.remove(f)
+                            break
+                    if not alreadySelected:
+                        self.state.selectedFaces.append(
+                            FaceSelection(editorObject, face))
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         for o in self.state.objects:
@@ -340,6 +358,8 @@ class Editor(EditorActions):
         if self.state.selectMode == EditorState.SELECT_FACES:
             glColor(0.0, 0.0, 1.0)
             glEnable(GL_POLYGON_STIPPLE)
+            glEnable(GL_POLYGON_OFFSET_FILL)
+            glPolygonOffset(-0.75, -1.0)
             for fSelect in self.state.selectedFaces:
                 glPushMatrix()
                 self.transformObject(fSelect.editorObject)
@@ -350,6 +370,7 @@ class Editor(EditorActions):
                 glEnd()
                 glPopMatrix()
             glDisable(GL_POLYGON_STIPPLE)
+            glDisable(GL_POLYGON_OFFSET_FILL)
 
     def drawSelectHulls(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:

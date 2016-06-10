@@ -41,6 +41,7 @@ class EditorObject:
     def setRotation(self, rotation):
         pass
 
+    # factor is a vector
     def scale(self, factor):
         pass
 

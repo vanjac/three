@@ -40,11 +40,11 @@ class EditorActions:
         
         # test code
         if len(self.state.objects) == 0:
-            testObject = TestObject()
-            testObject.setPosition(Vector(-10, 0, 0))
+            testObject = MeshObject(8)
+            testObject.setPosition(Vector(-50, 0, 0))
             self.state.objects.append(testObject)
             self.state.select(testObject)
-            testObject2 = TestObject()
+            testObject2 = MeshObject(8)
             testObject2.setPosition(Vector(-100, 0, 0))
             self.state.objects.append(testObject2)
     
@@ -130,8 +130,10 @@ class EditorActions:
                 print("Nothing selected")
             elif len(self.state.selectedVertices) == 1:
                 print("Translate vertex")
+                selected = self.state.selectedVertices[0]
                 self.setupAdjustMode(VertexTranslateAdjustor(
-                    self.state.selectedVertices[0].vertex))
+                    selected.vertex,
+                    selected.editorObject))
             else:
                 print("Translate vertices")
                 adjustors = [ ]
