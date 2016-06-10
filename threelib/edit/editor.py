@@ -276,15 +276,24 @@ class Editor(EditorActions):
                                   - self.editorMain.mouseY(),
                                   1, 1, # width, height
                                   GL_RGB, GL_UNSIGNED_BYTE)
-            index = self.colorToObjectIndex( (pixels[0], pixels[1], pixels[2]) )
+            color = (pixels[0], pixels[1], pixels[2])
             if self.state.selectMode == EditorState.SELECT_OBJECTS:
+                index = self.colorToObjectIndex(color)
                 if not self.selectMultiple:
                     self.state.deselectAll()
                 if index != -1:
                     self.state.select(self.state.objects[index])
-            else:
+            elif self.state.selectMode == EditorState.SELECT_VERTICES:
+                objectIndex, vertexIndex = self.colorToSubObjectIndex(color)
+                if not self.selectMultiple:
+                    self.state.selectedVertices = [ ]
+                if objectIndex != -1:
+                    editorObject = self.state.objects[objectIndex]
+                    vertex = editorObject.getMesh().getVertices()[vertexIndex]
+                    self.state.selectedVertices.append(
+                        VertexSelection(editorObject, vertex))
+            elif self.state.selectMode == EditorState.SELECT_FACES:
                 print("Not supported yet")
-            # do stuff
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         for o in self.state.objects:
@@ -344,7 +353,27 @@ class Editor(EditorActions):
                 o.drawSelectHull(self.objectIndexToColor(i))
                 glPopMatrix()
                 i += 1
-        else:
+        elif self.state.selectMode == EditorState.SELECT_VERTICES:
+            i = 0
+            for o in self.state.objects:
+                glPushMatrix()
+                self.transformObject(o)
+                
+                if o.getMesh != None:
+                    glPointSize(8)
+                    glBegin(GL_POINTS)
+                    j = 0
+                    for v in o.getMesh().getVertices():
+                        color = self.subObjectIndexToColor(i, j)
+                        glColor(color[0], color[1], color[2])
+                        pos = v.getPosition()
+                        glVertex(pos.y, pos.z, pos.x)
+                        j += 1
+                    glEnd()
+
+                glPopMatrix()
+                i += 1
+        elif self.state.selectMode == EditorState.SELECT_FACES:
             print("Not implemented yet")
             
     def transformObject(self, editorObject):
@@ -362,9 +391,24 @@ class Editor(EditorActions):
         b = int(index / (256**2)) % 256
         return (float(r)/256.0, float(g)/256.0, float(b)/256.0)
 
+    def subObjectIndexToColor(self, objectIndex, subIndex):
+        objectIndex = int(objectIndex) + 1
+        r = int(subIndex) % 256
+        g = objectIndex % 256
+        b = int(objectIndex / 256) % 256
+        return (float(r)/256.0, float(g)/256.0, float(b)/256.0)
+
     # return -1 for no object
     def colorToObjectIndex(self, color):
         r = int(color[0])
         g = int(color[1])
         b = int(color[2])
         return b*(256**2) + g*256 + r - 1
+
+    # returns a tuple of (objectIndex, subIndex)
+    # objectIndex is -1 for nothing selected
+    def colorToSubObjectIndex(self, color):
+        r = int(color[0])
+        g = int(color[1])
+        b = int(color[2])
+        return b*256 + g - 1, r
