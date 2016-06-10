@@ -14,7 +14,6 @@ from threelib import files
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-
 stipplePattern = [
     0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
     0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
@@ -187,6 +186,9 @@ class Editor(EditorActions):
                 self.inAdjustMode = False
                 print("Complete adjust")
                 self.editorMain.unlockMouse()
+            else: # select
+                multiple = self.editorMain.shiftPressed()
+                self.selectAtCursor(multiple)
         if button == 2:
             if self.movingCamera:
                 self.movingCamera = False
@@ -248,6 +250,7 @@ class Editor(EditorActions):
 
     def init(self):
         glPolygonStipple(stipplePattern)
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1) # for getting select pixels
 
     def draw(self):
         rotate = self.state.cameraRotation
@@ -262,6 +265,20 @@ class Editor(EditorActions):
         
         drawVertices = self.state.selectMode == EditorState.SELECT_VERTICES
         
+        if self.selectAtCursorOnDraw:
+            self.selectAtCursorOnDraw = False
+            self.drawSelectHulls()
+            glFlush()
+            glFinish()
+            pixels = glReadPixels(self.editorMain.mouseX(),
+                                  self.editorMain.mouseY(),
+                                  1, 1, # width, height
+                                  GL_RGB, GL_UNSIGNED_BYTE)
+            index = self.colorToObjectIndex( (pixels[0], pixels[1], pixels[2]) )
+            print(index)
+            # do stuff
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
         for o in self.state.objects:
             glPushMatrix()
             self.transformObject(o)
@@ -309,6 +326,18 @@ class Editor(EditorActions):
                 glEnd()
                 glPopMatrix()
             glDisable(GL_POLYGON_STIPPLE)
+
+    def drawSelectHulls(self):
+        if self.state.selectMode == EditorState.SELECT_OBJECTS:
+            i = 0
+            for o in self.state.objects:
+                glPushMatrix()
+                self.transformObject(o)
+                o.drawSelectHull(self.objectIndexToColor(i))
+                glPopMatrix()
+                i += 1
+        else:
+            print("Not implemented yet")
             
     def transformObject(self, editorObject):
         oTranslate = editorObject.getPosition()
@@ -317,3 +346,17 @@ class Editor(EditorActions):
         glRotate(math.degrees(oRotate.z), 0, 1, 0)
         glRotate(math.degrees(oRotate.y), -1, 0, 0)
         glRotate(math.degrees(oRotate.x), 0, 0, 1)
+
+    def objectIndexToColor(self, index):
+        index = int(index) + 1
+        r = index % 256
+        g = int(index / 256) % 256
+        b = int(index / (256**2)) % 256
+        return (float(r)/256.0, float(g)/256.0, float(b)/256.0)
+
+    # return -1 for no object
+    def colorToObjectIndex(self, color):
+        r = int(color[0])
+        g = int(color[1])
+        b = int(color[2])
+        return b*(256**2) + g*256 + r - 1

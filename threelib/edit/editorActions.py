@@ -33,6 +33,10 @@ class EditorActions:
         self.selectedAxes = (EditorActions.X, EditorActions.Y)
         self.adjustMouseMovement = (0, 0) # in snap mode
         self.adjustMouseGrid = 16 # number of pixels per grid line
+
+        # flags
+        self.selectAtCursorOnDraw = False
+        self.selectMultiple = False
         
         # test code
         if len(self.state.objects) == 0:
@@ -204,6 +208,11 @@ class EditorActions:
         self.adjustorOriginalValue = adjustor.getAxes()
         self.adjustMouseMovement = (0, 0)
         self.editorMain.lockMouse()
+
+    def selectAtCursor(self, multiple=False):
+        print("Select", multiple)
+        self.selectAtCursorOnDraw = True
+        self.selectMultiple = multiple
 
 
     # ADJUST MODE ACTIONS:

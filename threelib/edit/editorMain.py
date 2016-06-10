@@ -102,6 +102,23 @@ class EditorMain:
     def buttonPressed(button=0):
         return mouseButtonPressed[button]
 
+    def shiftPressed():
+        return glutGetModifiers(GLUT_ACTIVE_SHIFT) != 0
+
+    def ctrlPressed():
+        return glutGetModifiers(GLUT_ACTIVE_CTRL) != 0
+
+    def altPressed():
+        return glutGetModifiers(GLUT_ACTIVE_ALT) != 0
+
+    def mouseX():
+        global pmouseX
+        return pmouseX
+
+    def mouseY():
+        global pmouseY
+        return pmouseY
+
     def lockMouse():
         global mouseLocked
         mouseLocked = True
