@@ -55,14 +55,15 @@ class TranslateAdjustor(Adjustor):
 
 class VertexTranslateAdjustor(Adjustor):
 
-    def __init__(self, meshVertex):
+    def __init__(self, meshVertex, editorObject):
+        self.origin = editorObject.getPosition()
         self.vertex = meshVertex
 
     def getAxes(self):
-        return self.vertex.getPosition().getTuple()
+        return (self.vertex.getPosition() + self.origin).getTuple()
 
     def setAxes(self, values):
-        self.vertex.setPosition(Vector.fromTuple(values))
+        self.vertex.setPosition(Vector.fromTuple(values) - self.origin)
 
     def gridType(self):
         return Adjustor.TRANSLATE

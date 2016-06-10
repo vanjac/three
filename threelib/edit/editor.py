@@ -225,7 +225,9 @@ class Editor:
                     print("Translate vertices")
                     adjustors = [ ]
                     for v in self.state.selectedVertices:
-                        adjustors.append(VertexTranslateAdjustor(v.vertex))
+                        adjustors.append(VertexTranslateAdjustor(
+                            v.vertex,
+                            v.editorObject))
                     self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
             elif self.state.selectMode == EditorState.SELECT_FACES:
                 if len(self.state.selectedFaces) == 0:
@@ -235,7 +237,9 @@ class Editor:
                     adjustors = [ ]
                     for f in self.state.selectedFaces:
                         for v in f.face.getVertices():
-                            adjustors.append(VertexTranslateAdjustor(v.vertex))
+                            adjustors.append(VertexTranslateAdjustor(
+                                v.vertex,
+                                f.editorObject))
                     self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
             return True
             
@@ -257,9 +261,36 @@ class Editor:
                     self.setupAdjustMode(MultiRotateAdjustor(translators,
                                                              rotators))
             elif self.state.selectMode == EditorState.SELECT_VERTICES:
-                print("Not implemented yet")
+                if len(self.state.selectedVertices) == 0:
+                    print("Nothing selected")
+                elif len(self.state.selectedVertices) == 1:
+                    print("A single vertex can't be rotated")
+                else:
+                    print("Rotate vertices")
+                    translators = [ ]
+                    rotators = [ ]
+                    for v in self.state.selectedVertices:
+                        translators.append(VertexTranslateAdjustor(
+                            v.vertex,
+                            v.editorObject))
+                        rotators.append(NoOpAdjustor(Adjustor.ROTATE))
+                    self.setupAdjustMode(MultiRotateAdjustor(translators,
+                                                             rotators))
             elif self.state.selectMode == EditorState.SELECT_FACES:
-                print("Not implemented yet")
+                if len(self.state.selectedFaces) == 0:
+                    print("Nothing selected")
+                else:
+                    print("Rotate face(s)")
+                    translators = [ ]
+                    rotators = [ ]
+                    for f in self.state.selectedFaces:
+                        for v in f.face.getVertices():
+                            translators.append(VertexTranslateAdjustor(
+                                v.vertex,
+                                f.editorObject))
+                            rotators.append(NoOpAdjustor(Adjustor.ROTATE))
+                    self.setupAdjustMode(MultiRotateAdjustor(translators,
+                                                             rotators))
             return True
 
         # if no match
