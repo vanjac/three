@@ -270,8 +270,10 @@ class Editor(EditorActions):
             self.drawSelectHulls()
             glFlush()
             glFinish()
+            # gl y coordinates start at bottom of window
             pixels = glReadPixels(self.editorMain.mouseX(),
-                                  self.editorMain.mouseY(),
+                                  self.editorMain.windowHeight() \
+                                  - self.editorMain.mouseY(),
                                   1, 1, # width, height
                                   GL_RGB, GL_UNSIGNED_BYTE)
             index = self.colorToObjectIndex( (pixels[0], pixels[1], pixels[2]) )

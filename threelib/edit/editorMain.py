@@ -129,6 +129,14 @@ class EditorMain:
         mouseLocked = False
         glutSetCursor(GLUT_CURSOR_INHERIT)
 
+    def windowWidth():
+        global windowWidth
+        return windowWidth
+
+    def windowHeight():
+        global windowHeight
+        return windowHeight
+
     def mouseMovement(mouseX, mouseY):
         global editor, pmouseX, pmouseY, mouseLocked, mouseLockMargin
         global windowWidth, windowHeight, framesSinceMouseLockMove
