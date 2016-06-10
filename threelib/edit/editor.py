@@ -293,7 +293,14 @@ class Editor(EditorActions):
                     self.state.selectedVertices.append(
                         VertexSelection(editorObject, vertex))
             elif self.state.selectMode == EditorState.SELECT_FACES:
-                print("Not supported yet")
+                objectIndex, faceIndex = self.colorToSubObjectIndex(color)
+                if not self.selectMultiple:
+                    self.state.selectedFaces = [ ]
+                if objectIndex != -1:
+                    editorObject = self.state.objects[objectIndex]
+                    face = editorObject.getMesh().getFaces()[faceIndex]
+                    self.state.selectedFaces.append(
+                        FaceSelection(editorObject, face))
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         for o in self.state.objects:
@@ -354,13 +361,16 @@ class Editor(EditorActions):
                 glPopMatrix()
                 i += 1
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
+            glPointSize(8)
             i = 0
             for o in self.state.objects:
                 glPushMatrix()
                 self.transformObject(o)
                 
+                # block selecting vertices through objects
+                o.drawSelectHull((0, 0, 0))
+
                 if o.getMesh != None:
-                    glPointSize(8)
                     glBegin(GL_POINTS)
                     j = 0
                     for v in o.getMesh().getVertices():
@@ -374,7 +384,25 @@ class Editor(EditorActions):
                 glPopMatrix()
                 i += 1
         elif self.state.selectMode == EditorState.SELECT_FACES:
-            print("Not implemented yet")
+            i = 0
+            for o in self.state.objects:
+                glPushMatrix()
+                self.transformObject(o)
+                
+                if o.getMesh != None:
+                    j = 0
+                    for f in o.getMesh().getFaces():
+                        glBegin(GL_POLYGON)
+                        color = self.subObjectIndexToColor(i, j)
+                        glColor(color[0], color[1], color[2])
+                        for vertex in f.getVertices():
+                            pos = vertex.vertex.getPosition()
+                            glVertex(pos.y, pos.z, pos.x)
+                        glEnd()
+                        j += 1
+                
+                glPopMatrix()
+                i += 1
             
     def transformObject(self, editorObject):
         oTranslate = editorObject.getPosition()
