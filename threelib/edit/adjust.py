@@ -21,6 +21,7 @@ class NoOpAdjustor(Adjustor):
     def gridType(self):
         return self.gridType
 
+
 class TestAdjustor(Adjustor):
 
     def __init__(self, initialValue = (0, 0, 0)):
@@ -51,6 +52,7 @@ class TranslateAdjustor(Adjustor):
     def gridType(self):
         return Adjustor.TRANSLATE
 
+
 class VertexTranslateAdjustor(Adjustor):
 
     def __init__(self, meshVertex):
@@ -64,6 +66,7 @@ class VertexTranslateAdjustor(Adjustor):
 
     def gridType(self):
         return Adjustor.TRANSLATE
+
 
 class MultiTranslateAdjustor(Adjustor):
 
@@ -95,27 +98,72 @@ class MultiTranslateAdjustor(Adjustor):
     def gridType(self):
         return Adjustor.TRANSLATE
 
+# convert a tuple of 3 values to degrees
+def tupleToDegrees(t):
+    return (math.degrees(t[0]), math.degrees(t[1]), math.degrees(t[2]))
+
+# convert a tuple of 3 values to radians
+def tupleToRadians(t):
+    return (math.radians(t[0]), math.radians(t[1]), math.radians(t[2]))
+
+
 # rotate adjustor doesn't use absolute rotation values provided by the
 # editorObject because some objects don't use those
 class RotateAdjustor(Adjustor):
 
     def __init__(self, editorObject):
         self.editorObject = editorObject
-        self.currentRotation = self.editorObject.getRotation()
+        self.currentRotate = self.editorObject.getRotation()
 
     def getAxes(self):
-        t = self.currentRotation.getTuple()
-        return (math.degrees(t[0]), math.degrees(t[1]), math.degrees(t[2]))
+        return tupleToDegrees(self.currentRotate.getTuple())
 
     def setAxes(self, values):
-        nextRotation = Rotate.fromTuple((
-            math.radians(values[0]),
-            math.radians(values[1]),
-            math.radians(values[2])))
-        diff = nextRotation - self.currentRotation
+        newRotate = Rotate.fromTuple(tupleToRadians(values))
+        diff = newRotate - self.currentRotate
         self.editorObject.setRotation(self.editorObject.getRotation() + diff)
-        self.currentRotation = nextRotation
+        self.currentRotate = newRotate
 
     def gridType(self):
         return Adjustor.ROTATE
 
+
+class MultiRotateAdjustor(Adjustor):
+
+    def __init__(self, translateAdjustors, rotateAdjustors):
+        self.translators = list(translateAdjustors)
+        self.rotators = list(rotateAdjustors)
+
+        # calculate the average initial position
+        self.average = Vector(0.0, 0.0, 0.0)
+        for a in self.translators:
+            self.average += Vector.fromTuple(a.getAxes())
+        self.average /= float(len(self.translators))
+
+        # calculate each adjustor's offset from the average
+        self.offsets = [ ] # array of Vectors for each adjustor
+        for a in self.translators:
+            offset = Vector.fromTuple(a.getAxes()) - self.average
+            self.offsets.append(offset)
+
+        self.currentRotate = Rotate(0, 0, 0)
+
+    def getAxes(self):
+        return tupleToDegrees(self.currentRotate.getTuple())
+
+    def setAxes(self, values):
+        newRotate = Rotate.fromTuple(tupleToRadians(values))
+        diff = newRotate - self.currentRotate
+        self.currentRotate = newRotate
+        
+        for i in range(0, len(self.translators)):
+            offset = self.offsets[i]
+            offset = offset.rotate(self.currentRotate)
+            self.translators[i].setAxes((offset + self.average).getTuple())
+            rotate = Rotate.fromTuple(
+                tupleToRadians(self.rotators[i].getAxes()))
+            rotate += diff
+            self.rotators[i].setAxes(tupleToDegrees(rotate.getTuple()))
+
+    def gridType(self):
+        return Adjustor.ROTATE

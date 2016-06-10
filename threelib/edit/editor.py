@@ -248,7 +248,14 @@ class Editor:
                     self.setupAdjustMode(RotateAdjustor(
                         self.state.selectedObjects[0]))
                 else:
-                    print("Not implemented yet")
+                    print("Rotate objects")
+                    translators = [ ]
+                    rotators = [ ]
+                    for o in self.state.selectedObjects:
+                        translators.append(TranslateAdjustor(o))
+                        rotators.append(RotateAdjustor(o))
+                    self.setupAdjustMode(MultiRotateAdjustor(translators,
+                                                             rotators))
             elif self.state.selectMode == EditorState.SELECT_VERTICES:
                 print("Not implemented yet")
             elif self.state.selectMode == EditorState.SELECT_FACES:
