@@ -321,6 +321,23 @@ class Editor(EditorActions):
                             FaceSelection(editorObject, face))
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
+        # draw axes
+        glBegin(GL_LINES)
+        # x axis
+        glColor(1.0, 0.0, 0.0)
+        glVertex(0.0, 0.0, 0.0)
+        glVertex(0.0, 0.0, 128.0)
+        # y axis
+        glColor(0.0, 1.0, 0.0)
+        glVertex(0.0, 0.0, 0.0)
+        glVertex(128.0, 0.0, 0.0)
+        # z axis
+        glColor(0.0, 0.0, 1.0)
+        glVertex(0.0, 0.0, 0.0)
+        glVertex(0.0, 128.0, 0.0)
+        
+        glEnd()
+        
         for o in self.state.objects:
             glPushMatrix()
             self.transformObject(o)
