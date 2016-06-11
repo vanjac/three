@@ -260,10 +260,14 @@ class Editor(EditorActions):
             axes = self.selectedAxes
             if axes[0] > axes[1]: # put axes in order
                 axes = (axes[1], axes[0])
+
+            mouseXDiff = mouseX - pmouseX
+            mouseYDiff = -mouseY + pmouseY # up should be positive
+            
             if self.state.snapEnabled:
                 mouseMovement = list(self.adjustMouseMovement)
-                mouseMovement[0] += mouseX - pmouseX
-                mouseMovement[1] += mouseY - pmouseY
+                mouseMovement[0] += mouseXDiff
+                mouseMovement[1] += mouseYDiff
                 if mouseMovement[0] > mouseGrid:
                     value[axes[0]] += math.floor(mouseMovement[0] / mouseGrid)\
                                       * grid
@@ -282,8 +286,8 @@ class Editor(EditorActions):
                     mouseMovement[1] = -(-mouseMovement[1] % mouseGrid)
                 self.adjustMouseMovement = tuple(mouseMovement)
             else:
-                mouseXChange = float(mouseX - pmouseX) / float(mouseGrid) * grid
-                mouseYChange = float(mouseY - pmouseY) / float(mouseGrid) * grid
+                mouseXChange = float(mouseXDiff) / float(mouseGrid) * grid
+                mouseYChange = float(mouseYDiff) / float(mouseGrid) * grid
                 value[axes[0]] += mouseXChange
                 value[axes[1]] += mouseYChange
             self.adjustor.setAxes(tuple(value))
