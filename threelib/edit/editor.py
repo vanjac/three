@@ -89,7 +89,7 @@ class Editor(EditorActions):
     # return True to clear current command
     def evaluateCommand(self, c):
 
-        if c[0] == '`': #save
+        if c[0] == '`':
             self.saveFile()
             return True
         
@@ -129,11 +129,46 @@ class Editor(EditorActions):
             self.rotateSelected()
             return True
 
+        if c[0] == 'S':
+            if len(c) == 1:
+                return False
+            last = c[len(c) - 1]
+            if last == '\r':
+                edges = [0, 0, 0]
+                for command in c[1:-1]:
+                    # x axis:
+                    if command == 'e': # east
+                        edges[0] = 1
+                    if command == 'w': # west
+                        edges[0] = -1
+                    # y axis:
+                    if command == 'n': # north
+                        edges[1] = 1
+                    if command == 's': # south
+                        edges[1] = -1
+                    # z axis:
+                    if command == 't': # top
+                        edges[2] = 1
+                    if command == 'b': # bottom
+                        edges[2] = -1
+                self.scaleSelected(tuple(edges))
+                return True
+            elif last != 'e' and last != 'w' and last != 'n' and last != 's' \
+                 and last != 't' and last != 'b':
+                print("Invalid command", c)
+                return True
+            else:
+                return False
+
         # if no match
         print("Unrecognized command " + c)
         return True
 
     def evaluateAdjustCommand(self, c):
+        
+        if c[0] == '\r':
+            self.completeAdjust()
+            return True
         
         if c[0] == 'x':
             self.selectAdjustAxis(EditorActions.X)
@@ -181,6 +216,7 @@ class Editor(EditorActions):
             else:
                 print("Invalid command", c)
             return True
+        
         # if no match
         print("Unrecognized command", c)
         return True
@@ -190,9 +226,7 @@ class Editor(EditorActions):
     def mousePressed(self, button, mouseX, mouseY):
         if button == 0:
             if self.inAdjustMode:
-                self.inAdjustMode = False
-                print("Complete adjust")
-                self.editorMain.unlockMouse()
+                self.completeAdjust()
             else: # select
                 multiple = self.editorMain.shiftPressed()
                 self.selectAtCursor(multiple)

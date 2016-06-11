@@ -168,3 +168,29 @@ class MultiRotateAdjustor(Adjustor):
 
     def gridType(self):
         return Adjustor.ROTATE
+
+class ScaleAdjustor(Adjustor):
+
+    # edges is a tuple of 3 values for each axis. the values can be 0, to scale
+    # in both directions; 1 to scale only the higher edge; or -1, to scale only
+    # the lower edge
+    def __init__(self, editorObject, edges):
+        self.editorObject = editorObject
+        self.scale = Vector(1.0, 1.0, 1.0)
+
+        self.edges = Vector.fromTuple(edges)
+        self.originPoint = self.editorObject.getCenter() \
+                           - (self.editorObject.getDimensions()/2 * self.edges)
+
+    def getAxes(self):
+        return self.scale.getTuple()
+
+    def setAxes(self, values):
+        v = Vector.fromTuple(values)
+        self.editorObject.scale(v / self.scale)
+        self.editorObject.setPosition(self.originPoint
+            + (self.editorObject.getDimensions()/2 * self.edges))
+        self.scale = v
+
+    def gridType(self):
+        return Adjustor.SCALE

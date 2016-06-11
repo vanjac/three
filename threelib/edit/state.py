@@ -35,6 +35,14 @@ class EditorObject:
     def getBounds(self):
         pass
 
+    def getCenter(self):
+        b1, b2 = self.getBounds()
+        return (b1 + b2) / 2
+
+    def getDimensions(self):
+        b1, b2 = self.getBounds()
+        return b2 - b1
+
     def setPosition(self, position):
         pass
 

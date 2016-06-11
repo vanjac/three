@@ -170,13 +170,12 @@ class EditorActions:
                 for o in self.state.selectedObjects:
                     translators.append(TranslateAdjustor(o))
                     rotators.append(RotateAdjustor(o))
-                self.setupAdjustMode(MultiRotateAdjustor(translators,
-                                                         rotators))
+                self.setupAdjustMode(MultiRotateAdjustor(translators, rotators))
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
             if len(self.state.selectedVertices) == 0:
                 print("Nothing selected")
             elif len(self.state.selectedVertices) == 1:
-                print("A single vertex can't be rotated")
+                print("Single vertex cannot be rotated")
             else:
                 print("Rotate vertices")
                 translators = [ ]
@@ -186,8 +185,7 @@ class EditorActions:
                         v.vertex,
                         v.editorObject))
                     rotators.append(NoOpAdjustor(Adjustor.ROTATE))
-                self.setupAdjustMode(MultiRotateAdjustor(translators,
-                                                         rotators))
+                self.setupAdjustMode(MultiRotateAdjustor(translators, rotators))
         elif self.state.selectMode == EditorState.SELECT_FACES:
             if len(self.state.selectedFaces) == 0:
                 print("Nothing selected")
@@ -201,8 +199,34 @@ class EditorActions:
                             v.vertex,
                             f.editorObject))
                         rotators.append(NoOpAdjustor(Adjustor.ROTATE))
-                self.setupAdjustMode(MultiRotateAdjustor(translators,
-                                                         rotators))
+                self.setupAdjustMode(MultiRotateAdjustor(translators, rotators))
+
+    # see ScaleAdjustor for description of edges
+    def scaleSelected(self, edges):
+        if self.state.selectMode == EditorState.SELECT_OBJECTS:
+            if len(self.state.selectedObjects) == 0:
+                print("Nothing selected")
+            elif len(self.state.selectedObjects) == 1:
+                print("Scale object with edges", edges)
+                self.setupAdjustMode(ScaleAdjustor(
+                    self.state.selectedObjects[0], edges))
+            else:
+                print("Scale objects")
+                print("Not supported yet")
+        elif self.state.selectMode == EditorState.SELECT_VERTICES:
+            if len(self.state.selectedObjects) == 0:
+                print("Nothing selected")
+            elif len(self.state.selectedObjects) == 1:
+                print("Single vertex cannot be scaled")
+            else:
+                print("Scale vertices with edges", edges)
+                print("Not supported yet")
+        elif self.state.selectMode == EditorState.SELECT_FACES:
+            if len(self.state.selectedObjects) == 0:
+                print("Nothing selected")
+            else:
+                print("Scale face(s) with edges", edges)
+                print("Not supported yet")
 
     def setupAdjustMode(self, adjustor):
         self.inAdjustMode = True
@@ -271,3 +295,8 @@ class EditorActions:
         value[axis] = number + origin[axis]
         self.adjustor.setAxes(tuple(value))
         print(value)
+
+    def completeAdjust(self):
+        print("Complete adjust")
+        self.inAdjustMode = False
+        self.editorMain.unlockMouse()
