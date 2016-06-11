@@ -17,10 +17,13 @@ editorMode = False
 
 numArgs = len(sys.argv)
 
-if numArgs == 1:
-    exit()
-if numArgs == 2:
-    print("Please enter a map name.")
+if numArgs == 1 or numArgs == 2:
+    print("To run, three needs:")
+    print("  - A game directory path with a maps folder")
+    print("  - A map name or number")
+    print("     (a number will read map names from maps.txt in the game"
+        + " directory)")
+    print("  - A mode: r or e for run or edit mode. Default is run mode.")
     exit()
 if numArgs >= 3:
     gameDirPathString = sys.argv[1]
@@ -54,7 +57,8 @@ except ValueError: # mapName is not a number
 
 print("Map path: " + str(files.getCurrentMap()))
 if editorMode:
-    print("Edit mode.")
+    print("Edit mode")
     EditorMain.main(files.loadMapState(files.getCurrentMap()))
 else:
-    print("Run mode.")
+    print("Run mode")
+    print("Not supported yet")
