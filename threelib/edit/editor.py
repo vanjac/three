@@ -99,6 +99,7 @@ class Editor(EditorActions):
 
         if c[0] == 'm':
             if len(c) == 1:
+                print("Change mode...")
                 return False
             if c[1] == 'o':
                 self.selectMode(EditorState.SELECT_OBJECTS)
@@ -112,6 +113,7 @@ class Editor(EditorActions):
 
         if c[0] == 'n':
             if len(c) == 1:
+                print("Create...")
                 return False
             if c[1] == 'b':
                 self.createBox()
@@ -131,6 +133,7 @@ class Editor(EditorActions):
 
         if c[0] == 'S':
             if len(c) == 1:
+                print("Scale...")
                 return False
             last = c[len(c) - 1]
             if last == '\r':

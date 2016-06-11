@@ -71,13 +71,14 @@ class EditorActions:
         self.state.selectedFaces = [ ]
 
     def createBox(self):
-        self.selectMode(EditorState.SELECT_OBJECTS)
         print("Create box")
+        self.selectMode(EditorState.SELECT_OBJECTS)
         self.state.deselectAll()
         box = MeshObject(self.state.translateGridSize)
         box.setPosition(Vector(0, 0, 0))
         self.state.objects.append(box)
         self.state.select(box)
+        print("Translate box")
         self.setupAdjustMode(TranslateAdjustor(box))
 
     def selectAll(self):
