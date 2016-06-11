@@ -14,6 +14,8 @@ class EditorActions:
     Y = 1
     Z = 2
 
+    ROTATE_GRID_SIZES = [5.0, 10.0, 15.0, 20.0, 30.0, 40.0, 45.0]
+
     def __init__(self, editorMain, state=None):
         if state == None:
             self.state = EditorState()
@@ -215,15 +217,15 @@ class EditorActions:
                 print("Scale objects")
                 print("Not supported yet")
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
-            if len(self.state.selectedObjects) == 0:
+            if len(self.state.selectedVertices) == 0:
                 print("Nothing selected")
-            elif len(self.state.selectedObjects) == 1:
+            elif len(self.state.selectedVertices) == 1:
                 print("Single vertex cannot be scaled")
             else:
                 print("Scale vertices with edges", edges)
                 print("Not supported yet")
         elif self.state.selectMode == EditorState.SELECT_FACES:
-            if len(self.state.selectedObjects) == 0:
+            if len(self.state.selectedFaces) == 0:
                 print("Nothing selected")
             else:
                 print("Scale face(s) with edges", edges)
@@ -235,6 +237,7 @@ class EditorActions:
         self.adjustorOriginalValue = adjustor.getAxes()
         self.adjustMouseMovement = (0, 0)
         self.editorMain.lockMouse()
+        print("Grid size:", self.state.getGridSize(adjustor.gridType()))
 
     def selectAtCursor(self, multiple=False):
         self.selectAtCursorOnDraw = True
@@ -252,11 +255,36 @@ class EditorActions:
             print("Select Z axis")
         self.selectedAxes = (self.selectedAxes[1], axis)
 
+    def increaseGrid(self):
+        gridType = self.adjustor.gridType()
+        if self.adjustor.gridType() == Adjustor.ROTATE:
+            current = self.state.getGridSize(gridType)
+            for size in EditorActions.ROTATE_GRID_SIZES:
+                if size > current:
+                    self.state.setGridSize(gridType, size)
+                    break
+        else:
+            self.multiplyGrid(2)
+        print("Grid size:", self.state.getGridSize(gridType))
+
+    def decreaseGrid(self):
+        gridType = self.adjustor.gridType()
+        if self.adjustor.gridType() == Adjustor.ROTATE:
+            current = self.state.getGridSize(gridType)
+            previous = EditorActions.ROTATE_GRID_SIZES[0]
+            for size in EditorActions.ROTATE_GRID_SIZES:
+                if size >= current:
+                    self.state.setGridSize(gridType, previous)
+                    break
+                previous = size
+        else:
+            self.multiplyGrid(0.5)
+        print("Grid size:", self.state.getGridSize(gridType))
+
     def multiplyGrid(self, factor):
         gridType = self.adjustor.gridType()
         self.state.setGridSize(gridType, \
                                self.state.getGridSize(gridType) * factor)
-        print("Grid size:", self.state.getGridSize(gridType))
 
     def toggleSnap(self):
         if self.state.snapEnabled:

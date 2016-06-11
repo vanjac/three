@@ -125,9 +125,9 @@ class EditorState:
         self.relativeCoordinatesEnabled = True
         self.snapEnabled = True
         self.axisLockEnabled = False
-        self.translateGridSize = 16
-        self.rotateGridSize = 15 # in degrees
-        self.scaleGridSize = 0.1
+        self.translateGridSize = 16.0
+        self.rotateGridSize = 15.0 # in degrees
+        self.scaleGridSize = 0.25
 
     # only required for objects -- faces and vertices just have to be added to
     # the list

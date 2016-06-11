@@ -184,10 +184,10 @@ class Editor(EditorActions):
             return True
 
         if c[0] == '[':
-            self.multiplyGrid(0.5)
+            self.decreaseGrid()
             return True
         if c[0] == ']':
-            self.multiplyGrid(2.0)
+            self.increaseGrid()
             return True
         if c[0] == 's':
             self.toggleSnap()

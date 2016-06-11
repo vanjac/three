@@ -187,6 +187,12 @@ class ScaleAdjustor(Adjustor):
 
     def setAxes(self, values):
         v = Vector.fromTuple(values)
+        if v.x == 0:
+            v = v.setX(self.scale.x)
+        if v.y == 0:
+            v = v.setY(self.scale.y)
+        if v.z == 0:
+            v = v.setZ(self.scale.z)
         self.editorObject.scale(v / self.scale)
         self.editorObject.setPosition(self.originPoint
             + (self.editorObject.getDimensions()/2 * self.edges))
