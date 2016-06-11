@@ -31,13 +31,14 @@ class EditorObject:
     def getRotation(self):
         pass
 
-    # return a tuple of 2 vectors (minCoords, maxCoords)
+    # return a tuple of 2 vectors (minCoords, maxCoords). Bounds are relative to
+    # the object position
     def getBounds(self):
         pass
 
     def getCenter(self):
         b1, b2 = self.getBounds()
-        return (b1 + b2) / 2
+        return (b1 + b2) / 2 + self.getPosition()
 
     def getDimensions(self):
         b1, b2 = self.getBounds()
