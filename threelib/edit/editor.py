@@ -110,6 +110,13 @@ class Editor(EditorActions):
                 self.selectMode(EditorState.SELECT_VERTICES)
                 return True
 
+        if c[0] == 'n':
+            if len(c) == 1:
+                return False
+            if c[1] == 'b':
+                self.createBox()
+                return True
+
         if c[0] == 'a':
             self.selectAll()
             return True

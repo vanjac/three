@@ -37,16 +37,6 @@ class EditorActions:
         # flags
         self.selectAtCursorOnDraw = False
         self.selectMultiple = False
-        
-        # test code
-        if len(self.state.objects) == 0:
-            testObject = MeshObject(8)
-            testObject.setPosition(Vector(-50, 0, 0))
-            self.state.objects.append(testObject)
-            self.state.select(testObject)
-            testObject2 = MeshObject(8)
-            testObject2.setPosition(Vector(-100, 0, 0))
-            self.state.objects.append(testObject2)
     
     
     def saveFile(self):
@@ -79,6 +69,16 @@ class EditorActions:
         self.state.deselectAll()
         self.state.selectedVertices = [ ]
         self.state.selectedFaces = [ ]
+
+    def createBox(self):
+        self.selectMode(EditorState.SELECT_OBJECTS)
+        print("Create box")
+        self.state.deselectAll()
+        box = MeshObject(self.state.translateGridSize)
+        box.setPosition(Vector(0, 0, 0))
+        self.state.objects.append(box)
+        self.state.select(box)
+        self.setupAdjustMode(TranslateAdjustor(box))
 
     def selectAll(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:

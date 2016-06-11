@@ -104,7 +104,7 @@ class EditorState:
     SELECT_VERTICES = 2
 
     def __init__(self):
-        self.cameraPosition = Vector(0, 0, 0)
+        self.cameraPosition = Vector(-32, 0, 0)
         self.cameraRotation = Rotate(0, 0, 0)
         self.objects = [ ]
         
