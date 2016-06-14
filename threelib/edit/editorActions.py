@@ -61,12 +61,6 @@ class EditorActions:
             self.state.deselectAll()
 
     def selectMode(self, mode):
-        if mode == EditorState.SELECT_OBJECTS:
-            print("Object select mode")
-        if mode == EditorState.SELECT_FACES:
-            print("Face select mode")
-        if mode == EditorState.SELECT_VERTICES:
-            print("Vertex select mode")
         self.state.selectMode = mode
         self.state.deselectAll()
         self.state.selectedVertices = [ ]
@@ -80,7 +74,6 @@ class EditorActions:
         box.setPosition(Vector(0, 0, 0))
         self.state.objects.append(box)
         self.state.select(box)
-        print("Translate box")
         self.setupAdjustMode(TranslateAdjustor(box))
 
     def selectAll(self):
@@ -237,7 +230,6 @@ class EditorActions:
         self.adjustorOriginalValue = adjustor.getAxes()
         self.adjustMouseMovement = (0, 0)
         self.editorMain.lockMouse()
-        print("Grid size:", self.state.getGridSize(adjustor.gridType()))
 
     def selectAtCursor(self, multiple=False):
         self.selectAtCursorOnDraw = True
@@ -247,12 +239,6 @@ class EditorActions:
     # ADJUST MODE ACTIONS:
 
     def selectAdjustAxis(self, axis):
-        if axis == EditorActions.X:
-            print("Select X axis")
-        if axis == EditorActions.Y:
-            print("Select Y axis")
-        if axis == EditorActions.Z:
-            print("Select Z axis")
         self.selectedAxes = (self.selectedAxes[1], axis)
 
     def increaseGrid(self):
@@ -265,7 +251,6 @@ class EditorActions:
                     break
         else:
             self.multiplyGrid(2)
-        print("Grid size:", self.state.getGridSize(gridType))
 
     def decreaseGrid(self):
         gridType = self.adjustor.gridType()
@@ -279,7 +264,6 @@ class EditorActions:
                 previous = size
         else:
             self.multiplyGrid(0.5)
-        print("Grid size:", self.state.getGridSize(gridType))
 
     def multiplyGrid(self, factor):
         gridType = self.adjustor.gridType()
@@ -288,10 +272,8 @@ class EditorActions:
 
     def toggleSnap(self):
         if self.state.snapEnabled:
-            print("Snap off")
             self.state.snapEnabled = False
         else:
-            print("Snap on")
             self.state.snapEnabled = True
             self.adjustMouseMovement = (0, 0)
 
@@ -310,10 +292,8 @@ class EditorActions:
 
     def toggleRelativeCoordinates(self):
         if self.state.relativeCoordinatesEnabled:
-            print("Absolute coordinates")
             self.state.relativeCoordinatesEnabled = False
         else:
-            print("Relative coordinates")
             self.state.relativeCoordinatesEnabled = True
 
     def setAdjustAxisValue(self, axis, number):
