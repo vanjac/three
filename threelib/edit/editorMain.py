@@ -151,9 +151,11 @@ class EditorMain:
 
     def unlockMouse():
         global mouseLocked, pmouseX, pmouseY, mouseLockX, mouseLockY
+        if mouseLocked:
+            pyautogui.moveRel(mouseLockX-pmouseX, mouseLockY - pmouseY)
         mouseLocked = False
         glutSetCursor(GLUT_CURSOR_INHERIT)
-        pyautogui.moveRel(mouseLockX-pmouseX, mouseLockY - pmouseY)
+        
 
     def windowWidth():
         global windowWidth
