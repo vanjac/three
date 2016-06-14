@@ -80,10 +80,8 @@ class EditorActions:
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
             if len(self.state.selectedObjects) == 0:
                 self.state.selectAll()
-                print("Select", len(self.state.selectedObjects), "objects")
             else:
                 self.state.deselectAll()
-                print("Select none")
         elif self.state.selectMode == EditorState.SELECT_FACES:
             if len(self.state.selectedFaces) == 0:
                 for o in self.state.objects:
@@ -91,10 +89,8 @@ class EditorActions:
                         for f in o.getMesh().getFaces():
                             self.state.selectedFaces.append(
                                 FaceSelection(o, f))
-                print("Select", len(self.state.selectedFaces), "faces")
             else:
                 self.state.selectedFaces = [ ]
-                print("Select none")
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
             if len(self.state.selectedVertices) == 0:
                 for o in self.state.objects:
@@ -102,10 +98,8 @@ class EditorActions:
                         for v in o.getMesh().getVertices():
                             self.state.selectedVertices.append(
                                 VertexSelection(o, v))
-                print("Select", len(self.state.selectedVertices), "vertices")
             else:
                 self.state.selectedVertices = [ ]
-                print("Select none")
 
     def translateSelected(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
