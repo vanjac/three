@@ -230,7 +230,7 @@ class Editor(EditorActions):
         if button == 0:
             if self.inAdjustMode:
                 self.completeAdjust()
-            else: # select
+            elif not self.movingCamera: # select
                 multiple = self.editorMain.shiftPressed()
                 self.selectAtCursor(multiple)
         if button == 2:

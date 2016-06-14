@@ -30,6 +30,9 @@ mouseButtonPressed = [ False for i in range(0, 7) ]
 pmouseX = 0
 pmouseY = 0
 mouseLocked = False
+# position mouse was locked at
+mouseLockX = 0
+mouseLockY = 0
 
 mouseLockMargin = 64
 framesSinceMouseLockMove = 0
@@ -120,14 +123,17 @@ class EditorMain:
         return pmouseY
 
     def lockMouse():
-        global mouseLocked
+        global mouseLocked, pmouseX, pmouseY, mouseLockX, mouseLockY
         mouseLocked = True
         glutSetCursor(GLUT_CURSOR_NONE)
+        mouseLockX = pmouseX
+        mouseLockY = pmouseY
 
     def unlockMouse():
-        global mouseLocked
+        global mouseLocked, pmouseX, pmouseY, mouseLockX, mouseLockY
         mouseLocked = False
         glutSetCursor(GLUT_CURSOR_INHERIT)
+        pyautogui.moveRel(mouseLockX-pmouseX, mouseLockY - pmouseY)
 
     def windowWidth():
         global windowWidth
