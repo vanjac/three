@@ -452,9 +452,47 @@ class Editor(EditorActions):
             glDisable(GL_POLYGON_STIPPLE)
             glDisable(GL_POLYGON_OFFSET_FILL)
         
+        # status bar
         glColor(1,1,1)
         glPopMatrix()
         self.editorMain.drawText(self.getStatusBar(), GLUT_BITMAP_9_BY_15, 4, 4)
+        
+        # mini axes:
+        
+        glDisable(GL_DEPTH_TEST)
+        glPushMatrix()
+
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glTranslate(2.5, -2.5, 0)
+        glMatrixMode(GL_MODELVIEW)
+        
+        glTranslate(0, 0, -5)
+        glRotate(math.degrees(rotate.x), 0, 0, 1)
+        glRotate(math.degrees(rotate.y), -1, 0, 0)
+        glRotate(math.degrees(rotate.z), 0, 1, 0)
+        
+        glBegin(GL_LINES)
+        # x axis
+        glColor(1.0, 0.0, 0.0)
+        glVertex(0.0, 0.0, 0.0)
+        glVertex(0.0, 0.0, 0.5)
+        # y axis
+        glColor(0.0, 1.0, 0.0)
+        glVertex(0.0, 0.0, 0.0)
+        glVertex(0.5, 0.0, 0.0)
+        # z axis
+        glColor(0.0, 0.0, 1.0)
+        glVertex(0.0, 0.0, 0.0)
+        glVertex(0.0, 0.5, 0.0)
+        
+        glEnd()
+
+        glMatrixMode(GL_PROJECTION)
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
+        glPopMatrix()
+        glEnable(GL_DEPTH_TEST)
 
     def drawSelectHulls(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
