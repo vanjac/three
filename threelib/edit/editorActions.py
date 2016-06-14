@@ -216,12 +216,20 @@ class EditorActions:
                 print("Single vertex cannot be scaled")
             else:
                 print("Scale vertices with edges", edges)
-                print("Not supported yet")
+                vertices = [ ]
+                for v in self.state.selectedVertices:
+                    vertices.append(v.vertex)
+                self.setupAdjustMode(MultiVertexScaleAdjustor(vertices, edges))
         elif self.state.selectMode == EditorState.SELECT_FACES:
             if len(self.state.selectedFaces) == 0:
                 print("Nothing selected")
             else:
                 print("Scale face(s) with edges", edges)
+                vertices = [ ]
+                for f in self.state.selectedFaces:
+                    for v in f.face.getVertices():
+                        vertices.append(v.vertex)
+                self.setupAdjustMode(MultiVertexScaleAdjustor(vertices, edges))
                 print("Not supported yet")
 
     def setupAdjustMode(self, adjustor):

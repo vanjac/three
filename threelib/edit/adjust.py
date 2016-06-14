@@ -200,3 +200,62 @@ class ScaleAdjustor(Adjustor):
 
     def gridType(self):
         return Adjustor.SCALE
+
+
+class MultiVertexScaleAdjustor(Adjustor):
+    
+    def __init__(self, vertices, edges):
+        self.vertices = list(vertices)
+        
+        self.scale = Vector(1.0, 1.0, 1.0)
+        
+        average = Vector(0.0, 0.0, 0.0)
+        firstVertexPos = self.vertices[0].getPosition()
+        lowX = firstVertexPos.x
+        lowY = firstVertexPos.y
+        lowZ = firstVertexPos.z
+        highX = firstVertexPos.x
+        highY = firstVertexPos.y
+        highZ = firstVertexPos.z
+        for v in self.vertices:
+            pos = v.getPosition()
+            average += pos
+            if pos.x < lowX:
+                lowX = pos.x
+            if pos.x > highX:
+                highX = pos.x
+            if pos.y < lowY:
+                lowY = pos.y
+            if pos.y > highY:
+                highY = pos.y
+            if pos.z < lowZ:
+                lowZ = pos.z
+            if pos.z > highZ:
+                highZ = pos.z
+        average /= len(self.vertices)
+        lowBound = Vector(lowX, lowY, lowZ)
+        highBound = Vector(highX, highY, highZ)
+        dimensions = highBound - lowBound
+
+        self.edges = Vector.fromTuple(edges)
+        self.originPoint = average - (dimensions/2 * self.edges)
+
+    def getAxes(self):
+        return self.scale.getTuple()
+
+    def setAxes(self, values):
+        v = Vector.fromTuple(values)
+        if v.x == 0:
+            v = v.setX(self.scale.x)
+        if v.y == 0:
+            v = v.setY(self.scale.y)
+        if v.z == 0:
+            v = v.setZ(self.scale.z)
+        for vertex in self.vertices:
+            pos = vertex.getPosition()
+            pos = (pos - self.originPoint) * (v / self.scale) + self.originPoint
+            vertex.setPosition(pos)
+        self.scale = v
+
+    def gridType(self):
+        return Adjustor.SCALE
