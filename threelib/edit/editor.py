@@ -41,7 +41,6 @@ class Editor(EditorActions):
 
     def keyPressed(self, key, mouseX, mouseY):
         if key[0] == 27: # escape
-            print("Escape")
             self.currentCommand = ""
             self.movingCamera = False
             self.fly = Vector(0, 0, 0)
