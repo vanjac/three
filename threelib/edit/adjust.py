@@ -259,3 +259,60 @@ class MultiVertexScaleAdjustor(Adjustor):
 
     def gridType(self):
         return Adjustor.SCALE
+
+
+class MultiScaleAdjustor(Adjustor):
+    
+    def __init__(self, editorObjects, edges):
+        self.editorObjects = list(editorObjects)
+        self.scale = Vector(1.0, 1.0, 1.0)
+
+        firstObjectBounds = editorObjects[0].getBounds()
+        firstObjectPos = editorObjects[0].getPosition()
+        lowBound = firstObjectBounds[0] + firstObjectPos
+        highBound = firstObjectBounds[1] + firstObjectPos
+
+        for o in editorObjects:
+            pos = o.getPosition()
+            bounds = o.getBounds()
+            low = bounds[0] + pos
+            high = bounds[1] + pos
+            if low.x < lowBound.x:
+                lowBound = lowBound.setX(low.x)
+            if low.y < lowBound.y:
+                lowBound = lowBound.setY(low.y)
+            if low.z < lowBound.z:
+                lowBound = lowBound.setZ(low.z)
+            if high.x > highBound.x:
+                highBound = highBound.setX(high.x)
+            if high.y > highBound.y:
+                highBound = highBound.setY(high.y)
+            if high.z > highBound.z:
+                highBound = highBound.setZ(high.z)
+
+        center = (lowBound + highBound) / 2
+        dimensions = highBound - lowBound
+
+        self.edges = Vector.fromTuple(edges)
+        self.originPoint = center - (dimensions/2 * self.edges)
+
+    def getAxes(self):
+        return self.scale.getTuple()
+
+    def setAxes(self, values):
+        v = Vector.fromTuple(values)
+        if v.x == 0:
+            v = v.setX(self.scale.x)
+        if v.y == 0:
+            v = v.setY(self.scale.y)
+        if v.z == 0:
+            v = v.setZ(self.scale.z)
+        for o in self.editorObjects:
+            o.scale(v / self.scale)
+            pos = o.getPosition()
+            pos = (pos - self.originPoint) * (v / self.scale) + self.originPoint
+            o.setPosition(pos)
+        self.scale = v
+
+    def gridType(self):
+        return Adjustor.SCALE

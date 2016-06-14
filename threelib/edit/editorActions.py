@@ -208,6 +208,8 @@ class EditorActions:
                     self.state.selectedObjects[0], edges))
             else:
                 print("Scale objects")
+                self.setupAdjustMode(MultiScaleAdjustor(
+                    self.state.selectedObjects, edges))
                 print("Not supported yet")
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
             if len(self.state.selectedVertices) == 0:
