@@ -13,6 +13,7 @@ from threelib import files
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
+from OpenGL.GLUT import *
 
 stipplePattern = [
     0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
@@ -301,6 +302,7 @@ class Editor(EditorActions):
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1) # for getting select pixels
 
     def draw(self):
+        glPushMatrix()
         rotate = self.state.cameraRotation
         translate = self.state.cameraPosition
         glRotate(math.degrees(rotate.x), 0, 0, 1)
@@ -443,6 +445,10 @@ class Editor(EditorActions):
                 glPopMatrix()
             glDisable(GL_POLYGON_STIPPLE)
             glDisable(GL_POLYGON_OFFSET_FILL)
+        
+        glColor(1,1,1)
+        glPopMatrix()
+        self.editorMain.drawText(self.getStatusBar(), GLUT_BITMAP_9_BY_15, 4, 4)
 
     def drawSelectHulls(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
@@ -533,3 +539,81 @@ class Editor(EditorActions):
         g = int(color[1])
         b = int(color[2])
         return b*256 + g - 1, r
+
+    def getStatusBar(self):
+        text = ""
+
+        if self.inAdjustMode:
+            text += "Adjust | "
+            value = self.adjustor.getAxes()
+            if self.state.relativeCoordinatesEnabled:
+                origin = self.adjustorOriginalValue
+                value = (value[0]-origin[0],
+                         value[1]-origin[1],
+                         value[2]-origin[2])
+            text += str(value)
+            if self.state.relativeCoordinatesEnabled:
+                text += " relative | "
+            else:
+                text += " absolute | "
+            for a in self.selectedAxes:
+                if a == EditorActions.X:
+                    text += "X"
+                if a == EditorActions.Y:
+                    text += "Y"
+                if a == EditorActions.Z:
+                    text += "Z"
+            text += " | "
+            text += " Grid: " + str(self.state.getGridSize(
+                self.adjustor.gridType())) + " | "
+            if self.state.snapEnabled:
+                text += "Snap on  | "
+            else:
+                text += "Snap off | "
+            if self.state.axisLockEnabled:
+                text += "Lock on  | "
+            else:
+                text += "Lock off | "
+        else:
+            if self.movingCamera:
+                text += "Fly    | "
+            else:
+                text += "Ready  | "
+
+            if self.state.selectMode == EditorState.SELECT_OBJECTS:
+                num = len(self.state.selectedObjects)
+                if num == 0:
+                    text += "Object select | "
+                elif num == 1:
+                    text += "1 object  | "
+                else:
+                    text += str(num) + " objects | "
+            if self.state.selectMode == EditorState.SELECT_FACES:
+                num = len(self.state.selectedFaces)
+                if num == 0:
+                    text += "Face select   | "
+                elif num == 1:
+                    text += "1 face  | "
+                else:
+                    text += str(num) + " faces | "
+            if self.state.selectMode == EditorState.SELECT_VERTICES:
+                num = len(self.state.selectedVertices)
+                if num == 0:
+                    text += "Vertex select | "
+                elif num == 1:
+                    text += "1 vertex   | "
+                else:
+                    text += str(num) + " vertices | "
+        
+        text += self.currentCommand
+        
+        return text
+            
+            
+
+    def padSpaces(self, string, spaces):
+        l = len(string)
+        if l < spaces:
+            for i in range(0, spaces - l):
+                string += spaces
+        return string

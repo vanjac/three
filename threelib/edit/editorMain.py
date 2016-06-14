@@ -88,6 +88,26 @@ class EditorMain:
         #  double buffered - swap the buffers to display what just got drawn. 
         glutSwapBuffers()
 
+    def drawText(text, font, x, y):
+        global windowWidth, windowHeight
+        depthEnabled = glIsEnabled(GL_DEPTH_TEST)
+        glDisable(GL_DEPTH_TEST)
+        
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        gluOrtho2D(0.0, windowWidth, 0.0, windowHeight)
+
+        glRasterPos(x,y)
+        for c in text :
+            glutBitmapCharacter(font, ctypes.c_int(ord(c)))
+        
+        if depthEnabled:
+            glEnable(GL_DEPTH_TEST)
+
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
+
     # info passed as tuple: (button, eventType, mouseX, mouseY)
     # button: left=0, middle=1, right=2, 
     #   scroll-up=3, scroll-down=4, scroll-left=5, scroll-right=6
