@@ -241,13 +241,13 @@ class Editor(EditorActions):
             elif not self.movingCamera: # select
                 multiple = self.editorMain.shiftPressed()
                 self.selectAtCursor(multiple)
-        if button == 2:
+        if button == 0 or button==2:
             if self.movingCamera:
                 self.movingCamera = False
                 self.fly = Vector(0, 0, 0)
                 if not self.inAdjustMode:
                     self.editorMain.unlockMouse()
-            else:
+            elif button == 2:
                 self.movingCamera = True
                 self.editorMain.lockMouse()
         if button == 3:
