@@ -63,7 +63,17 @@ class Editor(EditorActions):
             if key == b'e':
                 self.fly = self.fly.setZ(1)
         else:
-            self.currentCommand += chr(key[0])
+            character = chr(key[0])
+            if character == '\b' and len(self.currentCommand) != 0:
+                # delete from command
+                self.currentCommand = self.currentCommand[:-1]
+            else:
+                # add to command
+                self.currentCommand += character
+            
+            if len(self.currentCommand) == 0:
+                return
+            
             clearCommand = False
             if self.inAdjustMode:
                 clearCommand = self.evaluateAdjustCommand(self.currentCommand)
