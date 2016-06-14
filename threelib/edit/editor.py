@@ -550,7 +550,7 @@ class Editor(EditorActions):
         text = ""
 
         if self.inAdjustMode:
-            text += "Adjust | "
+            text += self.adjustor.getDescription() + " | "
             value = self.adjustor.getAxes()
             if self.state.relativeCoordinatesEnabled:
                 origin = self.adjustorOriginalValue

@@ -52,6 +52,9 @@ class TranslateAdjustor(Adjustor):
     def gridType(self):
         return Adjustor.TRANSLATE
 
+    def getDescription(self):
+        return "Translate object"
+
 
 class VertexTranslateAdjustor(Adjustor):
 
@@ -67,6 +70,9 @@ class VertexTranslateAdjustor(Adjustor):
 
     def gridType(self):
         return Adjustor.TRANSLATE
+
+    def getDescription(self):
+        return "Translate vertex"
 
 
 class MultiTranslateAdjustor(Adjustor):
@@ -99,6 +105,9 @@ class MultiTranslateAdjustor(Adjustor):
     def gridType(self):
         return Adjustor.TRANSLATE
 
+    def getDescription(self):
+        return "Translate " + str(len(self.adjustors)) + " objects"
+
 # convert a tuple of 3 values to degrees
 def tupleToDegrees(t):
     return (math.degrees(t[0]), math.degrees(t[1]), math.degrees(t[2]))
@@ -127,6 +136,9 @@ class RotateAdjustor(Adjustor):
 
     def gridType(self):
         return Adjustor.ROTATE
+
+    def getDescription(self):
+        return "Rotate object"
 
 
 class MultiRotateAdjustor(Adjustor):
@@ -169,6 +181,10 @@ class MultiRotateAdjustor(Adjustor):
     def gridType(self):
         return Adjustor.ROTATE
 
+    def getDescription(self):
+        return "Rotate " + str(len(self.rotators)) + " objects"
+
+
 class ScaleAdjustor(Adjustor):
 
     # edges is a tuple of 3 values for each axis. the values can be 0, to scale
@@ -200,6 +216,9 @@ class ScaleAdjustor(Adjustor):
 
     def gridType(self):
         return Adjustor.SCALE
+
+    def getDescription(self):
+        return "Scale object"
 
 
 class MultiVertexScaleAdjustor(Adjustor):
@@ -260,6 +279,8 @@ class MultiVertexScaleAdjustor(Adjustor):
     def gridType(self):
         return Adjustor.SCALE
 
+    def getDescription(self):
+        return "Scale " + str(len(self.vertices)) + " vertices"
 
 class MultiScaleAdjustor(Adjustor):
     
@@ -316,3 +337,6 @@ class MultiScaleAdjustor(Adjustor):
 
     def gridType(self):
         return Adjustor.SCALE
+
+    def getDescription(self):
+        return "Scale " + str(len(self.editorObjects)) + " objects"

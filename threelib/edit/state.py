@@ -194,6 +194,10 @@ class Adjustor:
     def gridType(self):
         pass
 
+    # return a string description of what the adjustor is doing
+    def getDescription(self):
+        return "Adjust"
+
 
 class FaceSelection:
     # face is a MeshFace
