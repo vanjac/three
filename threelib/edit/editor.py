@@ -335,7 +335,7 @@ class Editor(EditorActions):
                         self.state.deselect(o)
                     else:
                         self.state.select(o)
-            elif self.state.selectMode == EditorState.SELECT_VERTICES:
+            elif drawVertices:
                 objectIndex, vertexIndex = self.colorToSubObjectIndex(color)
                 if not self.selectMultiple:
                     self.state.selectedVertices = [ ]
@@ -405,6 +405,13 @@ class Editor(EditorActions):
                     pos = v.getPosition()
                     glVertex(pos.y, pos.z, pos.x)
                 glEnd()
+                
+                for f in o.getMesh().getFaces():
+                    glBegin(GL_LINE_LOOP)
+                    for v in f.getVertices():
+                        pos = v.vertex.getPosition()
+                        glVertex(pos.y, pos.z, pos.x)
+                    glEnd()
 
             glPopMatrix()
 
