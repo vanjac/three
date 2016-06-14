@@ -22,7 +22,7 @@ If a window with green and blue lines appears, it worked.
 - `mv` to switch to vertex select mode, `mf` for face select and `mo` for object select mode (default)
 - `g` to enter translate ("Grab") adjust mode for the selected objects (see below)
 - `r` to enter Rotate adjust mode
-- `Shift-s` to enter Scale adjust mode 
+- `Shift-s Enter` to enter Scale adjust mode
 - `Esc` to cancel all current operations
 - `` ` `` to save
 
