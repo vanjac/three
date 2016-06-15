@@ -623,7 +623,7 @@ class Editor(EditorActions):
                 text += "Lock on  | "
             else:
                 text += "Lock off | "
-        else:
+        else: # not in adjust mode
             if self.movingCamera:
                 text += "Fly    | "
             else:
@@ -635,6 +635,11 @@ class Editor(EditorActions):
                     text += "Object select | "
                 elif num == 1:
                     text += "1 object  | "
+                    o = self.state.selectedObjects[0]
+                    text += o.getType() + ": \"" + o.getName() + "\" | "
+                    text += "Pos: " + str(o.getPosition()) + " | "
+                    text += "Rot: " + str(o.getRotation()) + " | "
+                    text += "Size: " + str(o.getDimensions()) + " | "
                 else:
                     text += str(num) + " objects | "
             if self.state.selectMode == EditorState.SELECT_FACES:
@@ -651,6 +656,9 @@ class Editor(EditorActions):
                     text += "Vertex select | "
                 elif num == 1:
                     text += "1 vertex   | "
+                    text += "Pos: " + \
+                            str(self.state.selectedVertices[0].vertex \
+                                .getPosition()) + " | "
                 else:
                     text += str(num) + " vertices | "
         
