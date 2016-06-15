@@ -134,6 +134,10 @@ class Editor(EditorActions):
         if c[0] == 'g':
             self.translateSelected()
             return True
+
+        if c[0] == 'o':
+            self.adjustOriginOfSelected()
+            return True
             
         if c[0] == 'r':
             self.rotateSelected()
@@ -408,7 +412,16 @@ class Editor(EditorActions):
             if select:
                 glDisable(GL_POLYGON_STIPPLE)
 
-            if drawVertices and o.getMesh != None:
+            if o.getMesh() != None:
+                # a green point is used for the origin
+                glColor(0.0, 1.0, 0.0)
+                glPointSize(12)
+                glBegin(GL_POINTS)
+                origin = o.getPosition()
+                glVertex(origin.y, origin.z, origin.x)
+                glEnd()
+
+            if drawVertices and o.getMesh() != None:
                 # red points are used for vertices
                 glColor(1.0, 0.0, 0.0)
                 glPointSize(8)
@@ -425,14 +438,6 @@ class Editor(EditorActions):
                         pos = v.vertex.getPosition()
                         glVertex(pos.y, pos.z, pos.x)
                     glEnd()
-
-                # a green point is used for the origin
-                glColor(0.0, 1.0, 0.0)
-                glPointSize(12)
-                glBegin(GL_POINTS)
-                origin = o.getPosition()
-                glVertex(origin.y, origin.z, origin.x)
-                glEnd()
                 
             glPopMatrix()
         # end for each object

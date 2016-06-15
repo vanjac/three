@@ -108,6 +108,31 @@ class MultiTranslateAdjustor(Adjustor):
     def getDescription(self):
         return "Translate " + str(len(self.adjustors)) + " objects"
 
+
+class OriginAdjustor(Adjustor):
+
+    def __init__(self, editorObject):
+        self.editorObject = editorObject
+
+    def getAxes(self):
+        return self.editorObject.getPosition().getTuple()
+
+    def setAxes(self, values):
+        v = Vector.fromTuple(values)
+        diff = v - self.editorObject.getPosition()
+        self.editorObject.setPosition(v)
+
+        if self.editorObject.getMesh() != None:
+            for vertex in self.editorObject.getMesh().getVertices():
+                vertex.setPosition(vertex.getPosition() - diff)
+
+    def gridType(self):
+        return Adjustor.TRANSLATE
+
+    def getDescription(self):
+        return "Change object origin"
+
+
 # convert a tuple of 3 values to degrees
 def tupleToDegrees(t):
     return (math.degrees(t[0]), math.degrees(t[1]), math.degrees(t[2]))

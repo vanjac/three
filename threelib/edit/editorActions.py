@@ -144,6 +144,25 @@ class EditorActions:
                             v.vertex,
                             f.editorObject))
                 self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
+
+    
+    def adjustOriginOfSelected(self):
+        if self.state.selectMode == EditorState.SELECT_OBJECTS:
+            if len(self.state.selectedObjects) == 0:
+                print("Nothing selected")
+            elif len(self.state.selectedObjects) == 1:
+                print("Change origin of object")
+                self.setupAdjustMode(OriginAdjustor(
+                    self.state.selectedObjects[0]))
+            else:
+                print("Change origin of objects")
+                adjustors = [ ]
+                for o in self.state.selectedObjects:
+                    adjustors.append(OriginAdjustor(o))
+                self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
+        else:
+            print("Only objects have origins")
+                
                  
     def rotateSelected(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
