@@ -211,11 +211,11 @@ class ScaleAdjustor(Adjustor):
 
     def setAxes(self, values):
         v = Vector.fromTuple(values)
-        if v.x < 0:
+        if v.x <= 0:
             v = v.setX(self.scale.x)
-        if v.y < 0:
+        if v.y <= 0:
             v = v.setY(self.scale.y)
-        if v.z < 0:
+        if v.z <= 0:
             v = v.setZ(self.scale.z)
         self.editorObject.scale(v / self.scale)
         self.editorObject.setPosition(self.originPoint
@@ -280,11 +280,11 @@ class MultiVertexScaleAdjustor(Adjustor):
 
     def setAxes(self, values):
         v = Vector.fromTuple(values)
-        if v.x < 0:
+        if v.x <= 0:
             v = v.setX(self.scale.x)
-        if v.y < 0:
+        if v.y <= 0:
             v = v.setY(self.scale.y)
-        if v.z < 0:
+        if v.z <= 0:
             v = v.setZ(self.scale.z)
         for vertex in self.vertices:
             pos = vertex.getPosition()
@@ -347,11 +347,11 @@ class MultiScaleAdjustor(Adjustor):
 
     def setAxes(self, values):
         v = Vector.fromTuple(values)
-        if v.x < 0:
+        if v.x <= 0:
             v = v.setX(self.scale.x)
-        if v.y < 0:
+        if v.y <= 0:
             v = v.setY(self.scale.y)
-        if v.z < 0:
+        if v.z <= 0:
             v = v.setZ(self.scale.z)
         for o in self.editorObjects:
             o.scale(v / self.scale)
