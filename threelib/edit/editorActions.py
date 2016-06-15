@@ -191,42 +191,44 @@ class EditorActions:
                         rotators.append(NoOpAdjustor(Adjustor.ROTATE))
                 self.setupAdjustMode(MultiRotateAdjustor(translators, rotators))
 
-    # see ScaleAdjustor for description of edges
-    def scaleSelected(self, edges):
+    # see ScaleAdjustor for description of edges and resize value
+    def scaleSelected(self, edges, resize=False):
+        description = "Resize" if resize else "Scale"
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
             if len(self.state.selectedObjects) == 0:
                 print("Nothing selected")
             elif len(self.state.selectedObjects) == 1:
-                print("Scale object with edges", edges)
+                print(description, "object with edges", edges)
                 self.setupAdjustMode(ScaleAdjustor(
-                    self.state.selectedObjects[0], edges))
+                    self.state.selectedObjects[0], edges, resize))
             else:
-                print("Scale objects")
+                print(description, "objects")
                 self.setupAdjustMode(MultiScaleAdjustor(
-                    self.state.selectedObjects, edges))
+                    self.state.selectedObjects, edges, resize))
                 print("Not supported yet")
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
             if len(self.state.selectedVertices) == 0:
                 print("Nothing selected")
             elif len(self.state.selectedVertices) == 1:
-                print("Single vertex cannot be scaled")
+                print("Single vertex cannot be " + description + "d")
             else:
-                print("Scale vertices with edges", edges)
+                print(description, "vertices with edges", edges)
                 vertices = [ ]
                 for v in self.state.selectedVertices:
                     vertices.append(v.vertex)
-                self.setupAdjustMode(MultiVertexScaleAdjustor(vertices, edges))
+                self.setupAdjustMode(MultiVertexScaleAdjustor(vertices, edges,
+                                                              resize))
         elif self.state.selectMode == EditorState.SELECT_FACES:
             if len(self.state.selectedFaces) == 0:
                 print("Nothing selected")
             else:
-                print("Scale face(s) with edges", edges)
+                print(description, "face(s) with edges", edges)
                 vertices = [ ]
                 for f in self.state.selectedFaces:
                     for v in f.face.getVertices():
                         vertices.append(v.vertex)
-                self.setupAdjustMode(MultiVertexScaleAdjustor(vertices, edges))
-                print("Not supported yet")
+                self.setupAdjustMode(MultiVertexScaleAdjustor(vertices, edges,
+                                                              resize))
 
     def setupAdjustMode(self, adjustor):
         self.inAdjustMode = True

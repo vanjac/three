@@ -139,7 +139,7 @@ class Editor(EditorActions):
             self.rotateSelected()
             return True
 
-        if c[0] == 'S':
+        if c[0] == 's' or c[0] == 'S':
             if len(c) == 1:
                 return False
             last = c[len(c) - 1]
@@ -161,7 +161,9 @@ class Editor(EditorActions):
                         edges[2] = 1
                     if command == 'b': # bottom
                         edges[2] = -1
-                self.scaleSelected(tuple(edges))
+
+                resize = c[0] == 's'
+                self.scaleSelected(tuple(edges), resize)
                 return True
             elif last != 'e' and last != 'w' and last != 'n' and last != 's' \
                  and last != 't' and last != 'b':

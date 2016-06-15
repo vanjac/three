@@ -190,24 +190,32 @@ class ScaleAdjustor(Adjustor):
     # edges is a tuple of 3 values for each axis. the values can be 0, to scale
     # in both directions; 1 to scale only the higher edge; or -1, to scale only
     # the lower edge
-    def __init__(self, editorObject, edges):
+    # if resize is true, the adjustor will use a TRANSLATE grid type instead of
+    # SCALE, and the values will be the bounds dimensions
+    def __init__(self, editorObject, edges, resize=False):
         self.editorObject = editorObject
-        self.scale = Vector(1.0, 1.0, 1.0)
+        
+        if resize:
+            self.scale = self.editorObject.getDimensions()
+        else:
+            self.scale = Vector(1.0, 1.0, 1.0)
 
         self.edges = Vector.fromTuple(edges)
         self.originPoint = self.editorObject.getCenter() \
                            - (self.editorObject.getDimensions()/2 * self.edges)
+
+        self.resize = resize
 
     def getAxes(self):
         return self.scale.getTuple()
 
     def setAxes(self, values):
         v = Vector.fromTuple(values)
-        if v.x == 0:
+        if v.x < 0:
             v = v.setX(self.scale.x)
-        if v.y == 0:
+        if v.y < 0:
             v = v.setY(self.scale.y)
-        if v.z == 0:
+        if v.z < 0:
             v = v.setZ(self.scale.z)
         self.editorObject.scale(v / self.scale)
         self.editorObject.setPosition(self.originPoint
@@ -215,7 +223,10 @@ class ScaleAdjustor(Adjustor):
         self.scale = v
 
     def gridType(self):
-        return Adjustor.SCALE
+        if self.resize:
+            return Adjustor.TRANSLATE
+        else:
+            return Adjustor.SCALE
 
     def getDescription(self):
         return "Scale object"
@@ -223,10 +234,8 @@ class ScaleAdjustor(Adjustor):
 
 class MultiVertexScaleAdjustor(Adjustor):
     
-    def __init__(self, vertices, edges):
+    def __init__(self, vertices, edges, resize=False):
         self.vertices = list(vertices)
-        
-        self.scale = Vector(1.0, 1.0, 1.0)
         
         average = Vector(0.0, 0.0, 0.0)
         firstVertexPos = self.vertices[0].getPosition()
@@ -256,19 +265,26 @@ class MultiVertexScaleAdjustor(Adjustor):
         highBound = Vector(highX, highY, highZ)
         dimensions = highBound - lowBound
 
+        if resize:
+            self.scale = dimensions
+        else:
+            self.scale = Vector(1.0, 1.0, 1.0)
+
         self.edges = Vector.fromTuple(edges)
         self.originPoint = average - (dimensions/2 * self.edges)
+
+        self.resize = resize
 
     def getAxes(self):
         return self.scale.getTuple()
 
     def setAxes(self, values):
         v = Vector.fromTuple(values)
-        if v.x == 0:
+        if v.x < 0:
             v = v.setX(self.scale.x)
-        if v.y == 0:
+        if v.y < 0:
             v = v.setY(self.scale.y)
-        if v.z == 0:
+        if v.z < 0:
             v = v.setZ(self.scale.z)
         for vertex in self.vertices:
             pos = vertex.getPosition()
@@ -277,16 +293,18 @@ class MultiVertexScaleAdjustor(Adjustor):
         self.scale = v
 
     def gridType(self):
-        return Adjustor.SCALE
+        if self.resize:
+            return Adjustor.TRANSLATE
+        else:
+            return Adjustor.SCALE
 
     def getDescription(self):
         return "Scale " + str(len(self.vertices)) + " vertices"
 
 class MultiScaleAdjustor(Adjustor):
     
-    def __init__(self, editorObjects, edges):
+    def __init__(self, editorObjects, edges, resize=False):
         self.editorObjects = list(editorObjects)
-        self.scale = Vector(1.0, 1.0, 1.0)
 
         firstObjectBounds = editorObjects[0].getBounds()
         firstObjectPos = editorObjects[0].getPosition()
@@ -314,19 +332,26 @@ class MultiScaleAdjustor(Adjustor):
         center = (lowBound + highBound) / 2
         dimensions = highBound - lowBound
 
+        if resize:
+            self.scale = dimensions
+        else:
+            self.scale = Vector(1.0, 1.0, 1.0)
+
         self.edges = Vector.fromTuple(edges)
         self.originPoint = center - (dimensions/2 * self.edges)
+
+        self.resize = resize
 
     def getAxes(self):
         return self.scale.getTuple()
 
     def setAxes(self, values):
         v = Vector.fromTuple(values)
-        if v.x == 0:
+        if v.x < 0:
             v = v.setX(self.scale.x)
-        if v.y == 0:
+        if v.y < 0:
             v = v.setY(self.scale.y)
-        if v.z == 0:
+        if v.z < 0:
             v = v.setZ(self.scale.z)
         for o in self.editorObjects:
             o.scale(v / self.scale)
@@ -336,7 +361,10 @@ class MultiScaleAdjustor(Adjustor):
         self.scale = v
 
     def gridType(self):
-        return Adjustor.SCALE
+        if self.resize:
+            return Adjustor.TRANSLATE
+        else:
+            return Adjustor.SCALE
 
     def getDescription(self):
         return "Scale " + str(len(self.editorObjects)) + " objects"
