@@ -378,6 +378,7 @@ class Editor(EditorActions):
                         self.state.selectedFaces.append(
                             FaceSelection(editorObject, face))
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        # end select at cursor
 
         # draw axes
         glBegin(GL_LINES)
@@ -408,6 +409,7 @@ class Editor(EditorActions):
                 glDisable(GL_POLYGON_STIPPLE)
 
             if drawVertices and o.getMesh != None:
+                # red points are used for vertices
                 glColor(1.0, 0.0, 0.0)
                 glPointSize(8)
                 glBegin(GL_POINTS)
@@ -416,6 +418,7 @@ class Editor(EditorActions):
                     glVertex(pos.y, pos.z, pos.x)
                 glEnd()
                 
+                # red lines are used for edges
                 for f in o.getMesh().getFaces():
                     glBegin(GL_LINE_LOOP)
                     for v in f.getVertices():
@@ -423,7 +426,16 @@ class Editor(EditorActions):
                         glVertex(pos.y, pos.z, pos.x)
                     glEnd()
 
+                # a green point is used for the origin
+                glColor(0.0, 1.0, 0.0)
+                glPointSize(12)
+                glBegin(GL_POINTS)
+                origin = o.getPosition()
+                glVertex(origin.y, origin.z, origin.x)
+                glEnd()
+                
             glPopMatrix()
+        # end for each object
 
         if drawVertices:
             glColor(1.0, 1.0, 1.0)
