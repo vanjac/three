@@ -3,6 +3,7 @@ __author__ = "vantjac"
 from pathlib import Path
 import os.path
 import pickle
+import webbrowser
 
 gameDirPath = None
 mapPath = None
@@ -38,7 +39,8 @@ def getMap(name):
     try:
         return (getMapDir() / name).resolve()
     except FileNotFoundError:
-        open(os.path.join(str(getMapDir()), name), 'a')
+        with open(os.path.join(str(getMapDir()), name), 'a') as f:
+            pass
         return (getMapDir() / name).resolve()
 
 def getMapNumber(number):
@@ -79,3 +81,16 @@ def loadMapState(path):
             return pickle.load(f)
     except EOFError: # map is empty
         return None
+
+
+# create a temporary file for properties, then open it in an editor
+def openProperties(text):
+    path = getGameDir() / "propsTemp.txt"
+    with path.open('w') as f:
+        f.write(text)
+    webbrowser.open(str(path))
+
+def readProperties():
+    path = getGameDir() / "propsTemp.txt"
+    with path.open() as f:
+        return f.read()
