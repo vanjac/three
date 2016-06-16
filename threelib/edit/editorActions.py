@@ -46,6 +46,24 @@ class EditorActions:
         files.saveMapState(files.getCurrentMap(), self.state)
         print("Done")
 
+    def editPropertiesOfSelected(self):
+        if not self.state.selectMode == EditorState.SELECT_OBJECTS:
+            print("Only objects have properties")
+        elif len(self.state.selectedObjects) == 0:
+            print("Nothing selected")
+        elif len(self.state.selectedObjects) > 1:
+            print("Cannot edit properties of multiple objects")
+        else:
+            props = self.state.selectedObjects[0].getProperties()
+            text = ""
+            for key, value in props.items():
+                multiLine = '\n' in value
+                if multiLine:
+                    text += key + ":\n" + value + "\n~~~\n"
+                else:
+                    text += key + "=" + value + "\n"
+            files.openProperties(text)
+
     def deleteSelected(self):
         if self.state.selectMode == EditorState.SELECT_FACES:
             print("Faces cannot be deleted")

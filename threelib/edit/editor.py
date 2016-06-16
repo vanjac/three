@@ -9,8 +9,6 @@ from threelib.vectorMath import Rotate
 from threelib.edit.objects import *
 from threelib.edit.adjust import *
 
-from threelib import files
-
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
@@ -101,6 +99,10 @@ class Editor(EditorActions):
 
         if c[0] == '`':
             self.saveFile()
+            return True
+
+        if c[0] == '\r':
+            self.editPropertiesOfSelected()
             return True
         
         if c[0] == '\b':

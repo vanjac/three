@@ -178,7 +178,7 @@ class MeshObject(EditorObject):
             glEnd()
     
     def getProperties(self):
-        pass
+        return super().getProperties()
 
     def setProperties(self):
         pass

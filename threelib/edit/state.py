@@ -69,7 +69,11 @@ class EditorObject:
 
     # a dictionary mapping strings to strings
     def getProperties(self):
-        pass
+        properties = { 'name': self.getName(),
+                       'position': str(self.getPosition()),
+                       'rotation': str(self.getRotation()),
+                       }
+        return properties
 
     def setProperties(self):
         pass
