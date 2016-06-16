@@ -432,8 +432,7 @@ class Editor(EditorActions):
                     glColor(0.0, 1.0, 0.0)
                     glPointSize(12)
                     glBegin(GL_POINTS)
-                    origin = o.getPosition()
-                    glVertex(origin.y, origin.z, origin.x)
+                    glVertex(0, 0, 0)
                     glEnd()
 
             if drawVertices and o.getMesh() != None:
