@@ -271,6 +271,14 @@ class Editor(EditorActions):
                               -float(mouseY - pmouseY) * self.lookSpeed,
                               float(mouseX - pmouseX) * self.lookSpeed)
             self.state.cameraRotation += movement
+            # prevent from looking too far up or down
+            yRot = self.state.cameraRotation.y
+            if yRot > math.pi/2 and yRot < math.pi:
+                self.state.cameraRotation = self.state.cameraRotation.setY(
+                    math.pi/2)
+            if yRot > math.pi and yRot < math.pi*3/2:
+                self.state.cameraRotation = self.state.cameraRotation.setY(
+                    math.pi*3/2)
         elif self.inAdjustMode:
             grid = float(self.state.getGridSize(self.adjustor.gridType()))
             mouseGrid = self.adjustMouseGrid
