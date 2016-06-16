@@ -54,6 +54,7 @@ class EditorActions:
         elif len(self.state.selectedObjects) > 1:
             print("Cannot edit properties of multiple objects")
         else:
+            print("Edit object properties")
             props = self.state.selectedObjects[0].getProperties()
             text = ""
             for key, value in props.items():
@@ -72,6 +73,7 @@ class EditorActions:
         elif len(self.state.selectedObjects) > 1:
             print("Cannot update multiple objects")
         else:
+            print("Update object")
             text = files.readProperties()
             props = { }
             inMultiLine = False
@@ -167,11 +169,9 @@ class EditorActions:
             if len(self.state.selectedObjects) == 0:
                 print("Nothing selected")
             elif len(self.state.selectedObjects) == 1:
-                print("Translate object")
                 self.setupAdjustMode(TranslateAdjustor(
                     self.state.selectedObjects[0]))
             else:
-                print("Translate objects")
                 adjustors = [ ]
                 for o in self.state.selectedObjects:
                     adjustors.append(TranslateAdjustor(o))
@@ -180,13 +180,11 @@ class EditorActions:
             if len(self.state.selectedVertices) == 0:
                 print("Nothing selected")
             elif len(self.state.selectedVertices) == 1:
-                print("Translate vertex")
                 selected = self.state.selectedVertices[0]
                 self.setupAdjustMode(VertexTranslateAdjustor(
                     selected.vertex,
                     selected.editorObject))
             else:
-                print("Translate vertices")
                 adjustors = [ ]
                 for v in self.state.selectedVertices:
                     adjustors.append(VertexTranslateAdjustor(
@@ -197,7 +195,6 @@ class EditorActions:
             if len(self.state.selectedFaces) == 0:
                 print("Nothing selected")
             else:
-                print("Translate face(s)")
                 adjustors = [ ]
                 for f in self.state.selectedFaces:
                     for v in f.face.getVertices():
@@ -230,11 +227,9 @@ class EditorActions:
             if len(self.state.selectedObjects) == 0:
                 print("Nothing selected")
             elif len(self.state.selectedObjects) == 1:
-                print("Rotate object")
                 self.setupAdjustMode(RotateAdjustor(
                     self.state.selectedObjects[0]))
             else:
-                print("Rotate objects")
                 translators = [ ]
                 rotators = [ ]
                 for o in self.state.selectedObjects:
@@ -247,7 +242,6 @@ class EditorActions:
             elif len(self.state.selectedVertices) == 1:
                 print("Single vertex cannot be rotated")
             else:
-                print("Rotate vertices")
                 translators = [ ]
                 rotators = [ ]
                 for v in self.state.selectedVertices:
@@ -260,7 +254,6 @@ class EditorActions:
             if len(self.state.selectedFaces) == 0:
                 print("Nothing selected")
             else:
-                print("Rotate face(s)")
                 translators = [ ]
                 rotators = [ ]
                 for f in self.state.selectedFaces:
@@ -273,26 +266,22 @@ class EditorActions:
 
     # see ScaleAdjustor for description of edges and resize value
     def scaleSelected(self, edges, resize=False):
-        description = "Resize" if resize else "Scale"
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
             if len(self.state.selectedObjects) == 0:
                 print("Nothing selected")
             elif len(self.state.selectedObjects) == 1:
-                print(description, "object with edges", edges)
                 self.setupAdjustMode(ScaleAdjustor(
                     self.state.selectedObjects[0], edges, resize))
             else:
-                print(description, "objects")
                 self.setupAdjustMode(MultiScaleAdjustor(
                     self.state.selectedObjects, edges, resize))
-                print("Not supported yet")
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
             if len(self.state.selectedVertices) == 0:
                 print("Nothing selected")
             elif len(self.state.selectedVertices) == 1:
-                print("Single vertex cannot be " + description + "d")
+                print("Single vertex cannot be "
+                      + "resized" if resize else "scaled")
             else:
-                print(description, "vertices with edges", edges)
                 vertices = [ ]
                 for v in self.state.selectedVertices:
                     vertices.append(v.vertex)
@@ -302,7 +291,6 @@ class EditorActions:
             if len(self.state.selectedFaces) == 0:
                 print("Nothing selected")
             else:
-                print(description, "face(s) with edges", edges)
                 vertices = [ ]
                 for f in self.state.selectedFaces:
                     for v in f.face.getVertices():
