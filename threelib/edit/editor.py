@@ -105,6 +105,10 @@ class Editor(EditorActions):
             self.editPropertiesOfSelected()
             return True
         
+        if c[0] == 'u':
+            self.updateSelected()
+            return True
+        
         if c[0] == '\b':
             self.deleteSelected()
             return True

@@ -102,5 +102,5 @@ class MeshObject(EditorObject):
     def getProperties(self):
         return super().getProperties()
 
-    def setProperties(self):
-        pass
+    def setProperties(self, properties):
+        super().setProperties(properties)

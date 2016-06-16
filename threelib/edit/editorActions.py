@@ -64,6 +64,49 @@ class EditorActions:
                     text += key + "=" + value + "\n"
             files.openProperties(text)
 
+    def updateSelected(self):
+        if not self.state.selectMode == EditorState.SELECT_OBJECTS:
+            print("Only objects can be updated")
+        elif len(self.state.selectedObjects) == 0:
+            print("Nothing selected")
+        elif len(self.state.selectedObjects) > 1:
+            print("Cannot update multiple objects")
+        else:
+            text = files.readProperties()
+            props = { }
+            inMultiLine = False
+            multiLineKey = ""
+            multiLineValue = ""
+            for line in text.split('\n'):
+                if not inMultiLine:
+                    line = line.strip()
+                    if line == '':
+                        pass
+                    elif '=' in line:
+                        key, value = line.split('=')
+                        props[key] = value
+                    elif line.endswith(':'):
+                        inMultiLine = True
+                        multiLineKey = line[:-1]
+                        multiLineValue = ""
+                    else:
+                        print("Could not parse line:")
+                        print(line)
+                        print("Stopping")
+                        return
+                else: # in multi line
+                    if line == "~~~":
+                        inMultiLine = False
+                        props[multiLineKey] = multiLineValue
+                    else:
+                        multiLineValue += line + "\n"
+            if inMultiLine:
+                print("Unclosed multi-line value!")
+                print("Stopping")
+                return
+            
+            self.state.selectedObjects[0].setProperties(props)
+
     def deleteSelected(self):
         if self.state.selectMode == EditorState.SELECT_FACES:
             print("Faces cannot be deleted")

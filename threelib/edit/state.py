@@ -3,6 +3,9 @@ __author__ = "vantjac"
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 
+# for ast.literal_eval, used for parsing properties
+import ast
+
 # abstract class
 class EditorObject:
     
@@ -69,13 +72,20 @@ class EditorObject:
 
     # a dictionary mapping strings to strings
     def getProperties(self):
-        properties = { 'name': self.getName(),
-                       'position': str(self.getPosition()),
-                       'rotation': str(self.getRotation()),
+        properties = { "name": self.getName(),
+                       "position": str(self.getPosition()),
+                       "rotation": str(self.getRotation()),
                        }
         return properties
 
-    def setProperties(self):
+    def setProperties(self, properties):
+        for key, value in properties.items():
+            if key == "name":
+                self.setName(value)
+            if key == "position":
+                self.setPosition(Vector.fromTuple(ast.literal_eval(value)))
+            if key == "rotation":
+                self.setRotation(Rotate.fromTuple(ast.literal_eval(value)))
         pass
 
     # return another EditorObject
