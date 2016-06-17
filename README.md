@@ -19,10 +19,13 @@ If a window with green and blue lines appears, it worked.
 - Left click to select objects; hold shift to select multiple.
 - `a` to select none or all objects
 - Backspace to delete objects
+- `c` to duplicate the selected object(s), and enter translate adjust mode to move them (see below)
 - `mv` to switch to vertex select mode, `mf` for face select and `mo` for object select mode (default)
 - `g` to enter translate ("Grab") adjust mode for the selected objects (see below)
 - `r` to enter Rotate adjust mode
+- `s Enter` to enter Resize adjust mode, which changes the dimensions of the selected object(s)
 - `Shift-s Enter` to enter Scale adjust mode
+- With the two vertices of an edge selected, `d` to divide the edge
 - `Esc` to cancel all current operations
 - `` ` `` to save
 
