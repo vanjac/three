@@ -320,6 +320,64 @@ class EditorActions:
         self.selectAtCursorOnDraw = True
         self.selectMultiple = multiple
 
+    
+    # Mesh editing:
+    
+    def divideEdge(self):
+        if self.state.selectMode != EditorState.SELECT_VERTICES \
+           or len(self.state.selectedVertices) != 2:
+            print("2 vertices must be selected")
+        else:
+            v1 = self.state.selectedVertices[0].vertex
+            v2 = self.state.selectedVertices[1].vertex
+            mesh = self.state.selectedVertices[0].editorObject.getMesh()
+            
+            # faces that have both vertices
+            faces = list(v1.getReferences())
+
+            faces2 = v2.getReferences()
+            remove = [ ]
+            for face in faces:
+                if face not in faces2:
+                    remove.append(face)
+            for face in remove:
+                faces.remove(face)
+            # done finding faces, faces2 and remove are no longer necessary
+
+            if len(faces) < 2:
+                print("Please select the 2 vertices of an edge.")
+                print("Stopping")
+                return
+            if len(faces) > 2:
+                print("WARNING: " + len(faces) + " have these vertices!")
+                print("This should never happen.")
+                # continue and hope it works
+
+            newVertex = MeshVertex( (v1.getPosition() + v2.getPosition()) / 2 )
+            mesh.addVertex(newVertex)
+
+            for face in faces:
+                index1 = face.indexOf(v1)
+                index2 = face.indexOf(v2)
+                numVertices = len(face.getVertices())
+                
+                # index1 should be the lowest
+                if index1 > index2:
+                    temp = index1
+                    index1 = index2
+                    index2 = temp
+                
+                # make sure indices are consecutive
+                insertIndex = 0
+                if index2 - index1 == 1:
+                    insertIndex = index2
+                elif index1 == 0 and index2 == numVertices - 1:
+                    insertIndex = index1
+                else:
+                    continue
+                
+                face.addVertex(newVertex, index=insertIndex)
+                
 
     # ADJUST MODE ACTIONS:
 

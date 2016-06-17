@@ -186,6 +186,10 @@ class Editor(EditorActions):
             else:
                 return False
 
+        if c[0] == 'd':
+            self.divideEdge()
+            return True
+
         # if no match
         print("Unrecognized command " + c)
         return True

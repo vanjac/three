@@ -76,6 +76,16 @@ class MeshFace:
         index = self.vertices.index(old)
         self.vertices[index] = new
 
+    # the index of the specified MeshVertex (not a MeshFaceVertex)
+    # -1 if not found
+    def indexOf(self, meshVertex):
+        i = 0
+        for v in self.vertices:
+            if v.vertex == meshVertex:
+                return i
+            i += 1
+        return -1
+
     def setVertex(self, meshFaceVertex, meshVertex):
         v = MeshFaceVertex(vertex=meshVertex,
                            textureVertex = meshFaceVertex.textureVertex)
