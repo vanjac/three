@@ -14,6 +14,9 @@ class MeshVertex:
         self.v = position
         self.references = [ ] # list of MeshFaces that reference this vertex
 
+    def clone(self):
+        return MeshVertex(self.v)
+
     def getPosition(self):
         return self.v
 
@@ -100,9 +103,29 @@ class Mesh:
         self.vertices = [ ] # list of MeshVertex's
         self.faces = [ ] # list of MeshFace's
 
+    def clone(self):
+        newMesh = Mesh()
+
+        newVertices = [v.clone() for v in self.vertices]
+        for v in newVertices:
+            newMesh.addVertex(v)
+        
+        for face in self.faces:
+            newFace = MeshFace()
+            
+            for vertex in face.getVertices():
+                vertexIndex = self.vertices.index(vertex.vertex)
+                newFace.addVertex(newVertices[vertexIndex],
+                                  vertex.textureVertex)
+
+            newMesh.addFace(newFace)
+
+        return newMesh
+
     def getVertices(self):
         return self.vertices
 
+    # clears all vertex references. Do this before adding the vertex to a face
     def addVertex(self, vertex=MeshVertex(Vector(0,0,0))):
         vertex.clearReferences()
         self.vertices.append(vertex)
