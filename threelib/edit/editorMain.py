@@ -10,6 +10,9 @@ import pyautogui
 
 # based on PyOpenGl NeHe tutorial
 
+# enable to disable OpenGL errors being printed
+HIDE_GL_ERRORS = False
+
 # the editor
 editor = None
 
@@ -83,8 +86,16 @@ class EditorMain:
     def drawGL():
         # clear screen and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        glLoadIdentity() # reset the view 
-        editor.draw()
+        glLoadIdentity() # reset the view
+        
+        if HIDE_GL_ERRORS:
+            try:
+                editor.draw()
+            except GLError:
+                pass
+        else:
+            editor.draw()
+        
         #  double buffered - swap the buffers to display what just got drawn. 
         glutSwapBuffers()
 

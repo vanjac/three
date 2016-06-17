@@ -14,7 +14,7 @@ class MeshObject(EditorObject):
 
     # starts as a cube
     # scale is the size of the cube / 2
-    def __init__(self, scale):
+    def __init__(self, scale=1):
         EditorObject.__init__(self)
         self.position = Vector(0, 0, 0)
         self.rotation = Rotate(0, 0, 0)
@@ -86,6 +86,9 @@ class MeshObject(EditorObject):
 
     def getMesh(self):
         return self.mesh
+
+    def setMesh(self, mesh):
+        self.mesh = mesh
     
     def drawObject(self):
         self.drawSelectHull((0.8, 0.8, 0.8))
@@ -104,3 +107,12 @@ class MeshObject(EditorObject):
 
     def setProperties(self, properties):
         super().setProperties(properties)
+
+    def clone(self):
+        clone = MeshObject()
+        self.addToClone(clone)
+        return clone
+    
+    def addToClone(self, clone):
+        super().addToClone(clone)
+        clone.setMesh(self.mesh.clone())

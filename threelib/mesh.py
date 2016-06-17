@@ -148,7 +148,7 @@ class Mesh:
     def addFace(self, face=MeshFace()):
         self.faces.append(face)
         for v in face.getVertices():
-            v.addReference(face)
+            v.vertex.addReference(face)
         return face
 
     # removing the face deletes all of its vertices

@@ -110,10 +110,8 @@ class EditorActions:
             self.state.selectedObjects[0].setProperties(props)
 
     def deleteSelected(self):
-        if self.state.selectMode == EditorState.SELECT_FACES:
-            print("Faces cannot be deleted")
-        elif self.state.selectMode == EditorState.SELECT_VERTICES:
-            print("Vertices cannot be deleted")
+        if not self.state.selectMode == EditorState.SELECT_OBJECTS:
+            print("Only objects can be deleted")
         elif len(self.state.selectedObjects) == 0:
             print("Nothing selected")
         else:
@@ -123,6 +121,19 @@ class EditorActions:
                 self.state.objects.remove(o)
             self.state.deselectAll()
 
+    def duplicateSelected(self):
+        if not self.state.selectMode == EditorState.SELECT_OBJECTS:
+            print("Only objects can be duplicated")
+        elif len(self.state.selectedObjects) == 0:
+            print("Nothing selected")
+        else:
+            print("Duplicate selected objects")
+            for o in self.state.selectedObjects:
+                self.state.objects.append(o.clone())
+
+            self.translateSelected()
+
+        
     def selectMode(self, mode):
         self.state.selectMode = mode
         self.state.deselectAll()

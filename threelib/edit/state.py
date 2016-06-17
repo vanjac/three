@@ -119,6 +119,20 @@ class EditorObject:
     def setSelected(self, selected):
         self.selected = selected
 
+    # clone this object
+    # the new object will NOT have any parent or children.
+    def clone(self):
+        clone = EditorObject()
+        self.addToClone(clone)
+        return clone
+        
+    # internal method to add this objects properties to a newly created clone
+    # extending classes should call super().addToClone(clone) first
+    def addToClone(self, clone):
+        clone.setName(self.getName())
+        clone.setPosition(self.getPosition())
+        clone.setRotation(self.getRotation())
+
 
 class EditorState:
 

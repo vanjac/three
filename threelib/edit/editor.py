@@ -137,6 +137,10 @@ class Editor(EditorActions):
             self.selectAll()
             return True
 
+        if c[0] == 'c':
+            self.duplicateSelected()
+            return True
+
         if c[0] == 'g':
             self.translateSelected()
             return True
