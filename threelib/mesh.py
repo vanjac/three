@@ -98,7 +98,7 @@ class MeshFace:
 
     def clearVertices(self):
         for v in self.vertices:
-            v.removeReference(face)
+            v.vertex.removeReference(self)
         self.vertices = [ ]
     
     def setTextureTransform(self, shift, rotate, scale):

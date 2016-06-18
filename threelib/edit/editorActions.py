@@ -328,6 +328,7 @@ class EditorActions:
            or len(self.state.selectedVertices) != 2:
             print("2 vertices must be selected")
         else:
+            print("Divide edge")
             v1 = self.state.selectedVertices[0].vertex
             v2 = self.state.selectedVertices[1].vertex
             mesh = self.state.selectedVertices[0].editorObject.getMesh()
@@ -377,7 +378,72 @@ class EditorActions:
                     continue
                 
                 face.addVertex(newVertex, index=insertIndex)
-                
+
+    
+    def makeEdge(self):
+        if self.state.selectMode != EditorState.SELECT_VERTICES \
+           or len(self.state.selectedVertices) != 2:
+            print("2 vertices must be selected")
+        else:
+            print("Make edge")
+            v1 = self.state.selectedVertices[0].vertex
+            v2 = self.state.selectedVertices[1].vertex
+            mesh = self.state.selectedVertices[0].editorObject.getMesh()
+            
+            # faces that have both vertices
+            faces = list(v1.getReferences())
+
+            faces2 = v2.getReferences()
+            remove = [ ]
+            for face in faces:
+                if face not in faces2:
+                    remove.append(face)
+            for face in remove:
+                faces.remove(face)
+            # done finding faces, faces2 and remove are no longer necessary
+
+            if len(faces) != 1:
+                print("Please select 2 unconnected vertices on a face.")
+                print("Stopping")
+                return
+
+            face = faces[0]
+
+            # divide vertices into 2 new faces
+
+            index1 = face.indexOf(v1)
+            index2 = face.indexOf(v2)
+            numVertices = len(face.getVertices())
+
+            # list of MeshFaceVertices
+            face1Vertices = [ ]
+            face2Vertices = [ ]
+
+            inFace1 = True
+
+            for i in range(0, numVertices):
+                if inFace1:
+                    face1Vertices.append(face.getVertices()[i])
+                else:
+                    face2Vertices.append(face.getVertices()[i])
+                if i == index1 or i == index2:
+                    inFace1 = not inFace1
+                    if inFace1:
+                        face1Vertices.append(face.getVertices()[i])
+                    else:
+                        face2Vertices.append(face.getVertices()[i])
+
+            mesh.removeFace(face)
+
+            newFace1 = MeshFace()
+            for v in face1Vertices:
+                newFace1.addVertex(v.vertex, v.textureVertex)
+            newFace2 = MeshFace()
+            for v in face2Vertices:
+                newFace2.addVertex(v.vertex, v.textureVertex)
+            
+            mesh.addFace(newFace1)
+            mesh.addFace(newFace2)
 
     # ADJUST MODE ACTIONS:
 

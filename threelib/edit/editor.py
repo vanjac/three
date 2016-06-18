@@ -190,6 +190,10 @@ class Editor(EditorActions):
             self.divideEdge()
             return True
 
+        if c[0] == 'e':
+            self.makeEdge()
+            return True
+
         # if no match
         print("Unrecognized command " + c)
         return True
