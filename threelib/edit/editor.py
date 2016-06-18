@@ -498,42 +498,7 @@ class Editor(EditorActions):
         glPopMatrix()
         self.editorMain.drawText(self.getStatusBar(), GLUT_BITMAP_9_BY_15, 4, 4)
         
-        # mini axes:
-        
-        glDisable(GL_DEPTH_TEST)
-        glPushMatrix()
-
-        glMatrixMode(GL_PROJECTION)
-        glPushMatrix()
-        glTranslate(2.5, -2.5, 0)
-        glMatrixMode(GL_MODELVIEW)
-        
-        glTranslate(0, 0, -5)
-        glRotate(math.degrees(rotate.x), 0, 0, 1)
-        glRotate(math.degrees(rotate.y), -1, 0, 0)
-        glRotate(math.degrees(rotate.z), 0, 1, 0)
-        
-        glBegin(GL_LINES)
-        # x axis
-        glColor(1.0, 0.0, 0.0)
-        glVertex(0.0, 0.0, 0.0)
-        glVertex(0.0, 0.0, 0.5)
-        # y axis
-        glColor(0.0, 1.0, 0.0)
-        glVertex(0.0, 0.0, 0.0)
-        glVertex(0.5, 0.0, 0.0)
-        # z axis
-        glColor(0.0, 0.0, 1.0)
-        glVertex(0.0, 0.0, 0.0)
-        glVertex(0.0, 0.5, 0.0)
-        
-        glEnd()
-
-        glMatrixMode(GL_PROJECTION)
-        glPopMatrix()
-        glMatrixMode(GL_MODELVIEW)
-        glPopMatrix()
-        glEnable(GL_DEPTH_TEST)
+        self.drawMiniAxes(rotate)
 
     def drawSelectHulls(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
@@ -587,6 +552,46 @@ class Editor(EditorActions):
                 
                 glPopMatrix()
                 i += 1
+
+    def drawMiniAxes(self, cameraRotate):
+        glDisable(GL_DEPTH_TEST)
+        glPushMatrix()
+
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        glTranslate(0.7, -0.85, 0)
+        glScale(1/self.editorMain.getAspect(), 1, 1)
+        gluPerspective(self.editorMain.getFOV(), 1, 4, 16)
+        glMatrixMode(GL_MODELVIEW)
+        
+        glTranslate(0, 0, -5)
+        glRotate(math.degrees(cameraRotate.x), 0, 0, 1)
+        glRotate(math.degrees(cameraRotate.y), -1, 0, 0)
+        glRotate(math.degrees(cameraRotate.z), 0, 1, 0)
+        
+        glBegin(GL_LINES)
+        # x axis
+        glColor(1.0, 0.0, 0.0)
+        glVertex(0.0, 0.0, 0.0)
+        glVertex(0.0, 0.0, 0.5)
+        # y axis
+        glColor(0.0, 1.0, 0.0)
+        glVertex(0.0, 0.0, 0.0)
+        glVertex(0.5, 0.0, 0.0)
+        # z axis
+        glColor(0.0, 0.0, 1.0)
+        glVertex(0.0, 0.0, 0.0)
+        glVertex(0.0, 0.5, 0.0)
+        
+        glEnd()
+
+        glMatrixMode(GL_PROJECTION)
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
+        glPopMatrix()
+        glEnable(GL_DEPTH_TEST)
+    
             
     def transformObject(self, editorObject):
         oTranslate = editorObject.getPosition()

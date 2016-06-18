@@ -99,6 +99,14 @@ class EditorMain:
         #  double buffered - swap the buffers to display what just got drawn. 
         glutSwapBuffers()
 
+    def getAspect():
+        global aspect
+        return aspect
+
+    def getFOV():
+        global fov
+        return fov
+
     def drawText(text, font, x, y):
         global windowWidth, windowHeight
         depthEnabled = glIsEnabled(GL_DEPTH_TEST)
