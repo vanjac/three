@@ -709,12 +709,4 @@ class Editor(EditorActions):
         text += self.currentCommand
         
         return text
-            
-            
 
-    def padSpaces(self, string, spaces):
-        l = len(string)
-        if l < spaces:
-            for i in range(0, spaces - l):
-                string += spaces
-        return string
