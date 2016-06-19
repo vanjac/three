@@ -70,11 +70,12 @@ class MeshFace:
     def removeVertex(self, meshFaceVertex):
         if meshFaceVertex in self.vertices:
             self.vertices.remove(meshFaceVertex)
-        meshFaceVertex.removeReference(self)
+        meshFaceVertex.vertex.removeReference(self)
 
     def replaceVertex(self, old, new):
         index = self.vertices.index(old)
         self.vertices[index] = new
+        old.vertex.removeReference(self)
 
     # the index of the specified MeshVertex (not a MeshFaceVertex)
     # -1 if not found

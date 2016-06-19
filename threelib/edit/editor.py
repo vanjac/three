@@ -190,6 +190,10 @@ class Editor(EditorActions):
             self.divideEdge()
             return True
 
+        if c[0] == 'D':
+            self.combineVertices()
+            return True
+
         if c[0] == 'e':
             self.makeEdge()
             return True

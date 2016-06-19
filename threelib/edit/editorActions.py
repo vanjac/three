@@ -334,16 +334,7 @@ class EditorActions:
             mesh = self.state.selectedVertices[0].editorObject.getMesh()
             
             # faces that have both vertices
-            faces = list(v1.getReferences())
-
-            faces2 = v2.getReferences()
-            remove = [ ]
-            for face in faces:
-                if face not in faces2:
-                    remove.append(face)
-            for face in remove:
-                faces.remove(face)
-            # done finding faces, faces2 and remove are no longer necessary
+            faces = self.findSharedFaces(v1, v2)
 
             if len(faces) < 2:
                 print("Please select the 2 vertices of an edge.")
@@ -391,16 +382,7 @@ class EditorActions:
             mesh = self.state.selectedVertices[0].editorObject.getMesh()
             
             # faces that have both vertices
-            faces = list(v1.getReferences())
-
-            faces2 = v2.getReferences()
-            remove = [ ]
-            for face in faces:
-                if face not in faces2:
-                    remove.append(face)
-            for face in remove:
-                faces.remove(face)
-            # done finding faces, faces2 and remove are no longer necessary
+            faces = self.findSharedFaces(v1, v2)
 
             if len(faces) != 1:
                 print("Please select 2 unconnected vertices on a face.")
@@ -445,6 +427,53 @@ class EditorActions:
             mesh.addFace(newFace1)
             mesh.addFace(newFace2)
 
+    def combineVertices(self):
+        if self.state.selectMode != EditorState.SELECT_VERTICES \
+           or len(self.state.selectedVertices) != 2:
+            print("2 vertices must be selected")
+        else:
+            print("Combine vertices")
+            v1 = self.state.selectedVertices[0].vertex
+            v2 = self.state.selectedVertices[1].vertex
+            mesh = self.state.selectedVertices[0].editorObject.getMesh()
+            
+            # faces that have both vertices
+            sharedFaces = self.findSharedFaces(v1, v2)
+            
+            # replace all v2 references with v1
+
+            v2References = list(v2.getReferences())
+            for face in v2References:
+                for vertex in face.getVertices():
+                    if vertex.vertex == v2:
+                        face.replaceVertex(vertex,
+                                           MeshFaceVertex(v1,
+                                                          vertex.textureVertex))
+
+            # remove duplicate v1 vertices
+            for face in sharedFaces:
+                vertexIndex = face.indexOf(v1)
+                vertex = face.getVertices()[vertexIndex]
+                face.removeVertex(vertex) # remove only first reference
+                v1.addReference(face)
+
+            mesh.removeVertex(v2)
+            del self.state.selectedVertices[1]
+    
+    # find faces that have both vertices
+    def findSharedFaces(self, v1, v2):
+        faces = list(v1.getReferences())
+
+        faces2 = v2.getReferences()
+        remove = [ ]
+        for face in faces:
+            if face not in faces2:
+                remove.append(face)
+        for face in remove:
+            faces.remove(face)
+
+        return faces
+                
     # ADJUST MODE ACTIONS:
 
     def selectAdjustAxis(self, axis):
