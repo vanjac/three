@@ -4,7 +4,10 @@ When three is finished, it will be a 3d game engine with a map editor, written i
 
 ## Starting
 
-three requires Python 3.4, and all of the pip packages listed in `dependencies.txt`. You may have to install extra things to get those packages to work properly; look it up.
+three requires at least Python 3.4, and these pip packages:
+- PyOpenGL
+- PyOpenGL_accelerate
+- pyautogui: installation instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html)
 
 To use three, you need a game directory to work with. `gameDirTemplate` has a sample game directory layout with some useful materials.
 
