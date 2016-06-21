@@ -4,6 +4,7 @@ Pip packages:
 
 PyOpenGL
 PyOpenGL_accelerate
-python3-xlib
-pillow
-pyautogui (requires scrot, python3-tk, python3-dev packages on Linux)
+pyautogui
+  For Linux this requires the pillow pip package, along with the Linux packages scrot, python3-tk, python3-dev, and python3-xlib.
+  OS X / macOS may require other pip packages; look it up.
+  Windows shouldn't require anything.
