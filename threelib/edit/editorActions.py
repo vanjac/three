@@ -427,6 +427,7 @@ class EditorActions:
             mesh.addFace(newFace1)
             mesh.addFace(newFace2)
 
+    
     def combineVertices(self):
         if self.state.selectMode != EditorState.SELECT_VERTICES \
            or len(self.state.selectedVertices) != 2:
@@ -459,7 +460,56 @@ class EditorActions:
 
             mesh.removeVertex(v2)
             del self.state.selectedVertices[1]
+
     
+    def combineFaces(self):
+        if self.state.selectMode != EditorState.SELECT_VERTICES \
+           or len(self.state.selectedVertices) != 2:
+            print("2 vertices must be selected")
+        else:
+            print("Combine faces")
+            v1 = self.state.selectedVertices[0].vertex
+            v2 = self.state.selectedVertices[1].vertex
+            mesh = self.state.selectedVertices[0].editorObject.getMesh()
+            
+            # faces that have both vertices
+            faces = self.findSharedFaces(v1, v2)
+    
+            if len(faces) != 2:
+                print("The vertices of an edge dividing 2 faces must be "
+                      "selected")
+                print("Stopping")
+                return
+
+            newFace = MeshFace()
+            
+            faceNum = 0
+            for face in faces:
+                numVertices = len(face.getVertices())
+                v1Index = face.indexOf(v1)
+                v2Index = face.indexOf(v2)
+                # make sure there are vertices moving from v1 to v2
+                # otherwise swap them
+                if v1Index - v2Index != 1 and \
+                   not (v2Index == numVertices - 1 and v1Index == 0):
+                    temp = v1Index
+                    v1Index = v2Index
+                    v2Index = temp
+
+                i = v1Index
+                while i != v2Index:
+                    newVertex = face.getVertices()[i]
+                    newFace.addVertex(newVertex.vertex, newVertex.textureVertex)
+                    i += 1
+                    i %= numVertices
+
+                faceNum += 1
+            
+            mesh.removeFace(faces[0])
+            mesh.removeFace(faces[1])
+            mesh.addFace(newFace)
+                
+
     # find faces that have both vertices
     def findSharedFaces(self, v1, v2):
         faces = list(v1.getReferences())

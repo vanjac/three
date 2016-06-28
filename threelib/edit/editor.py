@@ -198,6 +198,10 @@ class Editor(EditorActions):
             self.makeEdge()
             return True
 
+        if c[0] == 'E':
+            self.combineFaces()
+            return True
+
         # if no match
         print("Unrecognized command " + c)
         return True
