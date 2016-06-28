@@ -31,6 +31,7 @@ If a window appears with green and blue lines and some text at the bottom, it wo
 - With the two vertices of an edge selected, `d` to Divide the edge
 - With two vertices selected, `Shift-d` to merge the second with the first ("undivide")
 - With two non-edge vertices on the same face selected, `e` to divide that face with an Edge connecting them
+- With two vertices of an edge selected that divides two coplanar polygons, `Shift-e` to merge the polygons and remove the edge. 
 - `Esc` to cancel all current operations
 - `` ` `` to save
 
