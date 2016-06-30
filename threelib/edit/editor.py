@@ -646,7 +646,10 @@ class Editor(EditorActions):
         text = ""
 
         if self.inAdjustMode:
-            text += self.adjustor.getDescription() + " | "
+            if self.movingCamera:
+                text += "Fly    | "
+            else:
+                text += self.adjustor.getDescription() + " | "
             value = self.adjustor.getAxes()
             if self.state.relativeCoordinatesEnabled:
                 origin = self.adjustorOriginalValue
@@ -718,7 +721,13 @@ class Editor(EditorActions):
                 else:
                     text += str(num) + " vertices | "
         
-        text += self.currentCommand
+        if self.currentCommand == "":
+            if self.movingCamera:
+                text += "WASDQE to fly, click to exit, scroll to change speed"
+            elif self.inAdjustMode:
+                text += "Click to complete"
+        else:
+            text += self.currentCommand
         
         return text
 
