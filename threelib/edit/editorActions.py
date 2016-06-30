@@ -41,6 +41,17 @@ class EditorActions:
         self.selectAtCursorOnDraw = False
         self.selectMultiple = False
     
+
+    def escape(self):
+        self.currentCommand = ""
+        self.movingCamera = False
+        self.fly = Vector(0, 0, 0)
+        self.editorMain.unlockMouse()
+        if self.inAdjustMode:
+            self.adjustor.setAxes(self.adjustorOriginalValue)
+            self.adjustor.cancel()
+            self.inAdjustMode = False
+            self.adjustor = None
     
     def saveFile(self):
         print("Saving map... ", end="")
@@ -611,3 +622,4 @@ class EditorActions:
             self.adjustCompleteAction()
             self.adjustCompleteAction = None
         self.adjustor.complete()
+        self.adjustor = None

@@ -39,13 +39,7 @@ class Editor(EditorActions):
 
     def keyPressed(self, key, mouseX, mouseY):
         if key[0] == 27: # escape
-            self.currentCommand = ""
-            self.movingCamera = False
-            self.fly = Vector(0, 0, 0)
-            self.editorMain.unlockMouse()
-            if self.inAdjustMode:
-                self.adjustor.setAxes(self.adjustorOriginalValue)
-                self.inAdjustMode = False
+            self.escape()
         elif self.movingCamera:
             if key == b'w':
                 self.fly = self.fly.setX(-1)

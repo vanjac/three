@@ -233,6 +233,10 @@ class Adjustor:
     def complete(self):
         pass
 
+    # called when adjust is cancelled
+    def cancel(self):
+        pass
+
     # return a string description of what the adjustor is doing
     def getDescription(self):
         return "Adjust"
