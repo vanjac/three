@@ -35,6 +35,7 @@ class EditorActions:
         self.selectedAxes = (EditorActions.X, EditorActions.Y)
         self.adjustMouseMovement = (0, 0) # in snap mode
         self.adjustMouseGrid = 24 # number of pixels per grid line
+        self.adjustCompleteAction = None # function that is run after completion
 
         # flags
         self.selectAtCursorOnDraw = False
@@ -142,13 +143,22 @@ class EditorActions:
 
     def createBox(self):
         print("Create box")
+        box = MeshObject(self.state.translateGridSize)
+        self.createObject(box)
+
+    def createObject(self, newObject):
         self.selectMode(EditorState.SELECT_OBJECTS)
         self.state.deselectAll()
-        box = MeshObject(self.state.translateGridSize)
-        box.setPosition(Vector(0, 0, 0))
-        self.state.objects.append(box)
-        self.state.select(box)
-        self.setupAdjustMode(TranslateAdjustor(box))
+        newObject.setPosition(self.state.createPosition)
+        self.state.objects.append(newObject)
+        self.state.select(newObject)
+        self.setupAdjustMode(TranslateAdjustor(newObject))
+
+        def setCreatePosition():
+            self.state.createPosition = \
+                Vector.fromTuple(self.adjustor.getAxes())
+        self.adjustCompleteAction = setCreatePosition
+
 
     def selectAll(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
@@ -597,4 +607,7 @@ class EditorActions:
         print("Complete adjust")
         self.inAdjustMode = False
         self.editorMain.unlockMouse()
+        if self.adjustCompleteAction != None:
+            self.adjustCompleteAction()
+            self.adjustCompleteAction = None
         self.adjustor.complete()

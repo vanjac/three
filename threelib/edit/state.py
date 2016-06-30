@@ -154,6 +154,9 @@ class EditorState:
         self.selectedFaces = [ ]
         self.selectedVertices = [ ]
 
+        # initial position for a newly created object
+        self.createPosition = Vector(0, 0, 0)
+
         # adjustor state
         self.relativeCoordinatesEnabled = True
         self.snapEnabled = True
