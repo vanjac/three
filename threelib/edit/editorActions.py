@@ -359,7 +359,6 @@ class EditorActions:
 
             if len(faces) < 2:
                 print("Please select the 2 vertices of an edge.")
-                print("Stopping")
                 return
             if len(faces) > 2:
                 print("WARNING: " + len(faces) + " have these vertices!")
@@ -407,7 +406,6 @@ class EditorActions:
 
             if len(faces) != 1:
                 print("Please select 2 unconnected vertices on a face.")
-                print("Stopping")
                 return
 
             face = faces[0]
@@ -458,6 +456,9 @@ class EditorActions:
             v1 = self.state.selectedVertices[0].vertex
             v2 = self.state.selectedVertices[1].vertex
             mesh = self.state.selectedVertices[0].editorObject.getMesh()
+            if mesh != self.state.selectedVertices[1].editorObject.getMesh():
+                print("Please select 2 vertices on the same mesh")
+                return
             
             # faces that have both vertices
             sharedFaces = self.findSharedFaces(v1, v2)
@@ -499,7 +500,6 @@ class EditorActions:
             if len(faces) != 2:
                 print("The vertices of an edge dividing 2 faces must be "
                       "selected")
-                print("Stopping")
                 return
 
             newFace = MeshFace()
