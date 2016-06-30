@@ -597,3 +597,4 @@ class EditorActions:
         print("Complete adjust")
         self.inAdjustMode = False
         self.editorMain.unlockMouse()
+        self.adjustor.complete()

@@ -47,7 +47,7 @@ class MeshObject(EditorObject):
         return self.position
     
     def getRotation(self):
-        return Rotate(0, 0, 0)
+        return self.rotation
     
     def getBounds(self):
         firstVertexPos = self.mesh.getVertices()[0].getPosition()
@@ -77,8 +77,12 @@ class MeshObject(EditorObject):
         self.position = position
 
     def setRotation(self, rotation):
+        self.rotation = rotation
+
+    def applyRotation(self):
         for v in self.mesh.getVertices():
-            v.setPosition(v.getPosition().rotate(rotation))
+            v.setPosition(v.getPosition().rotate(self.rotation))
+        self.rotation = Rotate(0, 0, 0)
 
     def scale(self, factor):
         for v in self.mesh.getVertices():

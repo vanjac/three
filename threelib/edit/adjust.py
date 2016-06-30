@@ -142,25 +142,22 @@ def tupleToRadians(t):
     return (math.radians(t[0]), math.radians(t[1]), math.radians(t[2]))
 
 
-# rotate adjustor doesn't use absolute rotation values provided by the
-# editorObject because some objects don't use those
 class RotateAdjustor(Adjustor):
 
     def __init__(self, editorObject):
         self.editorObject = editorObject
-        self.currentRotate = self.editorObject.getRotation()
 
     def getAxes(self):
-        return tupleToDegrees(self.currentRotate.getTuple())
+        return tupleToDegrees(self.editorObject.getRotation().getTuple())
 
     def setAxes(self, values):
-        newRotate = Rotate.fromTuple(tupleToRadians(values))
-        diff = newRotate - self.currentRotate
-        self.editorObject.setRotation(self.editorObject.getRotation() + diff)
-        self.currentRotate = newRotate
+        self.editorObject.setRotation(Rotate.fromTuple(tupleToRadians(values)))
 
     def gridType(self):
         return Adjustor.ROTATE
+
+    def complete(self):
+        self.editorObject.applyRotation()
 
     def getDescription(self):
         return "Rotate object"

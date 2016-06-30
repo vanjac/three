@@ -53,6 +53,10 @@ class EditorObject:
     def setRotation(self, rotation):
         pass
 
+    # apply the current rotation so it becomes 0
+    def applyRotation(self):
+        pass
+
     # factor is a vector
     def scale(self, factor):
         pass
@@ -220,6 +224,10 @@ class Adjustor:
     # return the type of grid the adjustor snaps to
     # one of the constants above
     def gridType(self):
+        pass
+
+    # called when adjust is competed successfully
+    def complete(self):
         pass
 
     # return a string description of what the adjustor is doing
