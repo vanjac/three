@@ -464,7 +464,7 @@ class ExtrudeAdjustor(Adjustor):
         self.state.objects.remove(self.newEditorObject)
 
     def complete(self):
-        # center origin of new object
+        # TODO: center origin of new object?
         pass
 
     def gridType(self):
@@ -472,3 +472,33 @@ class ExtrudeAdjustor(Adjustor):
 
     def getDescription(self):
         return "Extrude face"
+
+
+class MultiExtrudeAdjustor(Adjustor):
+
+    def __init__(self, adjustors):
+        self.adjustors = adjustors
+        self.extrudeAmount = 0
+
+    def getAxes(self):
+        return (self.extrudeAmount, 0.0, 0.0)
+
+    def setAxes(self, values):
+        self.extrudeAmount = values[0]
+        values = self.getAxes()
+        for adjustor in self.adjustors:
+            adjustor.setAxes(values)
+
+    def cancel(self):
+        for adjustor in self.adjustors:
+            adjustor.cancel()
+
+    def complete(self):
+        for adjustor in self.adjustors:
+            adjustor.complete()
+
+    def gridType(self):
+        return Adjustor.TRANSLATE
+
+    def getDescription(self):
+        return "Extrude faces"

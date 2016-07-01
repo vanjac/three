@@ -334,10 +334,23 @@ class EditorActions:
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
             if len(self.state.selectedObjects) == 0:
                 print("Nothing selected")
-            elif len(self.state.selectedObjects) == 1:
-                print("Not supported yet")
             else:
-                print("Not supported yet")
+                objectsToDelete = list(self.state.selectedObjects)
+                adjustors = [ ]
+                for o in self.state.selectedObjects:
+                    if o.getMesh() != None:
+                        for face in o.getMesh().getFaces():
+                            adjustors.append(ExtrudeAdjustor(
+                                face, o.getPosition(), self.state))
+                
+                self.setupAdjustMode(MultiExtrudeAdjustor(adjustors))
+                
+                def deleteHollowedObjects():
+                    self.state.deselectAll()
+                    for o in objectsToDelete:
+                        self.state.objects.remove(o)
+                self.adjustCompleteAction = deleteHollowedObjects
+        
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
             print("Faces or objects must be selected to extrude")
         elif self.state.selectMode == EditorState.SELECT_FACES:
@@ -349,7 +362,13 @@ class EditorActions:
                     self.state.selectedFaces[0].editorObject.getPosition(),
                     self.state))
             else:
-                print("Not supported yet")
+                adjustors = [ ]
+                for face in self.state.selectedFaces:
+                    adjustors.append(ExtrudeAdjustor(
+                        face.face,
+                        face.editorObject.getPosition(),
+                        self.state))
+                self.setupAdjustMode(MultiExtrudeAdjustor(adjustors))
 
     def setupAdjustMode(self, adjustor):
         self.inAdjustMode = True
