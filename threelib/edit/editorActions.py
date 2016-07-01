@@ -330,6 +330,27 @@ class EditorActions:
                 self.setupAdjustMode(MultiVertexScaleAdjustor(vertices, edges,
                                                               resize))
 
+    def extrude(self):
+        if self.state.selectMode == EditorState.SELECT_OBJECTS:
+            if len(self.state.selectedObjects) == 0:
+                print("Nothing selected")
+            elif len(self.state.selectedObjects) == 1:
+                print("Not supported yet")
+            else:
+                print("Not supported yet")
+        elif self.state.selectMode == EditorState.SELECT_VERTICES:
+            print("Faces or objects must be selected to extrude")
+        elif self.state.selectMode == EditorState.SELECT_FACES:
+            if len(self.state.selectedFaces) == 0:
+                print("Nothing selected")
+            elif len(self.state.selectedFaces) == 1:
+                self.setupAdjustMode(ExtrudeAdjustor(
+                    self.state.selectedFaces[0].face,
+                    self.state.selectedFaces[0].editorObject.getPosition(),
+                    self.state))
+            else:
+                print("Not supported yet")
+
     def setupAdjustMode(self, adjustor):
         self.inAdjustMode = True
         self.adjustor = adjustor

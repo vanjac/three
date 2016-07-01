@@ -4,6 +4,9 @@ import math
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 from threelib.edit.state import Adjustor
+# used by ExtrudeAdjustor:
+from threelib.mesh import *
+from threelib.edit.objects import MeshObject
 
 
 class NoOpAdjustor(Adjustor):
@@ -390,3 +393,82 @@ class MultiScaleAdjustor(Adjustor):
 
     def getDescription(self):
         return "Scale " + str(len(self.editorObjects)) + " objects"
+
+
+class ExtrudeAdjustor(Adjustor):
+    
+    # origin is the origin of the mesh object that the face comes from
+    def __init__(self, face, origin, state):
+        self.extrudeAmount = 0
+        self.state = state
+        
+        newMesh = Mesh()
+        self.newEditorObject = MeshObject(1)
+        self.newEditorObject.setMesh(newMesh)
+        self.newEditorObject.setPosition(origin)
+        state.objects.append(self.newEditorObject)
+        
+        baseFace = MeshFace()
+        self.extrudedFace = MeshFace()
+        
+        for vertex in face.getVertices():
+            newVertex1 = vertex.vertex.clone()
+            newVertex2 = vertex.vertex.clone()
+            newMesh.addVertex(newVertex1)
+            newMesh.addVertex(newVertex2)
+            newTextureVertex = vertex.textureVertex
+            
+            self.extrudedFace.addVertex(newVertex2, newTextureVertex)
+            # add vertices in reverse order
+            baseFace.addVertex(newVertex1, newTextureVertex, index=0)
+            
+        vertices = self.extrudedFace.getVertices()
+        self.normal = Vector.normal(vertices[0].vertex.getPosition(),
+                                    vertices[1].vertex.getPosition(),
+                                    vertices[2].vertex.getPosition())
+
+        newMesh.addFace(baseFace)
+        newMesh.addFace(self.extrudedFace)
+
+        numVertices = len(face.getVertices())
+        for i in range(0, numVertices):
+            j = numVertices - i - 1
+            iIncr = (i + 1) % numVertices
+            jIncr = (j - 1) % numVertices
+            if jIncr < 0:
+                jIncr += numVertices
+
+            sideFace = MeshFace()
+            v1 = self.extrudedFace.getVertices()[iIncr].vertex
+            v2 = self.extrudedFace.getVertices()[i].vertex
+            v3 = baseFace.getVertices()[j].vertex
+            v4 = baseFace.getVertices()[jIncr].vertex
+            sideFace.addVertex(v1).addVertex(v2).addVertex(v3).addVertex(v4)
+                
+            newMesh.addFace(sideFace)
+                
+            
+    def getAxes(self):
+        return (self.extrudeAmount, 0.0, 0.0)
+
+    def setAxes(self, values):
+        diff = values[0] - self.extrudeAmount
+        self.extrudeAmount = values[0]
+        
+        for vertex in self.extrudedFace.getVertices():
+            vertex.vertex.setPosition(vertex.vertex.getPosition()
+                                      + (self.normal * diff))
+            
+
+    def cancel(self):
+        self.state.objects.remove(self.newEditorObject)
+
+    def complete(self):
+        # center origin of new object
+        pass
+
+    def gridType(self):
+        return Adjustor.TRANSLATE
+
+    def getDescription(self):
+        return "Extrude face"

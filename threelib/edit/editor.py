@@ -196,6 +196,10 @@ class Editor(EditorActions):
             self.combineFaces()
             return True
 
+        if c[0] == 'h':
+            self.extrude()
+            return True
+
         # if no match
         print("Unrecognized command " + c)
         return True
