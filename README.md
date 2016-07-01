@@ -17,6 +17,8 @@ If a window appears with green and blue lines and some text at the bottom, it wo
 
 ## Controls
 
+- `Esc` to cancel any operations
+- `` ` `` to save
 - Right click, then use the mouse and `WASDQE` keys to fly around. Use the mouse wheel to control fly speed.
 - `nb` to create a New Box and enter translate-adjust mode to move it (see below)
 - Left click to select objects; hold shift to select multiple.
@@ -31,9 +33,8 @@ If a window appears with green and blue lines and some text at the bottom, it wo
 - With the two vertices of an edge selected, `d` to Divide the edge
 - With two vertices selected, `Shift-d` to merge the second with the first ("undivide")
 - With two non-edge vertices on the same face selected, `e` to divide that face with an Edge connecting them
-- With two vertices of an edge selected that divides two coplanar polygons, `Shift-e` to merge the polygons and remove the edge. 
-- `Esc` to cancel all current operations
-- `` ` `` to save
+- With two vertices of an edge selected that divides two coplanar polygons, `Shift-e` to merge the polygons and remove the edge.
+- `h` to enter adjust mode to extrude the selected faces. If objects are selected, all faces will be extruded and the original object will be deleted afterwards ("hollow").
 
 ### Adjust Mode
 
