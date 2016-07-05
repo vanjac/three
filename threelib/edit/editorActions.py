@@ -335,20 +335,20 @@ class EditorActions:
             if len(self.state.selectedObjects) == 0:
                 print("Nothing selected")
             else:
-                objectsToDelete = list(self.state.selectedObjects)
                 adjustors = [ ]
                 for o in self.state.selectedObjects:
                     if o.getMesh() != None:
                         for face in o.getMesh().getFaces():
                             adjustors.append(ExtrudeAdjustor(
-                                face, o.getPosition(), self.state))
+                                face, o, self.state))
                 
                 self.setupAdjustMode(MultiExtrudeAdjustor(adjustors))
                 
                 def deleteHollowedObjects():
-                    self.state.deselectAll()
-                    for o in objectsToDelete:
+                    for o in self.state.selectedObjects:
+                        o.removeFromParent()
                         self.state.objects.remove(o)
+                    self.state.deselectAll()
                 self.adjustCompleteAction = deleteHollowedObjects
         
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
@@ -359,14 +359,14 @@ class EditorActions:
             elif len(self.state.selectedFaces) == 1:
                 self.setupAdjustMode(ExtrudeAdjustor(
                     self.state.selectedFaces[0].face,
-                    self.state.selectedFaces[0].editorObject.getPosition(),
+                    self.state.selectedFaces[0].editorObject,
                     self.state))
             else:
                 adjustors = [ ]
                 for face in self.state.selectedFaces:
                     adjustors.append(ExtrudeAdjustor(
                         face.face,
-                        face.editorObject.getPosition(),
+                        face.editorObject,
                         self.state))
                 self.setupAdjustMode(MultiExtrudeAdjustor(adjustors))
 

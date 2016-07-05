@@ -397,15 +397,14 @@ class MultiScaleAdjustor(Adjustor):
 
 class ExtrudeAdjustor(Adjustor):
     
-    # origin is the origin of the mesh object that the face comes from
-    def __init__(self, face, origin, state):
+    # meshObject is the mesh object that the face comes from
+    def __init__(self, face, meshObject, state):
         self.extrudeAmount = 0
         self.state = state
         
         newMesh = Mesh()
-        self.newEditorObject = MeshObject(1)
+        self.newEditorObject = meshObject.clone()
         self.newEditorObject.setMesh(newMesh)
-        self.newEditorObject.setPosition(origin)
         state.objects.append(self.newEditorObject)
         
         baseFace = MeshFace()
