@@ -90,7 +90,6 @@ class EditorObject:
                 self.setPosition(Vector.fromTuple(ast.literal_eval(value)))
             if key == "rotation":
                 self.setRotation(Rotate.fromTuple(ast.literal_eval(value)))
-        pass
 
     # return another EditorObject
     def getParent(self):
@@ -136,6 +135,45 @@ class EditorObject:
         clone.setName(self.getName())
         clone.setPosition(self.getPosition())
         clone.setRotation(self.getRotation())
+
+
+class WorldObject(EditorObject):
+    
+    def __init__(self):
+        super().__init__()
+    
+    def getType(self):
+        return "World"
+    
+    def getPosition(self):
+        return Vector(0, 0, 0)
+    
+    def getRotation(self):
+        return Rotate(0, 0, 0)
+    
+    def getBounds(self):
+        return (Vector(0, 0, 0), Vector(0, 0, 0))
+
+    def getMesh(self):
+        return None
+    
+    def getProperties(self):
+        properties = { "name": self.getName(),
+                       }
+        return properties
+
+    def setProperties(self, properties):
+        for key, value in properties.items():
+            if key == "name":
+                self.setName(value)
+    
+    def clone(self):
+        clone = WorldObject()
+        self.addToClone(clone)
+        return clone
+    
+    def addToClone(self, clone):
+        clone.setName(self.getName())
 
 
 class EditorState:
