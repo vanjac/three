@@ -302,44 +302,81 @@ class Editor(EditorActions):
                 self.state.cameraRotation = self.state.cameraRotation.setY(
                     math.pi*3/2)
         elif self.inAdjustMode:
-            grid = float(self.state.getGridSize(self.adjustor.gridType()))
-            mouseGrid = self.adjustMouseGrid
-            value = list(self.adjustor.getAxes())
-            axes = self.selectedAxes
-            if axes[0] > axes[1]: # put axes in order
-                axes = (axes[1], axes[0])
+            self.mouseMovedAdjustMode(mouseX, mouseY, pmouseX, pmouseY)
 
-            mouseXDiff = mouseX - pmouseX
-            mouseYDiff = -mouseY + pmouseY # up should be positive
+    def mouseMovedAdjustMode(self, mouseX, mouseY, pmouseX, pmouseY):
+        grid = float(self.state.getGridSize(self.adjustor.gridType()))
+        mouseGrid = self.adjustMouseGrid
+
+        mouseXDiff = mouseX - pmouseX
+        mouseYDiff = -mouseY + pmouseY # up should be positive
+        
+        change = [0.0, 0.0] # change in first / second axes
+
+        if self.state.snapEnabled:
+            mouseMovement = list(self.adjustMouseMovement)
+            mouseMovement[0] += mouseXDiff
+            mouseMovement[1] += mouseYDiff
+            if mouseMovement[0] > mouseGrid:
+                change[0] = math.floor(mouseMovement[0] / mouseGrid)\
+                            * grid
+                mouseMovement[0] %= mouseGrid
+            if mouseMovement[0] < -mouseGrid:
+                change[0] = -math.floor(-mouseMovement[0] / mouseGrid)\
+                            * grid
+                mouseMovement[0] = -(-mouseMovement[0] % mouseGrid)
+            if mouseMovement[1] > mouseGrid:
+                change[1] = math.floor(mouseMovement[1] / mouseGrid)\
+                            * grid
+                mouseMovement[1] %= mouseGrid
+            if mouseMovement[1] < -mouseGrid:
+                change[1] = -math.floor(-mouseMovement[1] / mouseGrid)\
+                            * grid
+                mouseMovement[1] = -(-mouseMovement[1] % mouseGrid)
+            self.adjustMouseMovement = tuple(mouseMovement)
+        else:
+            change[0] = float(mouseXDiff) / float(mouseGrid) * grid
+            change[1] = float(mouseYDiff) / float(mouseGrid) * grid
+
+        # 0 - 3
+        # 0 is looking down -x, 1 is looking down +y,
+        # 2 is looking down +x, 3 is looking down -y
+        quadrant = round(self.state.cameraRotation.z / (math.pi / 2)) % 4
+        
+        # 0 - 3
+        # 0 is towards -x/+y, 1 is towards +x/+y,
+        # 2 is towards +x/-y, 3 is towards -x/-y
+        quarter = math.floor(self.state.cameraRotation.z / (math.pi / 2))
+        
+        axes = self.selectedAxes
+        if axes[0] > axes[1]: # put axes in order
+            axes = (axes[1], axes[0])
             
-            if self.state.snapEnabled:
-                mouseMovement = list(self.adjustMouseMovement)
-                mouseMovement[0] += mouseXDiff
-                mouseMovement[1] += mouseYDiff
-                if mouseMovement[0] > mouseGrid:
-                    value[axes[0]] += math.floor(mouseMovement[0] / mouseGrid)\
-                                      * grid
-                    mouseMovement[0] %= mouseGrid
-                if mouseMovement[0] < -mouseGrid:
-                    value[axes[0]] -= math.floor(-mouseMovement[0] / mouseGrid)\
-                                      * grid
-                    mouseMovement[0] = -(-mouseMovement[0] % mouseGrid)
-                if mouseMovement[1] > mouseGrid:
-                    value[axes[1]] += math.floor(mouseMovement[1] / mouseGrid)\
-                                      * grid
-                    mouseMovement[1] %= mouseGrid
-                if mouseMovement[1] < -mouseGrid:
-                    value[axes[1]] -= math.floor(-mouseMovement[1] / mouseGrid)\
-                                      * grid
-                    mouseMovement[1] = -(-mouseMovement[1] % mouseGrid)
-                self.adjustMouseMovement = tuple(mouseMovement)
-            else:
-                mouseXChange = float(mouseXDiff) / float(mouseGrid) * grid
-                mouseYChange = float(mouseYDiff) / float(mouseGrid) * grid
-                value[axes[0]] += mouseXChange
-                value[axes[1]] += mouseYChange
-            self.adjustor.setAxes(tuple(value))
-
+        if axes[0] == EditorActions.X and axes[1] == EditorActions.Y:
+            if quadrant == 0:
+                axes = (EditorActions.Y, EditorActions.X)
+                change[1] = -change[1]
+            if quadrant == 1:
+                pass
+            if quadrant == 2:
+                axes = (EditorActions.Y, EditorActions.X)
+                change[0] = -change[0]
+            if quadrant == 3:
+                change[0] = -change[0]
+                change[1] = -change[1]
+        elif axes[0] == EditorActions.X:
+            if quarter == 2 or quarter == 3:
+                change[0] = -change[0]
+        elif axes[0] == EditorActions.Y:
+            if quarter == 1 or quarter == 2:
+                change[0] = -change[0]
+                
+        value = list(self.adjustor.getAxes())
+        value[axes[0]] += change[0]
+        value[axes[1]] += change[1]
+        
+        self.adjustor.setAxes(tuple(value))
+    
 
     def init(self):
         glPolygonStipple(stipplePattern)
