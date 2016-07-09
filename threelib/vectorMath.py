@@ -287,6 +287,11 @@ class Rotate:
         else:
             return Rotate(v.x / self.x, v.y / self.y, v.z / self.z / v.z)
 
+    def rotate(self, amount):
+        vector = BASE_ROTATION_V.rotate(self).rotate(amount)
+        roll = self.x + amount.x
+        return vector.rotation().setX(roll)
+
     
 ZERO_V = Vector(0, 0, 0)
 

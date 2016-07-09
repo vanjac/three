@@ -12,6 +12,68 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 
+class PointObject(EditorObject):
+    
+    def __init__(self):
+        EditorObject.__init__(self)
+        self.position = Vector(0, 0, 0)
+        self.rotation = Rotate(0, 0, 0)
+        self.baseRotation = Rotate(0, 0, 0)
+        
+    def getType(self):
+        return "Point"
+
+    def getPosition(self):
+        return self.position
+    
+    def getRotation(self):
+        return self.rotation
+    
+    def getBounds(self):
+        return (Vector(0, 0, 0), Vector(0, 0, 0))
+
+    def setPosition(self, position):
+        self.position = position
+
+    def setRotation(self, rotation):
+        self.rotation = rotation
+
+    def applyRotation(self):
+        self.baseRotation.rotate(self.rotation)
+        self.rotation = Rotate(0, 0, 0)
+
+    def scale(self, factor):
+        pass
+
+    def getMesh(self):
+        return None
+    
+    def drawObject(self):
+        self.drawSelectHull((1.0, 1.0, 1.0))
+    
+    def drawSelectHull(self, color):
+        glColor(color[0], color[1], color[2])
+        glPointSize(10)
+        glBegin(GL_POINTS)
+        pos = self.position
+        glVertex(pos.y, pos.z, pos.x)
+        glEnd()
+    
+    def getProperties(self):
+        return super().getProperties()
+
+    def setProperties(self, properties):
+        super().setProperties(properties)
+
+    def clone(self):
+        clone = PointObject()
+        self.addToClone(clone)
+        return clone
+    
+    def addToClone(self, clone):
+        super().addToClone(clone)
+
+
 class MeshObject(EditorObject):
 
     # starts as a cube
