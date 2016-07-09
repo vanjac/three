@@ -341,34 +341,34 @@ class Editor(EditorActions):
         # 0 - 3
         # 0 is looking down -x, 1 is looking down +y,
         # 2 is looking down +x, 3 is looking down -y
-        quadrant = round(self.state.cameraRotation.z / (math.pi / 2)) % 4
+        quarter = round(self.state.cameraRotation.z / (math.pi / 2)) % 4
         
         # 0 - 3
         # 0 is towards -x/+y, 1 is towards +x/+y,
         # 2 is towards +x/-y, 3 is towards -x/-y
-        quarter = math.floor(self.state.cameraRotation.z / (math.pi / 2))
+        quadrant = math.floor(self.state.cameraRotation.z / (math.pi / 2))
         
         axes = self.selectedAxes
         if axes[0] > axes[1]: # put axes in order
             axes = (axes[1], axes[0])
             
         if axes[0] == EditorActions.X and axes[1] == EditorActions.Y:
-            if quadrant == 0:
+            if quarter == 0:
                 axes = (EditorActions.Y, EditorActions.X)
                 change[1] = -change[1]
-            if quadrant == 1:
+            if quarter == 1:
                 pass
-            if quadrant == 2:
+            if quarter == 2:
                 axes = (EditorActions.Y, EditorActions.X)
                 change[0] = -change[0]
-            if quadrant == 3:
+            if quarter == 3:
                 change[0] = -change[0]
                 change[1] = -change[1]
         elif axes[0] == EditorActions.X:
-            if quarter == 2 or quarter == 3:
+            if quadrant == 2 or quadrant == 3:
                 change[0] = -change[0]
         elif axes[0] == EditorActions.Y:
-            if quarter == 1 or quarter == 2:
+            if quadrant == 1 or quadrant == 2:
                 change[0] = -change[0]
                 
         value = list(self.adjustor.getAxes())
