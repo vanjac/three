@@ -2,7 +2,7 @@ __author__ = "vantjac"
 
 import math
 
-from threelib.edit.state import EditorObject
+from threelib.edit.base import EditorObject
 from threelib.vectorMath import *
 from threelib.mesh import *
 
