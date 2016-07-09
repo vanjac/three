@@ -186,6 +186,7 @@ class EditorState:
         self.cameraPosition = Vector(-32, 0, 0)
         self.cameraRotation = Rotate(0, 0, 0)
         self.objects = [ ]
+        self.worldObject = WorldObject()
         
         self.selectMode = EditorState.SELECT_OBJECTS
         self.selectedObjects = [ ]

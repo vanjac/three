@@ -62,64 +62,76 @@ class EditorActions:
         if not self.state.selectMode == EditorState.SELECT_OBJECTS:
             print("Only objects have properties")
         elif len(self.state.selectedObjects) == 0:
-            print("Nothing selected")
+            print("Edit world properties")
+            props = self.state.worldObject.getProperties()
+            self.makePropsFile(props)
         elif len(self.state.selectedObjects) > 1:
             print("Cannot edit properties of multiple objects")
         else:
             print("Edit object properties")
             props = self.state.selectedObjects[0].getProperties()
-            text = ""
-            for key, value in props.items():
-                multiLine = '\n' in value
-                if multiLine:
-                    text += key + ":\n" + value + "\n~~~\n"
-                else:
-                    text += key + "=" + value + "\n"
-            files.openProperties(text)
+            self.makePropsFile(props)
+
+    def makePropsFile(self, props):
+        text = ""
+        for key, value in props.items():
+            multiLine = '\n' in value
+            if multiLine:
+                text += key + ":\n" + value + "\n~~~\n"
+            else:
+                text += key + "=" + value + "\n"
+        files.openProperties(text)
 
     def updateSelected(self):
         if not self.state.selectMode == EditorState.SELECT_OBJECTS:
             print("Only objects can be updated")
         elif len(self.state.selectedObjects) == 0:
-            print("Nothing selected")
+            print("Update world")
+            props = self.readPropsFile()
+            if props != None:
+                self.state.worldObject.setProperties(props)
         elif len(self.state.selectedObjects) > 1:
             print("Cannot update multiple objects")
         else:
             print("Update object")
-            text = files.readProperties()
-            props = { }
-            inMultiLine = False
-            multiLineKey = ""
-            multiLineValue = ""
-            for line in text.split('\n'):
-                if not inMultiLine:
-                    line = line.strip()
-                    if line == '':
-                        pass
-                    elif '=' in line:
-                        key, value = line.split('=')
-                        props[key] = value
-                    elif line.endswith(':'):
-                        inMultiLine = True
-                        multiLineKey = line[:-1]
-                        multiLineValue = ""
-                    else:
-                        print("Could not parse line:")
-                        print(line)
-                        print("Stopping")
-                        return
-                else: # in multi line
-                    if line == "~~~":
-                        inMultiLine = False
-                        props[multiLineKey] = multiLineValue
-                    else:
-                        multiLineValue += line + "\n"
-            if inMultiLine:
-                print("Unclosed multi-line value!")
-                print("Stopping")
-                return
-            
-            self.state.selectedObjects[0].setProperties(props)
+            props = self.readPropsFile()
+            if props != None:
+                self.state.selectedObjects[0].setProperties(props)
+
+    def readPropsFile(self):
+        text = files.readProperties()
+        props = { }
+        inMultiLine = False
+        multiLineKey = ""
+        multiLineValue = ""
+        for line in text.split('\n'):
+            if not inMultiLine:
+                line = line.strip()
+                if line == '':
+                    pass
+                elif '=' in line:
+                    key, value = line.split('=')
+                    props[key] = value
+                elif line.endswith(':'):
+                    inMultiLine = True
+                    multiLineKey = line[:-1]
+                    multiLineValue = ""
+                else:
+                    print("Could not parse line:")
+                    print(line)
+                    print("Stopping")
+                    return
+            else: # in multi line
+                if line == "~~~":
+                    inMultiLine = False
+                    props[multiLineKey] = multiLineValue
+                else:
+                    multiLineValue += line + "\n"
+        if inMultiLine:
+            print("Unclosed multi-line value!")
+            print("Stopping")
+            return None
+        return props
 
     def deleteSelected(self):
         if not self.state.selectMode == EditorState.SELECT_OBJECTS:
