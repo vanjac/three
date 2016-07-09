@@ -9,6 +9,8 @@ from threelib.vectorMath import Rotate
 from threelib.edit.objects import *
 from threelib.edit.adjust import *
 
+import OpenGL
+OpenGL.ERROR_CHECKING = False
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
@@ -544,6 +546,9 @@ class Editor(EditorActions):
         glColor(1,1,1)
         glPopMatrix()
         self.editorMain.drawText(self.getStatusBar(), GLUT_BITMAP_9_BY_15, 4, 4)
+        self.editorMain.drawText(str(self.editorMain.getFps()) + " FPS",
+                                 GLUT_BITMAP_9_BY_15,
+                                 4, self.editorMain.windowHeight() - 19) # 4+15
         
         self.drawMiniAxes(rotate)
 

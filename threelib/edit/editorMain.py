@@ -1,17 +1,15 @@
 __author__ = "vantjac"
 
 import threelib.edit.editor
-
-from OpenGL.GL import *
-from OpenGL.GLUT import *
-from OpenGL.GLU import *
+import time # for fps
 
 import pyautogui
 
-# based on PyOpenGl NeHe tutorial
-
-# enable to disable OpenGL errors being printed
-HIDE_GL_ERRORS = False
+import OpenGL
+OpenGL.ERROR_CHECKING = False
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
 
 # the editor
 editor = None
@@ -39,6 +37,10 @@ mouseLockY = 0
 
 mouseLockMargin = 64
 framesSinceMouseLockMove = 0
+
+lastFpsTime = time.time()
+fpsCount = 0
+fps = 0
 
 class EditorMain:
     # General OpenGL initialization function.
@@ -84,20 +86,31 @@ class EditorMain:
         
     # The main drawing function. 
     def drawGL():
+        global lastFpsTime, fpsCount, fps
+
+        fpsCount += 1
+        
+        seconds = time.time()
+        if seconds - lastFpsTime > 1:
+            lastFpsTime = seconds
+            fps = fpsCount
+            fpsCount = 0
+
         # clear screen and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity() # reset the view
         
-        if HIDE_GL_ERRORS:
-            try:
-                editor.draw()
-            except GLError:
-                pass
-        else:
-            editor.draw()
+        editor.draw()
+        
+        if glGetError() != GL_NO_ERROR:
+            print("GL Error!")
         
         #  double buffered - swap the buffers to display what just got drawn. 
         glutSwapBuffers()
+
+    def getFps():
+        global fps
+        return fps
 
     def getAspect():
         global aspect

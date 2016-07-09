@@ -6,6 +6,8 @@ from threelib.edit.base import EditorObject
 from threelib.vectorMath import *
 from threelib.mesh import *
 
+import OpenGL
+OpenGL.ERROR_CHECKING = False
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
