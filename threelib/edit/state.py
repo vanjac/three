@@ -4,6 +4,7 @@ from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 
 from threelib.edit.base import WorldObject
+from threelib.world import World
 
 class EditorState:
 
@@ -12,6 +13,8 @@ class EditorState:
     SELECT_VERTICES = 2
 
     def __init__(self):
+        self.world = World()
+
         self.cameraPosition = Vector(-32, 0, 0)
         self.cameraRotation = Rotate(0, 0, 0)
         self.objects = [ ]
