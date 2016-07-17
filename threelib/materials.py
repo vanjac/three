@@ -6,15 +6,20 @@ import struct
 
 class Material:
     
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
         self.texture = None
         self.isTransparent = False
         self.xLen = 0
         self.yLen = 0
+
+    # prevent pickling:
+    # see https://docs.python.org/3/library/pickle.html#object.__getstate__
+
+    def __getstate__():
+        return None
+    def __setstate__(state):
+        pass
     
-    def getName(self):
-        return self.name
 
     def isTransparent(self):
         return self.isTransparent
@@ -35,9 +40,9 @@ class Material:
     def getYLen(self):
         return self.yLen
 
-    def load(self):
+    def load(self, name):
         # based on opengl-tutorial.org/beginners-tutorials/tutorial-5-a-textured-cube
-        materialPath = files.getMaterial(self.name)
+        materialPath = files.getMaterial(name)
         with materialPath.open('rb') as f:
             fBytes = f.read()
             # read the header...
@@ -69,3 +74,27 @@ class Material:
                else:
                    self.texture.append(255)
                    index += int(bitsPerPixel / 8)
+
+class MaterialReference:
+    
+    def __init__(self, name, addReference=False, load=False):
+        self.name = name
+        self.material = Material()
+        self.references = 1 if addReference else 0
+        if load:
+            self.load()
+
+    def load(self):
+        self.material.load(self.name)
+
+    def numReferences(self):
+        return self.references
+
+    def addReference(self):
+        self.references += 1
+
+    def removeReference(self):
+        self.references -= 1
+
+    def hasNoReferences(self):
+        return self.references == 0
