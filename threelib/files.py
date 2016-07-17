@@ -65,7 +65,7 @@ def getMaterialDir():
     return getGameDir() / "materials"
 
 def getMaterial(name):
-    return (getMaterialDir() / name).resolve()
+    return (getMaterialDir() / (name + ".bmp")).resolve()
 
 
 # path is a Path to the map file
