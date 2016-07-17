@@ -23,13 +23,15 @@ If a window appears with green and blue lines and some text at the bottom, it wo
 - `nb` to create a New Box and enter translate-adjust mode to move it (see below)
 - Left click to select objects; hold shift to select multiple.
 - `a` to select none or All objects
-- Backspace to delete objects
+- `Backspace` to delete objects
 - `c` to duplicate ("Copy") selected objects and enter translate-adjust mode to move them (see below)
 - `mv` to switch to Vertex select mode, `mf` for Face select and `mo` for Object select mode (default)
+- `Enter` to edit the properties of selected objects using your default text editor. When you are finished editing properties and have saved the file, press `u` ("Update") with the same objects selected to update their properties. If nothing is selected world properties will be edited.
 - `g` to enter translate ("Grab") adjust mode for the selected objects (see below)
 - `r` to enter Rotate adjust mode
 - `s Enter` to enter reSize adjust mode, which changes the dimensions of the selected object(s). Before pressing Enter you can type any of the letters `nsewtb` (North South East West Top Bottom). With these you can choose to resize in just one direction along an axis.
 - `Shift-s Enter` to enter Scale adjust mode. You can use the same direction letters as in Resize.
+- `o` to adjust the Origins of selected objects in adjust mode.
 - With the two vertices of an edge selected, `d` to Divide the edge
 - With two vertices selected, `Shift-d` to merge the second with the first ("undivide")
 - With two non-edge vertices on the same face selected, `e` to divide that face with an Edge connecting them
