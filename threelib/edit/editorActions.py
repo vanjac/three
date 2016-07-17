@@ -5,6 +5,7 @@ from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 from threelib.edit.objects import *
 from threelib.edit.adjust import *
+from threelib.materials import MaterialReference
 
 from threelib import files
 
@@ -675,3 +676,19 @@ class EditorActions:
             self.adjustCompleteAction = None
         self.adjustor.complete()
         self.adjustor = None
+
+
+    # MATERIALS:
+
+    def setCurrentMaterial(self, name):
+        if name != None and name != "":
+            foundMaterial = self.state.world.findMaterial(name)
+        
+            if foundMaterial != None:
+                self.state.setCurrentMaterial(foundMaterial)
+            else:
+                matRef = MaterialReference(name)
+                self.state.world.addMaterial(matRef)
+                self.state.setCurrentMaterial(matRef)
+        
+        self.state.currentMaterial.load()

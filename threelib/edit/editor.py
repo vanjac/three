@@ -202,6 +202,13 @@ class Editor(EditorActions):
             self.extrude()
             return True
 
+        if c[0] == 'P':
+            if c[len(c) - 1] == '\r':
+                self.setCurrentMaterial( c[1:-1] )
+                return True
+            else:
+                return False
+
         # if no match
         print("Unrecognized command " + c)
         return True
@@ -760,6 +767,11 @@ class Editor(EditorActions):
                                 .getPosition()) + " | "
                 else:
                     text += str(num) + " vertices | "
+
+            if self.state.currentMaterial != None:
+                text += "mat " + self.state.currentMaterial.getName() + " | "
+            else:
+                text += "mat none | "
         
         if self.currentCommand == "":
             if self.movingCamera:

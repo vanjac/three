@@ -36,6 +36,8 @@ class EditorState:
         self.rotateGridSize = 15.0 # in degrees
         self.scaleGridSize = 0.25
 
+        self.currentMaterial = None # a material reference
+
     # only required for objects -- faces and vertices just have to be added to
     # the list
     def select(self, editorObject):
@@ -76,6 +78,15 @@ class EditorState:
             self.rotateGridSize = value
         if gridType == Adjustor.SCALE:
             self.scaleGridSize = value
+
+    def setCurrentMaterial(self, materialReference):
+        if self.currentMaterial != None:
+            self.world.removeMaterialReference(self.currentMaterial)
+        
+        self.currentMaterial = materialReference
+        
+        if self.currentMaterial != None:
+            self.currentMaterial.addReference()
 
 
 # used for adjusting an objects position, rotation, etc using the mouse

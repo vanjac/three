@@ -42,7 +42,13 @@ class Material:
 
     def load(self, name):
         # based on opengl-tutorial.org/beginners-tutorials/tutorial-5-a-textured-cube
-        materialPath = files.getMaterial(name)
+        materialPath = None
+        try:
+            materialPath = files.getMaterial(name)
+        except FileNotFoundError:
+            print("Material not found:", name)
+            return
+
         with materialPath.open('rb') as f:
             fBytes = f.read()
             # read the header...
@@ -77,12 +83,15 @@ class Material:
 
 class MaterialReference:
     
-    def __init__(self, name, addReference=False, load=False):
+    def __init__(self, name, load=False):
         self.name = name
         self.material = Material()
-        self.references = 1 if addReference else 0
+        self.references = 0
         if load:
             self.load()
+
+    def getName(self):
+        return self.name
 
     def load(self):
         self.material.load(self.name)
