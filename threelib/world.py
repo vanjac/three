@@ -11,7 +11,7 @@ class World:
     def removeMaterialReference(self, material):
         material.removeReference()
         
-        if material.hasNoReferences:
+        if material.hasNoReferences():
             self.materials.remove(material)
             print("Removing unused material", material.getName())
 

@@ -209,6 +209,10 @@ class Editor(EditorActions):
             else:
                 return False
 
+        if c[0] == 'p':
+            self.paint()
+            return True
+
         # if no match
         print("Unrecognized command " + c)
         return True

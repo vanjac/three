@@ -107,6 +107,14 @@ class MeshFace:
         self.textureRotate = rotate
         self.textureScale = scale
 
+    # MaterialReference
+    def getMaterial(self):
+        return self.material
+
+    # doesn't change references
+    def setMaterial(self, material):
+        self.material = material
+
 
 class Mesh:
     

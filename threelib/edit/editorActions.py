@@ -692,3 +692,30 @@ class EditorActions:
                 self.state.setCurrentMaterial(matRef)
         
         self.state.currentMaterial.load()
+
+    def paint(self):
+        if self.state.selectMode == EditorState.SELECT_OBJECTS:
+            if len(self.state.selectedObjects) == 0:
+                print("Nothing selected")
+            elif len(self.state.selectedObjects) == 1:
+                for o in self.state.selectedObjects:
+                    if o.getMesh() != None:
+                        for f in o.getMesh().getFaces():
+                            self.setFaceMaterial(f, self.state.currentMaterial)
+        elif self.state.selectMode == EditorState.SELECT_VERTICES:
+            print("Cannot paint vertices")
+        elif self.state.selectMode == EditorState.SELECT_FACES:
+            if len(self.state.selectedFaces) == 0:
+                print("Nothing selected")
+            else:
+                for f in self.state.selectedFaces:
+                    self.setFaceMaterial(f.face, self.state.currentMaterial)
+
+    def setFaceMaterial(self, face, materialReference):
+        if face.getMaterial() != None:
+            self.state.world.removeMaterialReference(face.getMaterial())
+        
+        face.setMaterial(materialReference)
+        
+        if face.getMaterial() != None:
+            face.getMaterial().addReference()
