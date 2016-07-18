@@ -394,8 +394,32 @@ class Editor(EditorActions):
     def init(self):
         glPolygonStipple(stipplePattern)
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1) # for getting select pixels
+                                              # and storing textures
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
 
     def draw(self):
+        for m in self.state.world.getAddedMaterials():
+            material = m.material
+
+            texName = glGenTextures(1)
+            m.setNumber(texName)
+            
+            glBindTexture(GL_TEXTURE_2D, texName);
+            
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 
+                            GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
+                            GL_NEAREST);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, material.getXLen(), 
+                         material.getYLen(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+                         material.getTexture());
+        
+        for m in self.state.world.getRemovedMaterials():
+            texName = m.getNumber()
+            glDeleteTextures([texName])
+
         glPushMatrix()
         rotate = self.state.cameraRotation
         translate = self.state.cameraPosition

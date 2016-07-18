@@ -126,7 +126,8 @@ class MeshFace:
         i = 0
         for oldVertex in self.vertices:
             pos = oldVertex.vertex.getPosition()
-            textureVertex = pos.rotate(-normalRot)
+            textureVertex = pos.rotate(-normalRot) / 16.0
+            textureVertex = Vector(textureVertex.y, textureVertex.z)
             newVertex = MeshFaceVertex(vertex = oldVertex.vertex,
                                        textureVertex = textureVertex)
             self.vertices[i] = newVertex

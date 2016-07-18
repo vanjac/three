@@ -7,7 +7,7 @@ import struct
 class Material:
     
     def __init__(self):
-        self.texture = None
+        self.texture = [ ]
         self.isTransparent = False
         self.xLen = 0
         self.yLen = 0
@@ -69,7 +69,7 @@ class Material:
             print("Image size: " + str(self.xLen) + ", " + str(self.yLen))
             print("Bits per pixel: " + str(bitsPerPixel))
 
-            self.texture = array('B')
+            self.texture = [ ]
             index = dataPos
             for i in range(0, self.xLen * self.yLen):
                self.texture.append(fBytes[index+2]) #R
@@ -85,6 +85,7 @@ class MaterialReference:
     
     def __init__(self, name, load=False):
         self.name = name
+        self.number = 0
         self.material = Material()
         self.references = 0
         if load:
@@ -92,6 +93,15 @@ class MaterialReference:
 
     def getName(self):
         return self.name
+
+    # used by 3d rendering
+    # for example, for OpenGL this is the texture object's "name"
+    
+    def getNumber(self):
+        return self.number
+
+    def setNumber(self, number):
+        self.number = number
 
     def load(self):
         self.material.load(self.name)

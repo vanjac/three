@@ -159,7 +159,27 @@ class MeshObject(EditorObject):
         self.mesh = mesh
     
     def drawObject(self):
-        self.drawSelectHull((0.8, 0.8, 0.8))
+        glColor(0.8, 0.8, 0.8)
+        for f in self.mesh.getFaces():
+            texture = False
+
+            mat = f.getMaterial()
+            if mat != None:
+                if len(mat.material.texture) != 0:
+                    texture = True
+                    glEnable(GL_TEXTURE_2D)
+                    glBindTexture(GL_TEXTURE_2D, mat.getNumber())
+            
+            glBegin(GL_POLYGON)
+            for v in f.getVertices():
+                pos = v.vertex.getPosition()
+                texPos = v.textureVertex
+                glTexCoord(texPos.x, texPos.y)
+                glVertex(pos.y, pos.z, pos.x)
+            glEnd()
+
+            if texture:
+                glDisable(GL_TEXTURE_2D)
     
     def drawSelectHull(self, color):
         glColor(color[0], color[1], color[2])
