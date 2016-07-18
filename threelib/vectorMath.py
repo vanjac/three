@@ -179,7 +179,7 @@ class Vector:
         xyz = Vector(xy.magnitude(), self.z)
         yRot = xyz.direction2()
         zRot = xy.direction2()
-        return Rotation(0, yRot, zRot);
+        return Rotate(0, yRot, zRot);
 
     # return the direction towards another vector, as a unit-vector
     def directionTowards(self, v):

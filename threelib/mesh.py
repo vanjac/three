@@ -22,6 +22,8 @@ class MeshVertex:
 
     def setPosition(self, position):
         self.v = position
+        for face in self.references:
+            face.calculateTextureVertices()
 
     # reference methods shouldn't be called directly
 
@@ -58,13 +60,22 @@ class MeshFace:
 
     # return this MeshFace
     # for easy chaining of addVertex commands
-    def addVertex(self, meshVertex, textureVertex=Vector(0,0), index=None):
+    def addVertex(self, meshVertex, textureVertex=None, index=None):
+        calculate = False
+        if textureVertex == None:
+            textureVertex = Vector(0,0)
+            calculate = True
+        
         v = MeshFaceVertex(vertex=meshVertex, textureVertex=textureVertex)
         if index == None:
             self.vertices.append(v)
         else:
             self.vertices.insert(index, v)
         meshVertex.addReference(self)
+
+        if calculate:
+            self.calculateTextureVertices()
+        
         return self
 
     def removeVertex(self, meshFaceVertex):
@@ -76,6 +87,8 @@ class MeshFace:
         index = self.vertices.index(old)
         self.vertices[index] = new
         old.vertex.removeReference(self)
+        new.vertex.addReference(self)
+        self.calculateTextureVertices()
 
     # the index of the specified MeshVertex (not a MeshFaceVertex)
     # -1 if not found
@@ -88,14 +101,10 @@ class MeshFace:
         return -1
 
     def setVertex(self, meshFaceVertex, meshVertex):
-        v = MeshFaceVertex(vertex=meshVertex,
+        v = MeshFaceVertex(vertex = meshVertex,
                            textureVertex = meshFaceVertex.textureVertex)
         self.replaceVertex(meshFaceVertex, v)
-
-    def setTextureVertex(self, meshFaceVertex, textureVertex):
-        v = MeshFaceVertex(vertex=meshFaceVertex.vertex,
-                           textureVertex = textureVertex)
-        self.replaceVertex(meshFaceVertex, v)
+        self.calculateTextureVertices()
 
     def clearVertices(self):
         for v in self.vertices:
@@ -106,6 +115,23 @@ class MeshFace:
         self.textureShift = shift
         self.textureRotate = rotate
         self.textureScale = scale
+        self.calculateTextureVertices()
+
+    def calculateTextureVertices(self):
+        normal = self.getNormal()
+        if normal == None:
+            return
+        normalRot = normal.rotation()
+
+        i = 0
+        for oldVertex in self.vertices:
+            pos = oldVertex.vertex.getPosition()
+            textureVertex = pos.rotate(-normalRot)
+            newVertex = MeshFaceVertex(vertex = oldVertex.vertex,
+                                       textureVertex = textureVertex)
+            self.vertices[i] = newVertex
+
+            i += 1
 
     # MaterialReference
     def getMaterial(self):
@@ -114,6 +140,14 @@ class MeshFace:
     # doesn't change references
     def setMaterial(self, material):
         self.material = material
+
+    def getNormal(self):
+        if len(self.vertices) >= 3:
+            return Vector.normal(self.vertices[0].vertex.getPosition(),
+                                 self.vertices[1].vertex.getPosition(),
+                                 self.vertices[2].vertex.getPosition())
+        else:
+            return None
 
 
 class Mesh:
