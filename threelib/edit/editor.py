@@ -399,6 +399,8 @@ class Editor(EditorActions):
 
     def draw(self):
         for m in self.state.world.getAddedMaterials():
+            print("Sending", m.getName(), "to OpenGL")
+
             material = m.material
 
             texName = glGenTextures(1)
@@ -415,6 +417,7 @@ class Editor(EditorActions):
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, material.getXLen(), 
                          material.getYLen(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 
                          material.getTexture());
+            print("Done sending")
         
         for m in self.state.world.getRemovedMaterials():
             texName = m.getNumber()

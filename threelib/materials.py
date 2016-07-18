@@ -3,6 +3,15 @@ __author__ = "vantjac"
 from threelib import files
 from array import array
 import struct
+import math
+
+# for texture scaling
+from PIL import Image
+
+def isPowerOf2(num):
+    # from:
+    # code.activestate.com/recipes/577514-chek-if-a-number-is-a-power-of-two/
+    return num != 0 and ((num & (num - 1)) == 0)
 
 class Material:
     
@@ -48,38 +57,29 @@ class Material:
         except FileNotFoundError:
             print("Material not found:", name)
             return
+        
+        print("Reading image at", materialPath)
+        image = Image.open(materialPath)
+        image.load()
+        image = image.convert('RGBA')
+        self.xLen = image.width
+        self.yLen = image.height
 
-        with materialPath.open('rb') as f:
-            fBytes = f.read()
-            # read the header...
-            if fBytes[0] != b'B'[0] or fBytes[1] != b'M'[0]:
-                print("Not a valid BMP file!")
-                return
-            dataPos = struct.unpack('<I', fBytes[10:14])[0]
-            bitsPerPixel = struct.unpack('<H', fBytes[28:30])[0]
-
-            if bitsPerPixel != 24 and bitsPerPixel != 32:
-                print("Unrecognized bits per pixel")
-                return
-            self.xLen = struct.unpack('<I', fBytes[18:22])[0]
-            self.yLen = struct.unpack('<I', fBytes[22:26])[0]
-            if dataPos == 0:
-                dataPos = 54
+        print("Size is", str(self.xLen) + ", " + str(self.yLen))
             
-            print("Image size: " + str(self.xLen) + ", " + str(self.yLen))
-            print("Bits per pixel: " + str(bitsPerPixel))
+        # dimensions need to be a power of 2
+        if not (isPowerOf2(self.xLen) and isPowerOf2(self.yLen)):
+            # search upwards for the next power of 2
+            self.xLen = 2 ** math.ceil(math.log(self.xLen, 2))
+            self.yLen = 2 ** math.ceil(math.log(self.yLen, 2))
+            print("Scaling up to", str(self.xLen) + ", " + str(self.yLen))
+            
+            image = image.resize((self.xLen, self.yLen), Image.BICUBIC)
+        
+        self.texture = list(image.tobytes())
 
-            self.texture = [ ]
-            index = dataPos
-            for i in range(0, self.xLen * self.yLen):
-               self.texture.append(fBytes[index+2]) #R
-               self.texture.append(fBytes[index+1]) #G
-               self.texture.append(fBytes[index+0]) #B
-               if bitsPerPixel == 32:
-                   self.texture.append(fBytes[index+3])
-               else:
-                   self.texture.append(255)
-                   index += int(bitsPerPixel / 8)
+        print("Done loading image")
+
 
 class MaterialReference:
     

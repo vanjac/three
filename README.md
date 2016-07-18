@@ -5,6 +5,7 @@ When three is finished, it will be a 3d game engine with a map editor, written i
 ## Starting
 
 three requires at least Python 3.4, and these pip packages:
+- pillow
 - PyOpenGL
 - PyOpenGL_accelerate
 - pyautogui: installation instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html)
