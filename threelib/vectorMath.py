@@ -16,6 +16,17 @@ def fixRotation(n):
     n = n % CIRCLE
     return n
 
+def tripleTupleToString(t):
+    return numToStr(t[0]) + ',' + \
+        numToStr(t[1]) + ',' + \
+        numToStr(t[2])
+
+def numToStr(num):
+    if num % 1.0 == 0.0:
+        return str(int(num))
+    else:
+        return str(num)
+
 class Vector:
         
     # computes the normal unit-vector of a triangle, with vertices in
@@ -39,8 +50,8 @@ class Vector:
         self.z = float(z)
         
     def __repr__(self):
-        return '(' + str(self.x) + ', ' + str(self.y) + ', ' + str(self.z) + ')'
-    
+        return tripleTupleToString(self.getTuple())
+
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.x == other.x and self.y == other.y and self.z == other.z
@@ -225,7 +236,7 @@ class Rotate:
         self.z = fixRotation(z)
     
     def __repr__(self):
-        return '(' + str(self.x) + ', ' + str(self.y) + ', ' + str(self.z) + ')'
+        return tripleTupleToString(self.getTuple())
     
     def __eq__(self, other):
         if isinstance(other, self.__class__):

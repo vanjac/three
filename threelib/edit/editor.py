@@ -735,8 +735,8 @@ class Editor(EditorActions):
                          value[1]-origin[1],
                          value[2]-origin[2])
             text += "(" + \
-                    ("{0:.2f}".format(value[0])) + ", " + \
-                    ("{0:.2f}".format(value[1])) + ", " + \
+                    ("{0:.2f}".format(value[0])) + "," + \
+                    ("{0:.2f}".format(value[1])) + "," + \
                     ("{0:.2f}".format(value[2])) + ")"
             if self.state.relativeCoordinatesEnabled:
                 text += " relative | "
@@ -749,7 +749,6 @@ class Editor(EditorActions):
                     text += "Y"
                 if a == EditorActions.Z:
                     text += "Z"
-            text += " | "
             text += " Grid: " + str(self.state.getGridSize(
                 self.adjustor.gridType())) + " | "
             if self.state.snapEnabled:
@@ -774,8 +773,8 @@ class Editor(EditorActions):
                     text += "1 object  | "
                     o = self.state.selectedObjects[0]
                     text += o.getType() + ": \"" + o.getName() + "\" | "
-                    text += "Pos: " + str(o.getPosition()) + " | "
-                    text += "Rot: " + str(o.getRotation()) + " | "
+                    text += "Pos: " + str(o.getPosition()) + " "
+                    text += "Rot: " + str(o.getRotation()) + " "
                     text += "Size: " + str(o.getDimensions()) + " | "
                 else:
                     text += str(num) + " objects | "
@@ -800,7 +799,9 @@ class Editor(EditorActions):
                     text += str(num) + " vertices | "
 
             if self.state.currentMaterial != None:
-                text += "mat " + self.state.currentMaterial.getName() + " | "
+                text += "mat " + \
+                        self.state.currentMaterial.getName().split("/")[-1] + \
+                        " | "
             else:
                 text += "mat none | "
         
