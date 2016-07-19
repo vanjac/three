@@ -24,9 +24,9 @@ class Material:
     # prevent pickling:
     # see https://docs.python.org/3/library/pickle.html#object.__getstate__
 
-    def __getstate__():
+    def __getstate__(self):
         return None
-    def __setstate__(state):
+    def __setstate__(self, state):
         pass
     
 

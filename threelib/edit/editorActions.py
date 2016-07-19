@@ -697,7 +697,7 @@ class EditorActions:
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
             if len(self.state.selectedObjects) == 0:
                 print("Nothing selected")
-            elif len(self.state.selectedObjects) == 1:
+            else:
                 for o in self.state.selectedObjects:
                     if o.getMesh() != None:
                         for f in o.getMesh().getFaces():
