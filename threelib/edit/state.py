@@ -38,6 +38,9 @@ class EditorState:
 
         self.currentMaterial = None # a material reference
 
+    def onLoad(self):
+        self.world.onLoad()
+
     # only required for objects -- faces and vertices just have to be added to
     # the list
     def select(self, editorObject):

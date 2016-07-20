@@ -7,6 +7,11 @@ class World:
         self.addedMaterials = [ ]
         self.removedMaterials = [ ]
 
+    def onLoad(self):
+        for mat in self.materials:
+            mat.load()
+            self.addedMaterials.append(mat)
+
     def addMaterial(self, materialReference):
         self.materials.append(materialReference)
         self.addedMaterials.append(materialReference)
@@ -37,3 +42,21 @@ class World:
                 return matRef
 
         return None
+
+
+class Resource:
+    
+    def __init__(self):
+        self.references = 0
+
+    def numReferences(self):
+        return self.references
+
+    def addReference(self):
+        self.references += 1
+
+    def removeReference(self):
+        self.references -= 1
+
+    def hasNoReferences(self):
+        return self.references == 0

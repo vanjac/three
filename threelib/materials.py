@@ -4,6 +4,7 @@ from threelib import files
 from array import array
 import struct
 import math
+from threelib.world import Resource
 
 # for texture scaling
 from PIL import Image
@@ -17,7 +18,6 @@ class Material:
     
     def __init__(self):
         self.texture = [ ]
-        self.isTransparent = False
         self.xLen = 0
         self.yLen = 0
 
@@ -29,9 +29,6 @@ class Material:
     def __setstate__(self, state):
         pass
     
-
-    def isTransparent(self):
-        return self.isTransparent
     
     # an array of chars, of size xLen * yLen * 4
     # ordered RGBA
@@ -78,13 +75,13 @@ class Material:
         print("Done loading image")
 
 
-class MaterialReference:
+class MaterialReference(Resource):
     
     def __init__(self, name, load=False):
+        super().__init__()
         self.name = name
         self.number = 0
         self.material = Material()
-        self.references = 0
         if load:
             self.load()
 
@@ -102,15 +99,4 @@ class MaterialReference:
 
     def load(self):
         self.material.load(self.name)
-
-    def numReferences(self):
-        return self.references
-
-    def addReference(self):
-        self.references += 1
-
-    def removeReference(self):
-        self.references -= 1
-
-    def hasNoReferences(self):
-        return self.references == 0
+    

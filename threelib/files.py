@@ -104,7 +104,9 @@ def saveMapState(path, state):
 def loadMapState(path):
     try:
         with path.open('rb') as f:
-            return pickle.load(f)
+            editorState = pickle.load(f)
+            editorState.onLoad()
+            return editorState
     except EOFError: # map is empty
         return None
 
