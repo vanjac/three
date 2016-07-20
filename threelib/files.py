@@ -61,11 +61,37 @@ def getMapNumber(number):
         print("File not found!")
         return None
 
+def getResourcePath(directoryPath, name):
+    try:
+        dirs = name.split('/')
+        parentDir = directoryPath
+        for d in dirs[:-1]:
+            parentDir = parentDir / d
+        parentDir = parentDir.resolve()
+        
+        name = dirs[-1]
+        for child in parentDir.iterdir():
+            cName = ""
+            cNames = child.name.split('.')
+            if len(cNames) == 1 or len(cNames) == 2:
+                cName = cNames[0]
+            else:
+                cName = cNames[0]
+                for n in cNames[1:-1]:
+                    cName += "." + n
+
+            if cName == name:
+                return child
+
+        return None
+    except (FileNotFoundError, OSError):
+        return None
+
 def getMaterialDir():
     return getGameDir() / "materials"
 
 def getMaterial(name):
-    return (getMaterialDir() / (name + ".bmp")).resolve()
+    return getResourcePath(getMaterialDir(), name)
 
 
 # path is a Path to the map file

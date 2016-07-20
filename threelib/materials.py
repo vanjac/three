@@ -50,11 +50,8 @@ class Material:
         return self.yLen
 
     def load(self, name):
-        # based on opengl-tutorial.org/beginners-tutorials/tutorial-5-a-textured-cube
-        materialPath = None
-        try:
-            materialPath = files.getMaterial(name)
-        except FileNotFoundError:
+        materialPath = files.getMaterial(name)
+        if materialPath == None:
             print("Material not found:", name)
             return
         
