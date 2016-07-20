@@ -64,14 +64,15 @@ class EditorObject:
     def getMesh(self):
         pass
 
-    # use OpenGL to draw the object. Draw it at the origin with no rotation (but
-    # with scaling) -- it is the editor's responsibility to position and rotate
+    # Draw the object with the GraphicsTools.
+    # Draw it at the origin with no rotation (but with scaling) -- it is the
+    # editor's responsibility to position and rotate
     # it.
-    def drawObject(self):
+    def drawObject(self, graphicsTools):
         pass
 
     # color is a tuple of (r, g, b). Draw with OpenGL.
-    def drawSelectHull(self, color):
+    def drawSelectHull(self, color, graphicsTools):
         pass
 
     # a dictionary mapping strings to strings

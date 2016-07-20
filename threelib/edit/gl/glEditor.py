@@ -9,6 +9,8 @@ from threelib.vectorMath import Rotate
 from threelib.edit.objects import *
 from threelib.edit.adjust import *
 
+from threelib.edit.gl.glGraphics import GLGraphicsTools
+
 import OpenGL
 OpenGL.ERROR_CHECKING = False
 from OpenGL.GL import *
@@ -38,6 +40,7 @@ class Editor(EditorActions):
     
     def __init__(self, editorMain, state=None):
         EditorActions.__init__(self, editorMain, state)
+        self.graphicsTools = GLGraphicsTools()
 
     def keyPressed(self, key, mouseX, mouseY):
         if key[0] == 27: # escape
@@ -518,7 +521,7 @@ class Editor(EditorActions):
             if select:
                 glEnable(GL_POLYGON_STIPPLE)
             
-            o.drawObject()
+            o.drawObject(self.graphicsTools)
             
             if select:
                 glDisable(GL_POLYGON_STIPPLE)
@@ -596,7 +599,7 @@ class Editor(EditorActions):
             for o in self.state.objects:
                 glPushMatrix()
                 self.transformObject(o)
-                o.drawSelectHull(self.objectIndexToColor(i))
+                o.drawSelectHull(self.objectIndexToColor(i), self.graphicsTools)
                 glPopMatrix()
                 i += 1
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
@@ -607,7 +610,7 @@ class Editor(EditorActions):
                 self.transformObject(o)
                 
                 # block selecting vertices through objects
-                o.drawSelectHull((0, 0, 0))
+                o.drawSelectHull((0, 0, 0), self.graphicsTools)
 
                 if o.getMesh != None:
                     glBegin(GL_POINTS)

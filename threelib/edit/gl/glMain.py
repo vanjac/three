@@ -1,6 +1,6 @@
 __author__ = "vantjac"
 
-import threelib.edit.editor
+import threelib.edit.gl.glEditor
 import time # for fps
 
 import pyautogui
@@ -233,7 +233,7 @@ class EditorMain:
         width = 1024
         height = 736
         
-        editor = threelib.edit.editor.Editor(EditorMain, state)
+        editor = threelib.edit.gl.glEditor.Editor(EditorMain, state)
         
         # pass arguments to init
         glutInit(sys.argv)

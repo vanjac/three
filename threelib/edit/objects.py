@@ -6,11 +6,6 @@ from threelib.edit.base import EditorObject
 from threelib.vectorMath import *
 from threelib.mesh import *
 
-import OpenGL
-OpenGL.ERROR_CHECKING = False
-from OpenGL.GL import *
-from OpenGL.GLU import *
-
 
 class PointObject(EditorObject):
     
@@ -48,16 +43,11 @@ class PointObject(EditorObject):
     def getMesh(self):
         return None
     
-    def drawObject(self):
-        self.drawSelectHull((1.0, 1.0, 1.0))
+    def drawObject(self, graphicsTools):
+        self.drawSelectHull((1.0, 1.0, 1.0), graphicsTools)
     
-    def drawSelectHull(self, color):
-        glColor(color[0], color[1], color[2])
-        glPointSize(10)
-        glBegin(GL_POINTS)
-        pos = self.position
-        glVertex(pos.y, pos.z, pos.x)
-        glEnd()
+    def drawSelectHull(self, color, graphicsTools):
+        graphicsTools.drawPoint(self.position, color, 10)
     
     def getProperties(self):
         return super().getProperties()
@@ -158,37 +148,11 @@ class MeshObject(EditorObject):
     def setMesh(self, mesh):
         self.mesh = mesh
     
-    def drawObject(self):
-        glColor(0.8, 0.8, 0.8)
-        for f in self.mesh.getFaces():
-            texture = False
-
-            mat = f.getMaterial()
-            if mat != None:
-                if len(mat.material.texture) != 0:
-                    texture = True
-                    glEnable(GL_TEXTURE_2D)
-                    glBindTexture(GL_TEXTURE_2D, mat.getNumber())
-            
-            glBegin(GL_POLYGON)
-            for v in f.getVertices():
-                pos = v.vertex.getPosition()
-                texPos = v.textureVertex
-                glTexCoord(texPos.x, texPos.y)
-                glVertex(pos.y, pos.z, pos.x)
-            glEnd()
-
-            if texture:
-                glDisable(GL_TEXTURE_2D)
+    def drawObject(self, graphicsTools):
+        graphicsTools.drawMesh(self.mesh)
     
-    def drawSelectHull(self, color):
-        glColor(color[0], color[1], color[2])
-        for f in self.mesh.getFaces():
-            glBegin(GL_POLYGON)
-            for v in f.getVertices():
-                pos = v.vertex.getPosition()
-                glVertex(pos.y, pos.z, pos.x)
-            glEnd()
+    def drawSelectHull(self, color, graphicsTools):
+        graphicsTools.drawMeshSelectHull(self.mesh, color)
     
     def getProperties(self):
         return super().getProperties()

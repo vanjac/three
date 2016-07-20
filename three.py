@@ -4,7 +4,7 @@ __name__ = "__main__"
 import sys
 from pathlib import Path
 from threelib import files
-from threelib.edit.editorMain import EditorMain
+from threelib.edit.gl.glMain import EditorMain
 
 THREE_VERSION = 0
 
