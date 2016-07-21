@@ -60,6 +60,15 @@ class GLEditorMain:
         windowHeight = height
         GLEditorMain.resetProjection()
 
+        # draw loading screen
+        glColor(1,1,1)
+        GLEditorMain.drawText("Loading...", GLUT_BITMAP_9_BY_15,
+                      windowWidth/2, windowHeight/2)
+        glFlush()
+        glFinish()
+        glutSwapBuffers()
+        # done drawing loading screen
+
         editor.init()
     
     # Called when window is resized
