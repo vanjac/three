@@ -18,6 +18,7 @@ If a window appears with green and blue lines and some text at the bottom, it wo
 
 ## Controls
 
+### General
 - `Esc` to cancel any operations
 - `` ` `` to save
 - Right click, then use the mouse and `WASDQE` keys to fly around. Use the mouse wheel to control fly speed.
@@ -33,11 +34,18 @@ If a window appears with green and blue lines and some text at the bottom, it wo
 - `s Enter` to enter reSize adjust mode, which changes the dimensions of the selected object(s). Before pressing Enter you can type any of the letters `nsewtb` (North South East West Top Bottom). With these you can choose to resize in just one direction along an axis.
 - `Shift-s Enter` to enter Scale adjust mode. You can use the same direction letters as in Resize.
 - `o` to adjust the Origins of selected objects in adjust mode.
+
+### Mesh Editing
 - With the two vertices of an edge selected, `d` to Divide the edge
 - With two vertices selected, `Shift-d` to merge the second with the first ("undivide")
 - With two non-edge vertices on the same face selected, `e` to divide that face with an Edge connecting them
 - With two vertices of an edge selected that divides two coplanar polygons, `Shift-e` to merge the polygons and remove the edge.
-- `h` to enter adjust mode to extrude the selected faces. If objects are selected, all faces will be extruded and the original object will be deleted afterwards ("hollow").
+- `h` to enter adjust mode to extrude the selected faces. If objects are selected, all faces will be extruded and the original object will be deleted afterwards ("Hollow").
+
+### Material
+- `Shift-p path/to/texture Enter` to choose the current material. The texture must be in the the `materials` subdirectory of the game directory. Even if you are on Windows you must use `/` as a path separator and match the case of the file name. Textures can sometimes take a while to transfer to OpenGL, during which the editor will be unresponsive.
+- `p` to "Paint" the current material on the selected faces or objects.
+- `Shift-p Enter` to reload the current material's texture. Everything with that material will be updated.
 
 ### Adjust Mode
 
