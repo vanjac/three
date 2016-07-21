@@ -684,10 +684,13 @@ class EditorActions:
         
             if foundMaterial != None:
                 self.state.setCurrentMaterial(foundMaterial)
+                self.state.world.updateMaterial(self.state.currentMaterial)
             else:
                 matRef = MaterialReference(name)
                 self.state.world.addMaterial(matRef)
                 self.state.setCurrentMaterial(matRef)
+        else:
+            self.state.world.updateMaterial(self.state.currentMaterial)
         
         self.state.currentMaterial.load()
 

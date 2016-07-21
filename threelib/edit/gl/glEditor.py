@@ -67,7 +67,7 @@ class GLEditor(EditorUI):
 
     def draw(self):
         for m in self.state.world.getAddedMaterials():
-            print("Sending", m.getName(), "to OpenGL")
+            print("Sending", m.getName(), "to OpenGL... ", end="")
 
             material = m.material
 
@@ -85,7 +85,19 @@ class GLEditor(EditorUI):
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, material.getXLen(), 
                          material.getYLen(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 
                          material.getTexture());
-            print("Done sending")
+            print("Done")
+
+        for m in self.state.world.getUpdatedMaterials():
+            print("Updating and sending", m.getName(), "to OpenGL... ", end="")
+
+            material = m.material
+            texName = m.getNumber()
+            
+            glBindTexture(GL_TEXTURE_2D, texName);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, material.getXLen(), 
+                         material.getYLen(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+                         material.getTexture());
+            print("Done")
         
         for m in self.state.world.getRemovedMaterials():
             texName = m.getNumber()

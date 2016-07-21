@@ -6,6 +6,7 @@ class World:
         self.materials = [ ] # list of MaterialReference's
         self.addedMaterials = [ ]
         self.removedMaterials = [ ]
+        self.updatedMaterials = [ ]
 
     def onLoad(self):
         for mat in self.materials:
@@ -25,12 +26,20 @@ class World:
             self.removedMaterials.append(material)
             print("Removing unused material", material.getName())
 
+    def updateMaterial(self, materialReference):
+        self.updatedMaterials.append(materialReference)
+
     # materials that have been added or removed since last check
     
     def getAddedMaterials(self):
         added = self.addedMaterials
         self.addedMaterials = [ ]
         return added
+
+    def getUpdatedMaterials(self):
+        updated = self.updatedMaterials
+        self.updatedMaterials = [ ]
+        return updated
 
     def getRemovedMaterials(self):
         removed = self.removedMaterials

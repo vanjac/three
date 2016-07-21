@@ -52,7 +52,7 @@ class MeshFace:
         self.vertices = [ ]
         self.material = None
         self.textureShift = Vector(0, 0)
-        self.textureScale = Vector(0, 0)
+        self.textureScale = Vector(32, 32)
         self.textureRotate = 0
 
     def getVertices(self):
@@ -126,8 +126,13 @@ class MeshFace:
         i = 0
         for oldVertex in self.vertices:
             pos = oldVertex.vertex.getPosition()
-            textureVertex = pos.rotate(-normalRot) / 16.0
+            textureVertex = pos.rotate(-normalRot)
             textureVertex = Vector(textureVertex.y, textureVertex.z)
+
+            textureVertex = textureVertex.rotate2(self.textureRotate)
+            textureVertex += self.textureShift
+            textureVertex /= self.textureScale.setZ(1) # prevent divide z by 0
+
             newVertex = MeshFaceVertex(vertex = oldVertex.vertex,
                                        textureVertex = textureVertex)
             self.vertices[i] = newVertex
