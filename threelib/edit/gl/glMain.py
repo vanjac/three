@@ -42,7 +42,7 @@ lastFpsTime = time.time()
 fpsCount = 0
 fps = 0
 
-class EditorMain:
+class GLEditorMain:
     # General OpenGL initialization function.
     def initGL(width, height):
         global windowWidth, windowHeight
@@ -58,7 +58,7 @@ class EditorMain:
     
         windowWidth = width
         windowHeight = height
-        EditorMain.resetProjection()
+        GLEditorMain.resetProjection()
 
         editor.init()
     
@@ -72,7 +72,7 @@ class EditorMain:
         windowHeight = height
         # reset the current viewport and perspective transformation
         glViewport(0, 0, width, height)
-        EditorMain.resetProjection()
+        GLEditorMain.resetProjection()
 
     # should be called if any settings like aspect
     # ratio, fov, near/far clip planes, have changed.
@@ -233,7 +233,7 @@ class EditorMain:
         width = 1024
         height = 736
         
-        editor = threelib.edit.gl.glEditor.Editor(EditorMain, state)
+        editor = threelib.edit.gl.glEditor.GLEditor(GLEditorMain, state)
         
         # pass arguments to init
         glutInit(sys.argv)
@@ -256,20 +256,20 @@ class EditorMain:
         #glutFullScreen()
         
         # Register important functions
-        glutDisplayFunc(EditorMain.drawGL)
-        glutIdleFunc(EditorMain.drawGL)
-        glutReshapeFunc(EditorMain.resizeGL)
+        glutDisplayFunc(GLEditorMain.drawGL)
+        glutIdleFunc(GLEditorMain.drawGL)
+        glutReshapeFunc(GLEditorMain.resizeGL)
         glutKeyboardFunc(editor.keyPressed)
         glutKeyboardUpFunc(editor.keyReleased)
-        glutMouseFunc(EditorMain.mouseEvent)
-        glutPassiveMotionFunc(EditorMain.mouseMovement)
+        glutMouseFunc(GLEditorMain.mouseEvent)
+        glutPassiveMotionFunc(GLEditorMain.mouseMovement)
         
         # Initialize our window. 
-        EditorMain.initGL(width, height)
+        GLEditorMain.initGL(width, height)
         
         # Start Event Processing Engine	
         glutMainLoop()
         
 if __name__=="__main__":
-    EditorMain.main()
+    GLEditorMain.main()
 

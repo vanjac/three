@@ -23,7 +23,6 @@ class EditorActions:
         else:
             self.state = state
         self.editorMain = editorMain
-        self.currentCommand = ""
         self.movingCamera = False
         self.lookSpeed = .005
         self.flySpeed = 2.0
@@ -44,7 +43,6 @@ class EditorActions:
     
 
     def escape(self):
-        self.currentCommand = ""
         self.movingCamera = False
         self.fly = Vector(0, 0, 0)
         self.editorMain.unlockMouse()

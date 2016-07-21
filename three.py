@@ -4,7 +4,7 @@ __name__ = "__main__"
 import sys
 from pathlib import Path
 from threelib import files
-from threelib.edit.gl.glMain import EditorMain
+from threelib.edit.gl.glMain import GLEditorMain
 
 THREE_VERSION = 0
 
@@ -58,7 +58,7 @@ except ValueError: # mapName is not a number
 print("Map path: " + str(files.getCurrentMap()))
 if editorMode:
     print("Edit mode")
-    EditorMain.main(files.loadMapState(files.getCurrentMap()))
+    GLEditorMain.main(files.loadMapState(files.getCurrentMap()))
 else:
     print("Run mode")
     print("Not supported yet")
