@@ -251,7 +251,8 @@ class GLEditor(EditorUI):
         # status bar
         glColor(1,1,1)
         glPopMatrix()
-        self.editorMain.drawText(self.getStatusBar(), GLUT_BITMAP_9_BY_15, 4, 4)
+        self.editorMain.drawText(self.getStatusBar(),
+                                 GLUT_BITMAP_9_BY_15, 4, 4)
         self.editorMain.drawText(str(self.editorMain.getFps()) + " FPS",
                                  GLUT_BITMAP_9_BY_15,
                                  4, self.editorMain.windowHeight() - 19) # 4+15

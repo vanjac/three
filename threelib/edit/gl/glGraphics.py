@@ -47,3 +47,4 @@ class GLGraphicsTools(GraphicsTools):
                 pos = v.vertex.getPosition()
                 glVertex(pos.y, pos.z, pos.x)
             glEnd()
+

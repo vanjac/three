@@ -1,5 +1,6 @@
 __author__ = "vantjac"
 
+from threelib.edit.ui.editorMain import EditorMain
 import threelib.edit.gl.glEditor
 import time # for fps
 
@@ -42,7 +43,63 @@ lastFpsTime = time.time()
 fpsCount = 0
 fps = 0
 
-class GLEditorMain:
+class GLEditorMain(EditorMain):
+
+    def getFps():
+        global fps
+        return fps
+
+    def windowWidth():
+        global windowWidth
+        return windowWidth
+
+    def windowHeight():
+        global windowHeight
+        return windowHeight
+
+    def getAspect():
+        global aspect
+        return aspect
+
+    def getFOV():
+        global fov
+        return fov
+
+    def buttonPressed(button=0):
+        return mouseButtonPressed[button]
+
+    def shiftPressed():
+        return glutGetModifiers(GLUT_ACTIVE_SHIFT) != 0
+
+    def ctrlPressed():
+        return glutGetModifiers(GLUT_ACTIVE_CTRL) != 0
+
+    def altPressed():
+        return glutGetModifiers(GLUT_ACTIVE_ALT) != 0
+
+    def mouseX():
+        global pmouseX
+        return pmouseX
+
+    def mouseY():
+        global pmouseY
+        return pmouseY
+
+    def lockMouse():
+        global mouseLocked, pmouseX, pmouseY, mouseLockX, mouseLockY
+        mouseLocked = True
+        glutSetCursor(GLUT_CURSOR_NONE)
+        mouseLockX = pmouseX
+        mouseLockY = pmouseY
+
+    def unlockMouse():
+        global mouseLocked, pmouseX, pmouseY, mouseLockX, mouseLockY
+        if mouseLocked:
+            pyautogui.moveRel(mouseLockX-pmouseX, mouseLockY - pmouseY)
+        mouseLocked = False
+        glutSetCursor(GLUT_CURSOR_INHERIT)
+
+
     # General OpenGL initialization function.
     def initGL(width, height):
         global windowWidth, windowHeight
@@ -63,7 +120,7 @@ class GLEditorMain:
         # draw loading screen
         glColor(1,1,1)
         GLEditorMain.drawText("Loading...", GLUT_BITMAP_9_BY_15,
-                      windowWidth/2, windowHeight/2)
+                              windowWidth/2, windowHeight/2)
         glFlush()
         glFinish()
         glutSwapBuffers()
@@ -117,38 +174,6 @@ class GLEditorMain:
         #  double buffered - swap the buffers to display what just got drawn. 
         glutSwapBuffers()
 
-    def getFps():
-        global fps
-        return fps
-
-    def getAspect():
-        global aspect
-        return aspect
-
-    def getFOV():
-        global fov
-        return fov
-
-    def drawText(text, font, x, y):
-        global windowWidth, windowHeight
-        depthEnabled = glIsEnabled(GL_DEPTH_TEST)
-        glDisable(GL_DEPTH_TEST)
-        
-        glMatrixMode(GL_PROJECTION)
-        glPushMatrix()
-        glLoadIdentity()
-        gluOrtho2D(0.0, windowWidth, 0.0, windowHeight)
-
-        glRasterPos(x,y)
-        for c in text :
-            glutBitmapCharacter(font, ctypes.c_int(ord(c)))
-        
-        if depthEnabled:
-            glEnable(GL_DEPTH_TEST)
-
-        glPopMatrix()
-        glMatrixMode(GL_MODELVIEW)
-
     # info passed as tuple: (button, eventType, mouseX, mouseY)
     # button: left=0, middle=1, right=2, 
     #   scroll-up=3, scroll-down=4, scroll-left=5, scroll-right=6
@@ -162,49 +187,6 @@ class GLEditorMain:
             editor.mousePressed(button, args[2], args[3])
         else:
             editor.mouseReleased(button, args[2], args[3])
-
-    def buttonPressed(button=0):
-        return mouseButtonPressed[button]
-
-    def shiftPressed():
-        return glutGetModifiers(GLUT_ACTIVE_SHIFT) != 0
-
-    def ctrlPressed():
-        return glutGetModifiers(GLUT_ACTIVE_CTRL) != 0
-
-    def altPressed():
-        return glutGetModifiers(GLUT_ACTIVE_ALT) != 0
-
-    def mouseX():
-        global pmouseX
-        return pmouseX
-
-    def mouseY():
-        global pmouseY
-        return pmouseY
-
-    def lockMouse():
-        global mouseLocked, pmouseX, pmouseY, mouseLockX, mouseLockY
-        mouseLocked = True
-        glutSetCursor(GLUT_CURSOR_NONE)
-        mouseLockX = pmouseX
-        mouseLockY = pmouseY
-
-    def unlockMouse():
-        global mouseLocked, pmouseX, pmouseY, mouseLockX, mouseLockY
-        if mouseLocked:
-            pyautogui.moveRel(mouseLockX-pmouseX, mouseLockY - pmouseY)
-        mouseLocked = False
-        glutSetCursor(GLUT_CURSOR_INHERIT)
-        
-
-    def windowWidth():
-        global windowWidth
-        return windowWidth
-
-    def windowHeight():
-        global windowHeight
-        return windowHeight
 
     def mouseMovement(mouseX, mouseY):
         global editor, pmouseX, pmouseY, mouseLocked, mouseLockMargin
@@ -234,6 +216,26 @@ class GLEditorMain:
                 framesSinceMouseLockMove = 0
         pmouseX = mouseX
         pmouseY = mouseY
+
+    def drawText(text, font, x, y):
+        global windowWidth, windowHeight
+        depthEnabled = glIsEnabled(GL_DEPTH_TEST)
+        glDisable(GL_DEPTH_TEST)
+        
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        gluOrtho2D(0.0, windowWidth, 0.0, windowHeight)
+
+        glRasterPos(x,y)
+        for c in text :
+            glutBitmapCharacter(font, ctypes.c_int(ord(c)))
+        
+        if depthEnabled:
+            glEnable(GL_DEPTH_TEST)
+
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
 
     # pass in an EditorState to initialize the Editor with that state
     def main(state=None):
