@@ -9,6 +9,7 @@ class World:
 
     def onLoad(self):
         for mat in self.materials:
+            mat.material.__init__()
             mat.load()
             self.addedMaterials.append(mat)
 
