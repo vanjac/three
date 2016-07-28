@@ -1,5 +1,7 @@
 __author__ = "vantjac"
 
+import math
+
 from threelib.edit.state import *
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
@@ -623,14 +625,72 @@ class EditorActions:
             if len(self.state.selectedObjects) == 0:
                 print("Objects must be selected")
             else:
-                self.setupArrowAction(self.meshClip)
+                self.setupArrowAction(self.clipSelected)
         else:
             print("Objects must be selected")
 
-    def meshClip(self):
+    def clipSelected(self):
         print("Clip!")
+        planePoint = self.arrowStart
+        planeNormal = (self.arrowEnd - planePoint).normalize()
+        
+        for o in self.state.selectedObjects:
+            if o.getMesh() != None:
+                # translate everything relative to mesh
+                relativePoint = planePoint - o.getPosition()
+                # (a, b, c, d)
+                # ax + by + cz + d = 0
+                planeConstants = (planeNormal.x, planeNormal.y, planeNormal.z,
+                                  -planePoint.dot(planeNormal))
+                self.clipMesh(o.getMesh(), planeConstants, relativePoint,
+                              planeNormal)
 
-                
+    def clipMesh(self, mesh, planeConstants, planePoint, planeNormal):
+        INSIDE = 0
+        ON_PLANE = 1 # counts as inside
+        OUTSIDE = 2
+        
+        newFaceEdges = [ ]
+
+        for face in mesh.getFaces():
+            vertexLocations = [ ] # INSIDE, OUTSIDE, or ON_PLANE
+            for faceVertex in face.getVertices():
+                vector = faceVertex.vertex.getPosition()
+                if self.vectorIsClose(vector, planePoint):
+                    vertexLocations.append(ON_PLANE)
+                    continue
+                angle = (vector - planePoint).normalize()\
+                                             .angleBetween(planeNormal)
+                if self.isclose(angle, math.pi / 2): # 90 degrees
+                    vertexLocations.append(ON_PLANE)
+                elif angle < math.pi / 2:
+                    vertexLocations.append(INSIDE)
+                else:
+                    vertexLocations.append(OUTSIDE)
+            print(vertexLocations)
+
+    # Based on https://www.python.org/dev/peps/pep-0485/
+    # Taken from https://github.com/PythonCHB/close_pep/blob/master/isclose.py
+    # Python 3.5 has this, but 3.4 doesn't.
+    # I changed the default value of abs_tol, and also removed some checking for
+    # special cases that will never appear here.
+    def isclose(self, a, b, rel_tol=1e-9, abs_tol=1e-9):
+        if a == b:
+            return True
+        if math.isinf(abs(a)) or math.isinf(abs(b)):
+            return False
+        
+        diff = abs(b - a)
+        return (((diff <= abs(rel_tol * b)) or
+                 (diff <= abs(rel_tol * a))) or
+                (diff <= abs_tol))
+
+    def vectorIsClose(self, a, b):
+        return self.isclose(a.x, b.x) \
+            and self.isclose(a.y, b.y) \
+            and self.isclose(a.z, b.z)
+        
+
     # ADJUST MODE ACTIONS:
 
     def selectAdjustAxis(self, axis):
