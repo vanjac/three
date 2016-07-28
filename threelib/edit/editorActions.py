@@ -28,6 +28,11 @@ class EditorActions:
         self.flySpeed = 2.0
         self.fly = Vector(0, 0, 0) # each component can be 0, 1, or -1
 
+        # clip arrow
+        self.arrowShown = False
+        self.arrowStart = Vector(0, 0, 0)
+        self.arrowEnd = Vector(0, 0, 0)
+
         # adjust mode
         self.inAdjustMode = False
         self.adjustor = None
@@ -388,6 +393,22 @@ class EditorActions:
         self.adjustMouseMovement = (0, 0)
         self.editorMain.lockMouse()
 
+    def setupArrowAction(self, action):
+        self.arrowStart = self.state.createPosition
+        self.arrowEnd = self.arrowStart
+        self.arrowShown = True
+        self.setupAdjustMode(ArrowStartAdjustor(self))
+
+        def arrowStartSet():
+            self.arrowEnd = self.arrowStart
+            self.setupAdjustMode(ArrowEndAdjustor(self))
+            
+            def arrowEndSet():
+                self.arrowShown = False
+                action()
+            self.adjustCompleteAction = arrowEndSet
+        self.adjustCompleteAction = arrowStartSet
+
     def selectAtCursor(self, multiple=False):
         self.selectAtCursorOnDraw = True
         self.selectMultiple = multiple
@@ -595,6 +616,20 @@ class EditorActions:
             faces.remove(face)
 
         return faces
+
+
+    def clip(self):
+        if self.state.selectMode == EditorState.SELECT_OBJECTS:
+            if len(self.state.selectedObjects) == 0:
+                print("Objects must be selected")
+            else:
+                self.setupArrowAction(self.meshClip)
+        else:
+            print("Objects must be selected")
+
+    def meshClip(self):
+        print("Clip!")
+
                 
     # ADJUST MODE ACTIONS:
 
@@ -669,11 +704,15 @@ class EditorActions:
         print("Complete adjust")
         self.inAdjustMode = False
         self.editorMain.unlockMouse()
+        adjustor = self.adjustor
         if self.adjustCompleteAction != None:
-            self.adjustCompleteAction()
+            action = self.adjustCompleteAction
             self.adjustCompleteAction = None
-        self.adjustor.complete()
-        self.adjustor = None
+            action()
+        adjustor.complete()
+        # prevent issues if complete action involves a new adjust mode:
+        if adjustor == self.adjustor:
+            self.adjustor = None
 
 
     # MATERIALS:

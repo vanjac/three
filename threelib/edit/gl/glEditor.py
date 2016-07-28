@@ -189,6 +189,22 @@ class GLEditor(EditorUI):
         glVertex(0.0, 128.0, 0.0)
         
         glEnd()
+
+        # draw arrow
+        if self.arrowShown:
+            startPos = self.arrowStart
+            endPos = self.arrowEnd
+            glColor(1.0, 1.0, 1.0)
+            glPointSize(12)
+
+            glBegin(GL_POINTS)
+            glVertex(startPos.y, startPos.z, startPos.x)
+            glEnd()
+            
+            glBegin(GL_LINES)
+            glVertex(startPos.y, startPos.z, startPos.x)
+            glVertex(endPos.y, endPos.z, endPos.x)
+            glEnd()
         
         for o in self.state.objects:
             glPushMatrix()

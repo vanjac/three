@@ -180,6 +180,10 @@ class EditorUI(EditorActions):
             self.extrude()
             return True
 
+        if c[0] == 'k':
+            self.clip()
+            return True
+
         if c[0] == 'P':
             if c[len(c) - 1] == '\r':
                 self.setCurrentMaterial( c[1:-1] )

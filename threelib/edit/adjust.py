@@ -501,3 +501,45 @@ class MultiExtrudeAdjustor(Adjustor):
 
     def getDescription(self):
         return "Extrude faces"
+
+
+class ArrowStartAdjustor(Adjustor):
+
+    def __init__(self, editorActions):
+        self.editorActions = editorActions
+
+    def getAxes(self):
+        return self.editorActions.arrowStart.getTuple()
+
+    def setAxes(self, values):
+        self.editorActions.arrowStart = Vector.fromTuple(values)
+        self.editorActions.arrowEnd = self.editorActions.arrowStart
+
+    def cancel(self):
+        self.editorActions.arrowShown = False
+
+    def gridType(self):
+        return Adjustor.TRANSLATE
+
+    def getDescription(self):
+        return "Arrow start"
+
+class ArrowEndAdjustor(Adjustor):
+
+    def __init__(self, editorActions):
+        self.editorActions = editorActions
+
+    def getAxes(self):
+        return self.editorActions.arrowEnd.getTuple()
+
+    def setAxes(self, values):
+        self.editorActions.arrowEnd = Vector.fromTuple(values)
+
+    def cancel(self):
+        self.editorActions.arrowShown = False
+
+    def gridType(self):
+        return Adjustor.TRANSLATE
+
+    def getDescription(self):
+        return "Arrow end"
