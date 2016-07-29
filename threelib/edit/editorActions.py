@@ -407,6 +407,7 @@ class EditorActions:
             
             def arrowEndSet():
                 self.arrowShown = False
+                self.state.createPosition = self.arrowStart
                 action()
             self.adjustCompleteAction = arrowEndSet
         self.adjustCompleteAction = arrowStartSet
@@ -632,7 +633,8 @@ class EditorActions:
     def clipSelected(self):
         print("Clip!")
         planePoint = self.arrowStart
-        planeNormal = (self.arrowEnd - planePoint).normalize()
+        # arrow points in direction of half to remove
+        planeNormal = (planePoint - self.arrowEnd).normalize()
         
         for o in self.state.selectedObjects:
             if o.getMesh() != None:
@@ -650,24 +652,73 @@ class EditorActions:
         ON_PLANE = 1 # counts as inside
         OUTSIDE = 2
         
-        newFaceEdges = [ ]
+        newFaceEdges = [ ] # pairs of vectors
+        facesToRemove = [ ]
 
         for face in mesh.getFaces():
             vertexLocations = [ ] # INSIDE, OUTSIDE, or ON_PLANE
+            hasInside = False
+            hasOutside = False
+            hasOnPlane = False
             for faceVertex in face.getVertices():
                 vector = faceVertex.vertex.getPosition()
                 if self.vectorIsClose(vector, planePoint):
                     vertexLocations.append(ON_PLANE)
-                    continue
+                    hasOnPlane = True
+                    continue # to next vertex
                 angle = (vector - planePoint).normalize()\
                                              .angleBetween(planeNormal)
                 if self.isclose(angle, math.pi / 2): # 90 degrees
                     vertexLocations.append(ON_PLANE)
+                    hasOnPlane = True
                 elif angle < math.pi / 2:
                     vertexLocations.append(INSIDE)
+                    hasInside = True
                 else:
                     vertexLocations.append(OUTSIDE)
+                    hasOutside = True
             print(vertexLocations)
+
+            if (not hasInside) and (not hasOutside):
+                print("Mesh face and clip plane are coplanar!"
+                      "Skipping this mesh.")
+                # TODO if some faces have already been clipped they will not be
+                # restored
+                return
+            if hasOnPlane:
+                # search for edges on the plane and add them to the list
+                for i in range(0, len(vertexLocations)):
+                    # -1 is a valid index
+                    if vertexLocations[i] == ON_PLANE and \
+                       vertexLocations[i-1] == ON_PLANE:
+                        edge = (face.getVertices()[i].vertex.getPosition(),
+                                face.getVertices()[i-1].vertex.getPosition())
+                        self.addUniqueEdge(edge, newFaceEdges)
+            if not hasInside:
+                print("Remove face")
+                facesToRemove.append(face) # face is entirely outside plane
+                continue # to next face
+            
+            if hasInside and hasOutside:
+                # partly inside plane and partly outside; clip the face
+                print("Clip face")
+        
+        for face in facesToRemove:
+            mesh.removeFace(face)
+            
+
+    # add the edge to the list only if it hasn't already been added
+    # check for reverse order of vertices
+    def addUniqueEdge(self, edge, edgeList):
+        for existingEdge in edgeList:
+            if self.vectorIsClose(existingEdge[0], edge[0]) and \
+               self.vectorIsClose(existingEdge[1], edge[1]):
+                return
+            if self.vectorIsClose(existingEdge[0], edge[1]) and \
+               self.vectorIsClose(existingEdge[1], edge[0]):
+                return
+        print("Adding edge")
+        edgeList.append(edge)
 
     # Based on https://www.python.org/dev/peps/pep-0485/
     # Taken from https://github.com/PythonCHB/close_pep/blob/master/isclose.py
