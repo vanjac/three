@@ -161,8 +161,12 @@ class Vector:
         return (self - v).magnitude()
 
     def angleBetween(self, v):
-        return fixRotation(
-            math.acos( self.dot(v) / (self.magnitude() * v.magnitude()) ) )
+        try:
+            return fixRotation(
+                math.acos( self.dot(v) / (self.magnitude() * v.magnitude()) ) )
+        except ValueError:
+            # vectors are in opposite directions
+            return math.pi
     
     def direction2(self):
         n = math.atan2(self.y, self.x)

@@ -161,6 +161,9 @@ class MeshFace:
         else:
             return None
 
+    def reverse(self):
+        self.vertices.reverse()
+
 
 class Mesh:
     
@@ -215,7 +218,11 @@ class Mesh:
     def getFaces(self):
         return self.faces
 
-    def addFace(self, face=MeshFace()):
+    def addFace(self, face=None):
+        if face == None:
+            # can't be used as default value
+            # the same face object would be used each tiem
+            face = MeshFace()
         self.faces.append(face)
         for v in face.getVertices():
             v.vertex.addReference(face)

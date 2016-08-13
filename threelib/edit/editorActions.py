@@ -669,7 +669,7 @@ class EditorActions:
                 if self.isclose(angle, math.pi / 2): # 90 degrees
                     vertexLocations.append(ON_PLANE)
                     hasOnPlane = True
-                elif angle < math.pi / 2:
+                elif angle < math.pi / 2 or angle > math.pi * 3 / 2:
                     vertexLocations.append(INSIDE)
                     hasInside = True
                 else:
@@ -693,13 +693,11 @@ class EditorActions:
                                 face.getVertices()[i-1].vertex.getPosition())
                         self.addUniqueEdge(edge, newFaceEdges)
             if not hasInside:
-                print("Remove face")
                 facesToRemove.append(face) # face is entirely outside plane
                 continue # to next face
             
             if hasInside and hasOutside:
                 # partly inside plane and partly outside; clip the face
-                print("Clip face")
 
                 # rotate/translate both the face and clip plane so the face is
                 # at x = 0
@@ -774,12 +772,65 @@ class EditorActions:
                     # undo any rotations
                     intersectionPoint = intersectionPoint.inverseRotate(
                         faceNormalRotate) + origin
-                    print(edge, intersectionPoint)
                     newVertices[i].setPosition(intersectionPoint)
                     i += 1
 
+                edge = ( newVertices[0].getPosition(), 
+                         newVertices[1].getPosition() )
+                self.addUniqueEdge(edge, newFaceEdges)
+
+                verticesToRemove = [ ]
+                i = 0
+                for vertex in face.getVertices():
+                    if self.vectorIsClose(vertex.vertex.getPosition(),
+                            face.getVertices()[i - 1].vertex.getPosition()):
+                        verticesToRemove.append(vertex)
+                    i += 1
+                for v in verticesToRemove:
+                    face.removeVertex(v)
+            # end if hasInside and hasOutside
+        # end for face in mesh.getFaces()
+
         for face in facesToRemove:
             mesh.removeFace(face)
+
+        # construct new faces from all of the edges that have been created
+        print("Construct faces from", len(newFaceEdges), "edges")
+        while not len(newFaceEdges) == 0:
+            newFace = mesh.addFace()
+            firstVertex = mesh.addVertex(MeshVertex(newFaceEdges[0][0]))
+            newFace.addVertex(firstVertex)
+            prevVertex = MeshVertex(newFaceEdges[0][1])
+            del newFaceEdges[0]
+            
+            while not self.vectorIsClose(firstVertex.getPosition(),
+                                         prevVertex.getPosition()):
+                mesh.addVertex(prevVertex)
+                newFace.addVertex(prevVertex)
+                foundEdge = None
+                for edge in newFaceEdges:
+                    if self.vectorIsClose(edge[0], prevVertex.getPosition()):
+                        prevVertex = MeshVertex(edge[1])
+                        foundEdge = edge
+                        break
+                    elif self.vectorIsClose(edge[1], prevVertex.getPosition()):
+                        prevVertex = MeshVertex(edge[0])
+                        foundEdge = edge
+                        break
+                if foundEdge == None:
+                    print("Cannot complete face!")
+                    break
+                else:
+                    newFaceEdges.remove(foundEdge)
+
+            if len(newFace.getVertices()) < 3:
+                print("Invalid face!")
+                mesh.removeFace(newFace)
+            else:
+                print("New face with", len(newFace.getVertices()), "vertices")
+                angle = newFace.getNormal().angleBetween(planeNormal)
+                if angle < math.pi / 2 or angle > math.pi * 3 / 2:
+                    newFace.reverse()
 
     def rotatePlane(self, point, normal, rotate):
         # return plane constants
@@ -803,7 +854,6 @@ class EditorActions:
             if self.vectorIsClose(existingEdge[0], edge[1]) and \
                self.vectorIsClose(existingEdge[1], edge[0]):
                 return
-        print("Adding edge")
         edgeList.append(edge)
 
     # Based on https://www.python.org/dev/peps/pep-0485/
