@@ -78,6 +78,12 @@ class MeshFace:
         
         return self
 
+    def findFaceVertex(self, meshVertex):
+        for v in self.vertices:
+            if v.vertex == meshVertex:
+                return v
+        return None
+
     def removeVertex(self, meshFaceVertex):
         if meshFaceVertex in self.vertices:
             self.vertices.remove(meshFaceVertex)
@@ -185,7 +191,11 @@ class Mesh:
         return self.vertices
 
     # clears all vertex references. Do this before adding the vertex to a face
-    def addVertex(self, vertex=MeshVertex(Vector(0,0,0))):
+    def addVertex(self, vertex=None):
+        if vertex == None:
+            # can't be used as default value
+            # the same vertex object would be used each time
+            vertex = MeshVertex(Vector(0,0,0))
         vertex.clearReferences()
         self.vertices.append(vertex)
         return vertex
@@ -199,7 +209,8 @@ class Mesh:
                 faces.append(face)
             for face in faces:
                 self.removeFace(face)
-        self.vertices.remove(vertex)
+        if vertex in self.vertices:
+            self.vertices.remove(vertex)
 
     def getFaces(self):
         return self.faces

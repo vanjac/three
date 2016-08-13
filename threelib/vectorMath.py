@@ -143,6 +143,8 @@ class Vector:
     
     def setMagnitude(self, newMag):
         currentMag = self.magnitude()
+        if currentMag == 0:
+            return self
         return self * (newMag / currentMag)
     
     # only set magnitude if current magnitude is greater than max
@@ -183,6 +185,10 @@ class Vector:
         amount = amount.rotate2(direction)
         return self + amount
 
+    # convert the homogeneous coordinates of a 2d vector to a regular 2d vector 
+    def homogeneousTo2d(self):
+        return Vector(self.x / self.z, self.y / self.z)
+
     # get the direction of this 3d vector as a Rotation
     # the rotation will not have a "roll" or x-rotation component
     def rotation(self):
@@ -214,6 +220,26 @@ class Vector:
         zRot = zRot.rotate2(amount.z)
         v = Vector(zRot.x, zRot.y, v.z)
 
+        return v
+
+    def inverseRotate(self, amount):
+        v = self
+
+        # yaw (z)
+        zRot = Vector(v.x, v.y)
+        zRot = zRot.rotate2(amount.z)
+        v = Vector(zRot.x, zRot.y, v.z)
+
+        # pitch (y)
+        yRot = Vector(v.x, v.z)
+        yRot = yRot.rotate2(amount.y)
+        v = Vector(yRot.x, v.y, yRot.y)
+
+        # roll (x)
+        xRot = Vector(v.y, v.z)
+        xRot = xRot.rotate2(amount.x)
+        v = Vector(v.x, xRot.x, xRot.y)
+        
         return v
         
     def rotateAround(self, amount, center):

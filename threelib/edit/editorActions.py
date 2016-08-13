@@ -640,10 +640,8 @@ class EditorActions:
             if o.getMesh() != None:
                 # translate everything relative to mesh
                 relativePoint = planePoint - o.getPosition()
-                # (a, b, c, d)
-                # ax + by + cz + d = 0
-                planeConstants = (planeNormal.x, planeNormal.y, planeNormal.z,
-                                  -planePoint.dot(planeNormal))
+                planeConstants = self.calculatePlaneConstants(relativePoint,
+                                                              planeNormal)
                 self.clipMesh(o.getMesh(), planeConstants, relativePoint,
                               planeNormal)
 
@@ -677,13 +675,13 @@ class EditorActions:
                 else:
                     vertexLocations.append(OUTSIDE)
                     hasOutside = True
-            print(vertexLocations)
+            #print(vertexLocations)
 
             if (not hasInside) and (not hasOutside):
                 print("Mesh face and clip plane are coplanar!"
                       "Skipping this mesh.")
                 # TODO if some faces have already been clipped they will not be
-                # restored
+                # restored if an error like this occurs
                 return
             if hasOnPlane:
                 # search for edges on the plane and add them to the list
@@ -702,10 +700,98 @@ class EditorActions:
             if hasInside and hasOutside:
                 # partly inside plane and partly outside; clip the face
                 print("Clip face")
-        
+
+                # rotate/translate both the face and clip plane so the face is
+                # at x = 0
+                # vertex 0 will be the origin
+                origin = face.getVertices()[0].vertex.getPosition()
+                faceNormalRotate = face.getNormal().rotation()
+                
+                translatedPlanePoint = planePoint - origin
+                rotatedPlane = self.rotatePlane(translatedPlanePoint,
+                                                planeNormal, -faceNormalRotate)
+                planeLineConstants = Vector(rotatedPlane[1],
+                                            rotatedPlane[2],
+                                            rotatedPlane[3])
+
+                # remove vertices outside the clip plane
+                verticesToRemove = [ ]
+                vertexInsertationIndices = [ ]
+                edgesToClip = [ ]
+                i = 0
+                for location in vertexLocations:
+                    if location == OUTSIDE:
+                        verticesToRemove.append(face.getVertices()[i].vertex)
+                        if vertexLocations[i-1] != OUTSIDE:
+                            edge = (face.getVertices()[i].vertex.getPosition(),
+                                face.getVertices()[i-1].vertex.getPosition())
+                            edgesToClip.append(edge)
+                            vertexInsertationIndices.append(i)
+                    else:
+                        if vertexLocations[i-1] == OUTSIDE:
+                            edge = (face.getVertices()[i].vertex.getPosition(),
+                                face.getVertices()[i-1].vertex.getPosition())
+                            edgesToClip.append(edge)
+                            vertexInsertationIndices.append(i)
+                    i += 1
+                newVertices = [ ]
+                # reverse array to prevent lower indices from pushing up higher
+                # indices
+                for i in reversed(vertexInsertationIndices):
+                    newVertex = mesh.addVertex()
+                    face.addVertex(newVertex, index=i)
+                    newVertices.insert(0, newVertex)
+                for v in verticesToRemove:
+                    face.removeVertex(face.findFaceVertex(v))
+
+                if len(edgesToClip) != 2:
+                    print("WARNING: Not 2 edges to clip for this face!")
+                
+                # there is a line where the face and the clip plane intersect
+                # the face has already been oriented to x=0, so the intersection
+                # is easy to calculate: for plane ax+by+cz+d=0, the intersection
+                # with x=0 is by+cz+d=0.
+                # the edges that cross the clip plane will be clipped by
+                # creating new vertices where they intersect the line. the
+                # vertices will then be rotated back.
+                i = 0
+                for edge in edgesToClip:
+                    # vector 0 and vector 1 are the two points of the rotated
+                    # edge. after rotating the edges, x values for all will be
+                    # 0 (not always exact because of float inaccuracies)
+                    v0 = (edge[0] - origin).rotate(-faceNormalRotate)
+                    v1 = (edge[1] - origin).rotate(-faceNormalRotate)
+                    # equation for the line: ax+by+c=0
+                    # represented as a Vector of homogeneous coordinates
+                    edgeLineConstants = Vector( v0.z - v1.z,
+                                                v1.y - v0.y,
+                                                v0.y*v1.z - v1.y*v0.z )
+                    intersectionPoint = edgeLineConstants.cross(
+                        planeLineConstants).homogeneousTo2d()
+                    intersectionPoint = Vector(0,
+                                               intersectionPoint.x,
+                                               intersectionPoint.y)
+                    # undo any rotations
+                    intersectionPoint = intersectionPoint.inverseRotate(
+                        faceNormalRotate) + origin
+                    print(edge, intersectionPoint)
+                    newVertices[i].setPosition(intersectionPoint)
+                    i += 1
+
         for face in facesToRemove:
             mesh.removeFace(face)
-            
+
+    def rotatePlane(self, point, normal, rotate):
+        # return plane constants
+        point = point.rotate(rotate)
+        normal = normal.rotate(rotate)
+        return self.calculatePlaneConstants(point, normal)
+    
+    def calculatePlaneConstants(self, point, normal):
+        # (a, b, c, d)
+        # ax + by + cz + d = 0
+        return (normal.x, normal.y, normal.z,
+                -point.dot(normal))
 
     # add the edge to the list only if it hasn't already been added
     # check for reverse order of vertices
