@@ -83,7 +83,7 @@ class EditorUI(EditorActions):
             self.updateSelected()
             return True
         
-        if c[0] == '\b':
+        if c[0] == '\b' or c[0] == '\x7f': # backspace or delete
             self.deleteSelected()
             return True
 
