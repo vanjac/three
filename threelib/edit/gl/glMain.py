@@ -238,8 +238,9 @@ class GLEditorMain(EditorMain):
         glMatrixMode(GL_MODELVIEW)
 
     # pass in an EditorState to initialize the Editor with that state
-    def main(state=None):
+    def main(flags, state=None):
         global window, editor
+        print("OpenGL 1 Editor")
 
         width = 1024
         height = 736

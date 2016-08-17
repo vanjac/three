@@ -12,7 +12,7 @@ three requires at least Python 3.4, and these pip packages:
 
 To use three, you need a game directory to work with. `gameDirTemplate` has a sample game directory layout with some useful materials.
 
-three has 2 modes of operation: run mode and edit mode. Run mode doesn't do anything at the moment, and edit mode is unfinished. To start three in edit mode, type `python3 three.py path/to/game/dir mapName e`. `mapName` is relative to the `maps` folder in the game directory; if the map does not exist, it will be created. Instead of a map name you can use a number, which will look up map names in `maps.txt`. The `e` indicates edit mode; you can use `r` or omit the letter for run mode.
+To start three, type `python3 three.py path/to/game/dir mapName`. `mapName` is relative to the `maps` folder in the game directory; if the map does not exist, it will be created. By default, three starts in Run Mode, which doesn't currently exist. To start the editor instead, use the `-edit` flag. The `-run` flag explicitly specifies run mode.
 
 If a window appears with green and blue lines and some text at the bottom, it worked.
 
