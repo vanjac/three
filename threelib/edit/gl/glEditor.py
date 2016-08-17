@@ -139,61 +139,7 @@ class GLEditor(EditorUI):
         drawVertices = self.state.selectMode == EditorState.SELECT_VERTICES
         
         if self.selectAtCursorOnDraw:
-            self.selectAtCursorOnDraw = False
-            self.drawSelectHulls()
-            glFlush()
-            glFinish()
-            # gl y coordinates start at bottom of window
-            pixels = glReadPixels(self.editorMain.mouseX(),
-                                  self.editorMain.windowHeight() \
-                                  - self.editorMain.mouseY(),
-                                  1, 1, # width, height
-                                  GL_RGB, GL_UNSIGNED_BYTE)
-            color = (pixels[0], pixels[1], pixels[2])
-            if self.state.selectMode == EditorState.SELECT_OBJECTS:
-                index = self.colorToObjectIndex(color)
-                if not self.selectMultiple:
-                    self.state.deselectAll()
-                if index != -1:
-                    o = self.state.objects[index]
-                    if o in self.state.selectedObjects:
-                        self.state.deselect(o)
-                    else:
-                        self.state.select(o)
-            elif drawVertices:
-                objectIndex, vertexIndex = self.colorToSubObjectIndex(color)
-                if not self.selectMultiple:
-                    self.state.selectedVertices = [ ]
-                if objectIndex != -1:
-                    editorObject = self.state.objects[objectIndex]
-                    vertex = editorObject.getMesh().getVertices()[vertexIndex]
-                    alreadySelected = False
-                    for v in self.state.selectedVertices:
-                        if v.vertex == vertex:
-                            alreadySelected = True
-                            self.state.selectedVertices.remove(v)
-                            break
-                    if not alreadySelected:
-                        self.state.selectedVertices.append(
-                            VertexSelection(editorObject, vertex))
-            elif self.state.selectMode == EditorState.SELECT_FACES:
-                objectIndex, faceIndex = self.colorToSubObjectIndex(color)
-                if not self.selectMultiple:
-                    self.state.selectedFaces = [ ]
-                if objectIndex != -1:
-                    editorObject = self.state.objects[objectIndex]
-                    face = editorObject.getMesh().getFaces()[faceIndex]
-                    alreadySelected = False
-                    for f in self.state.selectedFaces:
-                        if f.face == face:
-                            alreadySelected = True
-                            self.state.selectedFaces.remove(f)
-                            break
-                    if not alreadySelected:
-                        self.state.selectedFaces.append(
-                            FaceSelection(editorObject, face))
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        # end select at cursor
+            self.cursorSelect()
 
         glPushMatrix()
         glScale(128.0, 128.0, 128.0)
@@ -300,6 +246,64 @@ class GLEditor(EditorUI):
         glRotate(math.degrees(rotate.y), -1, 0, 0)
         glRotate(math.degrees(rotate.z), 0, 1, 0)
         glCallList(self.drawMiniAxesList2)
+
+
+    def cursorSelect(self):
+        self.selectAtCursorOnDraw = False
+        self.drawSelectHulls()
+        glFlush()
+        glFinish()
+        # gl y coordinates start at bottom of window
+        pixels = glReadPixels(self.editorMain.mouseX(),
+                              self.editorMain.windowHeight() \
+                              - self.editorMain.mouseY(),
+                              1, 1, # width, height
+                              GL_RGB, GL_UNSIGNED_BYTE)
+        color = (pixels[0], pixels[1], pixels[2])
+        if self.state.selectMode == EditorState.SELECT_OBJECTS:
+            index = self.colorToObjectIndex(color)
+            if not self.selectMultiple:
+                self.state.deselectAll()
+            if index != -1:
+                o = self.state.objects[index]
+                if o in self.state.selectedObjects:
+                    self.state.deselect(o)
+                else:
+                    self.state.select(o)
+        elif self.state.selectMode == EditorState.SELECT_VERTICES:
+            objectIndex, vertexIndex = self.colorToSubObjectIndex(color)
+            if not self.selectMultiple:
+                self.state.selectedVertices = [ ]
+            if objectIndex != -1:
+                editorObject = self.state.objects[objectIndex]
+                vertex = editorObject.getMesh().getVertices()[vertexIndex]
+                alreadySelected = False
+                for v in self.state.selectedVertices:
+                    if v.vertex == vertex:
+                        alreadySelected = True
+                        self.state.selectedVertices.remove(v)
+                        break
+                if not alreadySelected:
+                    self.state.selectedVertices.append(
+                        VertexSelection(editorObject, vertex))
+        elif self.state.selectMode == EditorState.SELECT_FACES:
+            objectIndex, faceIndex = self.colorToSubObjectIndex(color)
+            if not self.selectMultiple:
+                self.state.selectedFaces = [ ]
+            if objectIndex != -1:
+                editorObject = self.state.objects[objectIndex]
+                face = editorObject.getMesh().getFaces()[faceIndex]
+                alreadySelected = False
+                for f in self.state.selectedFaces:
+                    if f.face == face:
+                        alreadySelected = True
+                        self.state.selectedFaces.remove(f)
+                        break
+                if not alreadySelected:
+                    self.state.selectedFaces.append(
+                        FaceSelection(editorObject, face))
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
 
     def drawSelectHulls(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
