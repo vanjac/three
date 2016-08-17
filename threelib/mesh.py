@@ -129,6 +129,12 @@ class MeshFace:
         self.textureScale = scale
         self.calculateTextureVertices()
 
+    # copy material, texture transform from another face
+    def copyMaterialInfo(self, face):
+        self.setMaterial(face.getMaterial())
+        self.setTextureTransform(face.textureShift, face.textureRotate,
+                                 face.textureScale)
+
     def calculateTextureVertices(self):
         normal = self.getNormal()
         if normal == None:
@@ -155,9 +161,13 @@ class MeshFace:
     def getMaterial(self):
         return self.material
 
-    # doesn't change references
+    # changes material references
     def setMaterial(self, material):
+        if self.material != None:
+            self.material.removeReference()
         self.material = material
+        if self.material != None:
+            self.material.addReference()
 
     def getNormal(self):
         if len(self.vertices) >= 3:
@@ -240,6 +250,11 @@ class Mesh:
     def removeFace(self, face):
         self.faces.remove(face)
         face.clearVertices()
+        face.setMaterial(None)
+
+    def removeMaterials(self):
+        for face in self.faces:
+            face.setMaterial(None)
 
     def cleanUp(self):
         self.combineDuplicateVertices()

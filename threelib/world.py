@@ -22,12 +22,24 @@ class World:
         material.removeReference()
         
         if material.hasNoReferences():
-            self.materials.remove(material)
-            self.removedMaterials.append(material)
+            self.removeMaterial(material)
             print("Removing unused material", material.getName())
+            
+    def removeMaterial(self, material):
+        self.materials.remove(material)
+        self.removedMaterials.append(material)
 
     def updateMaterial(self, materialReference):
         self.updatedMaterials.append(materialReference)
+
+    def removeUnusedMaterials(self):
+        materialsToRemove = [ ]
+        for material in self.materials:
+            if material.hasNoReferences():
+                materialsToRemove.append(material)
+        for material in materialsToRemove:
+            self.removeMaterial(material)
+            print("Removing unused material", material.getName())
 
     # materials that have been added or removed since last check
     

@@ -150,7 +150,10 @@ class EditorActions:
             for o in self.state.selectedObjects:
                 o.removeFromParent()
                 self.state.objects.remove(o)
+                if o.getMesh() != None:
+                    o.getMesh().removeMaterials()
             self.state.deselectAll()
+            self.state.world.removeUnusedMaterials()
 
     def duplicateSelected(self):
         if not self.state.selectMode == EditorState.SELECT_OBJECTS:
@@ -509,15 +512,17 @@ class EditorActions:
                         face1Vertices.append(face.getVertices()[i])
                     else:
                         face2Vertices.append(face.getVertices()[i])
-
-            mesh.removeFace(face)
-
+            
             newFace1 = MeshFace()
             for v in face1Vertices:
                 newFace1.addVertex(v.vertex, v.textureVertex)
             newFace2 = MeshFace()
             for v in face2Vertices:
                 newFace2.addVertex(v.vertex, v.textureVertex)
+
+            newFace1.copyMaterialInfo(face)
+            newFace2.copyMaterialInfo(face)
+            mesh.removeFace(face)
             
             mesh.addFace(newFace1)
             mesh.addFace(newFace2)
@@ -602,9 +607,12 @@ class EditorActions:
 
                 faceNum += 1
             
+            newFace.copyMaterialInfo(faces[0])
             mesh.removeFace(faces[0])
             mesh.removeFace(faces[1])
             mesh.addFace(newFace)
+            
+            self.state.world.removeUnusedMaterials()
                 
 
     # find faces that have both vertices
@@ -833,9 +841,11 @@ class EditorActions:
                 angle = newFace.getNormal().angleBetween(planeNormal)
                 if angle < math.pi / 2 or angle > math.pi * 3 / 2:
                     newFace.reverse()
+                newFace.copyMaterialInfo(mesh.getFaces()[0])
         # end while not len(newFaceEdges) == 0
 
         mesh.cleanUp()
+        self.state.world.removeUnusedMaterials()
 
     
     # add the edge to the list only if it hasn't already been added
@@ -972,12 +982,7 @@ class EditorActions:
             else:
                 for f in self.state.selectedFaces:
                     self.setFaceMaterial(f.face, self.state.currentMaterial)
+        self.state.world.removeUnusedMaterials()
 
     def setFaceMaterial(self, face, materialReference):
-        if face.getMaterial() != None:
-            self.state.world.removeMaterialReference(face.getMaterial())
-        
         face.setMaterial(materialReference)
-        
-        if face.getMaterial() != None:
-            face.getMaterial().addReference()
