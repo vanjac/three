@@ -865,7 +865,7 @@ class EditorActions:
                     self.state.setGridSize(gridType, size)
                     break
         else:
-            self.multiplyGrid(2)
+            self.multiplyGrid(2.0)
 
     def decreaseGrid(self):
         gridType = self.adjustor.gridType()
@@ -879,6 +879,9 @@ class EditorActions:
                 previous = size
         else:
             self.multiplyGrid(0.5)
+
+    def setGrid(self, value):
+        self.state.setGridSize(self.adjustor.gridType(), float(value))
 
     def multiplyGrid(self, factor):
         gridType = self.adjustor.gridType()

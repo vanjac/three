@@ -233,6 +233,15 @@ class EditorUI(EditorActions):
         if c[0] == 'r':
             self.toggleRelativeCoordinates()
             return True
+        if c[0] == 'g':
+            if len(c) == 1 or c[-1].isdigit() or c[-1] == '.':
+                return False
+            elif c[-1] == '\r' and len(c) > 2:
+                self.setGrid(float(c[1:-1]))
+                return True
+            else:
+                print("Invalid command", c)
+                return True
         if c[0].isdigit() or c[0] == '.' or c[0] == '-':
             if c[-1].isdigit() or c[-1] == '.' or c[-1] == '-':
                 return False
