@@ -41,6 +41,7 @@ If a window appears with green and blue lines and some text at the bottom, it wo
 - With two non-edge vertices on the same face selected, `e` to divide that face with an Edge connecting them
 - With two vertices of an edge selected that divides two coplanar polygons, `Shift-e` to merge the polygons and remove the edge.
 - `h` to enter adjust mode to extrude the selected faces. If objects are selected, all faces will be extruded and the original object will be deleted afterwards ("Hollow").
+- `k` with meshes selected to "clip" the selected meshes, using a plane to slice off part of them. Adjust mode is used to set a point on the clip plane, followed by the normal of the plane. The normal points in the direction of the half that is removed. 
 
 ### Material
 - `Shift-p path/to/texture Enter` to choose the current material. The texture must be in the the `materials` subdirectory of the game directory. Even if you are on Windows you must use `/` as a path separator and match the case of the file name. Textures can sometimes take a while to transfer to OpenGL, during which the editor will be unresponsive.
@@ -49,13 +50,14 @@ If a window appears with green and blue lines and some text at the bottom, it wo
 
 ### Adjust Mode
 
-Adjust mode is used to translate, rotate, and scale objects.
+Adjust mode is used to translate, rotate, and scale objects. It has a completely different set of keyboard commands.
 
 - Move the mouse to move, rotate, or scale objects
 - `x` `y` and `z` to select the x, y, and z axes for adjusting. The mouse only has two axes so you can only be adjusting two at a time. The last two letters you type are the axes you are adjusting - if you type the same letter twice, you only adjust one axis.
 - Left click or `Enter` to confirm and exit adjust mode
 - `Esc` to cancel
 - `[` and `]` to increase / decrease the grid size. The grid is different for translating, rotating, and scaling.
+- `g` followed by a number and `Enter` to manually set the grid size.
 - `s` to toggle Snap to grid. The grid is relative, so if you are already off the grid you will continue to be off the grid, but you will still move in grid size increments.
 - `a` to move to the nearest, Absolute grid point for the selected axes
 - `o` to jump to the Origin
