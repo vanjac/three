@@ -428,6 +428,8 @@ class ExtrudeAdjustor(Adjustor):
 
         newMesh.addFace(baseFace)
         newMesh.addFace(self.extrudedFace)
+        baseFace.copyMaterialInfo(face)
+        self.extrudedFace.copyMaterialInfo(face)
 
         numVertices = len(face.getVertices())
         for i in range(0, numVertices):
@@ -445,6 +447,7 @@ class ExtrudeAdjustor(Adjustor):
             sideFace.addVertex(v1).addVertex(v2).addVertex(v3).addVertex(v4)
                 
             newMesh.addFace(sideFace)
+            sideFace.copyMaterialInfo(face)
                 
             
     def getAxes(self):

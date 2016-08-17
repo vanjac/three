@@ -370,7 +370,10 @@ class EditorActions:
                     for o in self.state.selectedObjects:
                         o.removeFromParent()
                         self.state.objects.remove(o)
+                        if o.getMesh() != None:
+                            o.getMesh().removeMaterials()
                     self.state.deselectAll()
+                    self.state.world.removeUnusedMaterials()
                 self.adjustCompleteAction = deleteHollowedObjects
         
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
