@@ -65,6 +65,28 @@ class GLEditor(EditorUI):
                                               # and storing textures
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
 
+        # initialize display lists
+        self.drawAxesList = self.makeDisplayList()
+        self.drawAxes()
+        glEndList()
+
+        self.drawMiniAxesList1 = self.makeDisplayList()
+        self.drawMiniAxes1()
+        glEndList()
+
+        self.drawMiniAxesList2 = self.makeDisplayList()
+        self.drawMiniAxes2()
+        glEndList()
+
+    def makeDisplayList(self):
+        l = glGenLists(1)
+        if not glIsList(l):
+            print("Error making display list!")
+            return None
+        else:
+            glNewList(l, GL_COMPILE)
+            return l
+
     def draw(self):
         for m in self.state.world.getAddedMaterials():
             print("Sending", m.getName(), "to OpenGL... ", end="")
@@ -173,22 +195,10 @@ class GLEditor(EditorUI):
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         # end select at cursor
 
-        # draw axes
-        glBegin(GL_LINES)
-        # x axis
-        glColor(1.0, 0.0, 0.0)
-        glVertex(0.0, 0.0, 0.0)
-        glVertex(0.0, 0.0, 128.0)
-        # y axis
-        glColor(0.0, 1.0, 0.0)
-        glVertex(0.0, 0.0, 0.0)
-        glVertex(128.0, 0.0, 0.0)
-        # z axis
-        glColor(0.0, 0.0, 1.0)
-        glVertex(0.0, 0.0, 0.0)
-        glVertex(0.0, 128.0, 0.0)
-        
-        glEnd()
+        glPushMatrix()
+        glScale(128.0, 128.0, 128.0)
+        glCallList(self.drawAxesList)
+        glPopMatrix()
 
         # draw arrow
         if self.arrowShown:
@@ -285,7 +295,11 @@ class GLEditor(EditorUI):
                                  GLUT_BITMAP_9_BY_15,
                                  4, self.editorMain.windowHeight() - 19) # 4+15
         
-        self.drawMiniAxes(rotate)
+        glCallList(self.drawMiniAxesList1)
+        glRotate(math.degrees(rotate.x), 0, 0, 1)
+        glRotate(math.degrees(rotate.y), -1, 0, 0)
+        glRotate(math.degrees(rotate.z), 0, 1, 0)
+        glCallList(self.drawMiniAxesList2)
 
     def drawSelectHulls(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
@@ -340,7 +354,25 @@ class GLEditor(EditorUI):
                 glPopMatrix()
                 i += 1
 
-    def drawMiniAxes(self, cameraRotate):
+    # display list
+    def drawAxes(self):
+        glBegin(GL_LINES)
+        # x axis
+        glColor(1.0, 0.0, 0.0)
+        glVertex(0.0, 0.0, 0.0)
+        glVertex(0.0, 0.0, 1.0)
+        # y axis
+        glColor(0.0, 1.0, 0.0)
+        glVertex(0.0, 0.0, 0.0)
+        glVertex(1.0, 0.0, 0.0)
+        # z axis
+        glColor(0.0, 0.0, 1.0)
+        glVertex(0.0, 0.0, 0.0)
+        glVertex(0.0, 1.0, 0.0)
+        glEnd()
+
+    # display list
+    def drawMiniAxes1(self):
         glDisable(GL_DEPTH_TEST)
         glPushMatrix()
 
@@ -353,25 +385,12 @@ class GLEditor(EditorUI):
         glMatrixMode(GL_MODELVIEW)
         
         glTranslate(0, 0, -5)
-        glRotate(math.degrees(cameraRotate.x), 0, 0, 1)
-        glRotate(math.degrees(cameraRotate.y), -1, 0, 0)
-        glRotate(math.degrees(cameraRotate.z), 0, 1, 0)
+
+    # display list
+    def drawMiniAxes2(self):
+        glScale(0.5, 0.5, 0.5)
         
-        glBegin(GL_LINES)
-        # x axis
-        glColor(1.0, 0.0, 0.0)
-        glVertex(0.0, 0.0, 0.0)
-        glVertex(0.0, 0.0, 0.5)
-        # y axis
-        glColor(0.0, 1.0, 0.0)
-        glVertex(0.0, 0.0, 0.0)
-        glVertex(0.5, 0.0, 0.0)
-        # z axis
-        glColor(0.0, 0.0, 1.0)
-        glVertex(0.0, 0.0, 0.0)
-        glVertex(0.0, 0.5, 0.0)
-        
-        glEnd()
+        glCallList(self.drawAxesList)
 
         glMatrixMode(GL_PROJECTION)
         glPopMatrix()
