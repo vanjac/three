@@ -5,6 +5,7 @@ import math
 from threelib.edit.state import *
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
+import threelib.vectorMath as vectorMath
 from threelib.edit.objects import *
 from threelib.edit.adjust import *
 from threelib.materials import MaterialReference
@@ -145,7 +146,7 @@ class EditorActions:
         elif len(self.state.selectedObjects) == 0:
             print("Nothing selected")
         else:
-            print("Delete selected objects")
+            print("Delete object(s)")
             for o in self.state.selectedObjects:
                 o.removeFromParent()
                 self.state.objects.remove(o)
@@ -157,7 +158,7 @@ class EditorActions:
         elif len(self.state.selectedObjects) == 0:
             print("Nothing selected")
         else:
-            print("Duplicate selected objects")
+            print("Duplicate object(s)")
             for o in self.state.selectedObjects:
                 self.state.objects.append(o.clone())
 
@@ -640,12 +641,12 @@ class EditorActions:
             if o.getMesh() != None:
                 # translate everything relative to mesh
                 relativePoint = planePoint - o.getPosition()
-                planeConstants = self.calculatePlaneConstants(relativePoint,
-                                                              planeNormal)
-                self.clipMesh(o.getMesh(), planeConstants, relativePoint,
-                              planeNormal)
+                self.clipMesh(o.getMesh(), relativePoint, planeNormal)
 
-    def clipMesh(self, mesh, planeConstants, planePoint, planeNormal):
+    def clipMesh(self, mesh, planePoint, planeNormal):
+        if planeNormal.isCloseToZero():
+            print("Cannot clip: clip plane normal is zero!")
+
         INSIDE = 0
         ON_PLANE = 1 # counts as inside
         OUTSIDE = 2
@@ -660,13 +661,13 @@ class EditorActions:
             hasOnPlane = False
             for faceVertex in face.getVertices():
                 vector = faceVertex.vertex.getPosition()
-                if self.vectorIsClose(vector, planePoint):
+                if vector.isClose(planePoint):
                     vertexLocations.append(ON_PLANE)
                     hasOnPlane = True
                     continue # to next vertex
                 angle = (vector - planePoint).normalize()\
                                              .angleBetween(planeNormal)
-                if self.isclose(angle, math.pi / 2): # 90 degrees
+                if vectorMath.isclose(angle, math.pi / 2): # 90 degrees
                     vertexLocations.append(ON_PLANE)
                     hasOnPlane = True
                 elif angle < math.pi / 2 or angle > math.pi * 3 / 2:
@@ -678,8 +679,7 @@ class EditorActions:
             #print(vertexLocations)
 
             if (not hasInside) and (not hasOutside):
-                print("Mesh face and clip plane are coplanar!"
-                      "Skipping this mesh.")
+                print("Cannot clip: mesh face and clip plane are coplanar!")
                 # TODO if some faces have already been clipped they will not be
                 # restored if an error like this occurs
                 return
@@ -706,7 +706,7 @@ class EditorActions:
                 faceNormalRotate = face.getNormal().rotation()
                 
                 translatedPlanePoint = planePoint - origin
-                rotatedPlane = self.rotatePlane(translatedPlanePoint,
+                rotatedPlane = vectorMath.rotatePlane(translatedPlanePoint,
                                                 planeNormal, -faceNormalRotate)
                 planeLineConstants = Vector(rotatedPlane[1],
                                             rotatedPlane[2],
@@ -782,7 +782,7 @@ class EditorActions:
                 verticesToRemove = [ ]
                 i = 0
                 for vertex in face.getVertices():
-                    if self.vectorIsClose(vertex.vertex.getPosition(),
+                    if vertex.vertex.getPosition().isClose(
                             face.getVertices()[i - 1].vertex.getPosition()):
                         verticesToRemove.append(vertex)
                     i += 1
@@ -803,80 +803,53 @@ class EditorActions:
             prevVertex = MeshVertex(newFaceEdges[0][1])
             del newFaceEdges[0]
             
-            while not self.vectorIsClose(firstVertex.getPosition(),
-                                         prevVertex.getPosition()):
+            while not firstVertex.getPosition().isClose(
+                    prevVertex.getPosition()):
                 mesh.addVertex(prevVertex)
                 newFace.addVertex(prevVertex)
                 foundEdge = None
                 for edge in newFaceEdges:
-                    if self.vectorIsClose(edge[0], prevVertex.getPosition()):
+                    if edge[0].isClose(prevVertex.getPosition()):
                         prevVertex = MeshVertex(edge[1])
                         foundEdge = edge
                         break
-                    elif self.vectorIsClose(edge[1], prevVertex.getPosition()):
+                    elif edge[1].isClose(prevVertex.getPosition()):
                         prevVertex = MeshVertex(edge[0])
                         foundEdge = edge
                         break
                 if foundEdge == None:
-                    print("Cannot complete face!")
+                    print("WARNING: Cannot complete face!",
+                          len(newFace.getVertices()), "vertices so far.")
                     break
                 else:
                     newFaceEdges.remove(foundEdge)
 
             if len(newFace.getVertices()) < 3:
-                print("Invalid face!")
+                print("WARNING: Invalid face!")
                 mesh.removeFace(newFace)
             else:
-                print("New face with", len(newFace.getVertices()), "vertices")
+                print("Completed face with", len(newFace.getVertices()),
+                      "vertices")
                 angle = newFace.getNormal().angleBetween(planeNormal)
                 if angle < math.pi / 2 or angle > math.pi * 3 / 2:
                     newFace.reverse()
+        # end while not len(newFaceEdges) == 0
 
-    def rotatePlane(self, point, normal, rotate):
-        # return plane constants
-        point = point.rotate(rotate)
-        normal = normal.rotate(rotate)
-        return self.calculatePlaneConstants(point, normal)
+        mesh.cleanUp()
+
     
-    def calculatePlaneConstants(self, point, normal):
-        # (a, b, c, d)
-        # ax + by + cz + d = 0
-        return (normal.x, normal.y, normal.z,
-                -point.dot(normal))
-
     # add the edge to the list only if it hasn't already been added
     # check for reverse order of vertices
     def addUniqueEdge(self, edge, edgeList):
         for existingEdge in edgeList:
-            if self.vectorIsClose(existingEdge[0], edge[0]) and \
-               self.vectorIsClose(existingEdge[1], edge[1]):
+            if existingEdge[0].isClose(edge[0]) and \
+               existingEdge[1].isClose(edge[1]):
                 return
-            if self.vectorIsClose(existingEdge[0], edge[1]) and \
-               self.vectorIsClose(existingEdge[1], edge[0]):
+            if existingEdge[0].isClose(edge[1]) and \
+               existingEdge[1].isClose(edge[0]):
                 return
         edgeList.append(edge)
-
-    # Based on https://www.python.org/dev/peps/pep-0485/
-    # Taken from https://github.com/PythonCHB/close_pep/blob/master/isclose.py
-    # Python 3.5 has this, but 3.4 doesn't.
-    # I changed the default value of abs_tol, and also removed some checking for
-    # special cases that will never appear here.
-    def isclose(self, a, b, rel_tol=1e-9, abs_tol=1e-9):
-        if a == b:
-            return True
-        if math.isinf(abs(a)) or math.isinf(abs(b)):
-            return False
-        
-        diff = abs(b - a)
-        return (((diff <= abs(rel_tol * b)) or
-                 (diff <= abs(rel_tol * a))) or
-                (diff <= abs_tol))
-
-    def vectorIsClose(self, a, b):
-        return self.isclose(a.x, b.x) \
-            and self.isclose(a.y, b.y) \
-            and self.isclose(a.z, b.z)
-        
+    
 
     # ADJUST MODE ACTIONS:
 
@@ -948,7 +921,6 @@ class EditorActions:
         print(value)
 
     def completeAdjust(self):
-        print("Complete adjust")
         self.inAdjustMode = False
         self.editorMain.unlockMouse()
         adjustor = self.adjustor

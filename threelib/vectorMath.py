@@ -27,6 +27,33 @@ def numToStr(num):
     else:
         return str(num)
 
+# Based on https://www.python.org/dev/peps/pep-0485/
+# Taken from https://github.com/PythonCHB/close_pep/blob/master/isclose.py
+# Python 3.5 has this, but 3.4 doesn't.
+# I changed the default value of abs_tol, and also removed some checking for
+# special cases that will never appear here.
+def isclose(a, b, rel_tol=1e-9, abs_tol=1e-9):
+    if a == b:
+        return True
+    if math.isinf(abs(a)) or math.isinf(abs(b)):
+        return False
+    
+    diff = abs(b - a)
+    return (((diff <= abs(rel_tol * b)) or
+             (diff <= abs(rel_tol * a))) or
+            (diff <= abs_tol))
+
+def calculatePlaneConstants(point, normal):
+    # (a, b, c, d)
+    # ax + by + cz + d = 0
+    return (normal.x, normal.y, normal.z, -point.dot(normal))
+
+def rotatePlane(point, normal, rotate):
+    # return plane constants
+    point = point.rotate(rotate)
+    normal = normal.rotate(rotate)
+    return calculatePlaneConstants(point, normal)
+
 class Vector:
         
     # computes the normal unit-vector of a triangle, with vertices in
@@ -61,11 +88,19 @@ class Vector:
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def isClose(self, other):
+        return isclose(self.x, other.x) \
+            and isclose(self.y, other.y) \
+            and isclose(self.z, other.z)
+
     def getTuple(self):
         return (self.x, self.y, self.z)
     
     def isZero(self):
         return self.x == 0 and self.y == 0 and self.z == 0
+
+    def isCloseToZero(self):
+        return self.isClose(ZERO_V)
     
     def setX(self, newX):
         return Vector(newX, self.y, self.z)
@@ -162,12 +197,20 @@ class Vector:
 
     def angleBetween(self, v):
         try:
-            return fixRotation(
+            return abs(
                 math.acos( self.dot(v) / (self.magnitude() * v.magnitude()) ) )
-        except ValueError:
-            # vectors are in opposite directions
-            return math.pi
-    
+        except ValueError as err:
+            # vectors are in opposite directions or same direction
+            v1Normal = self.normalize()
+            v2Normal = v.normalize()
+            if v1Normal.isClose(v2Normal):
+                return 0 # same direction
+            elif v1Normal.isClose(-v2Normal):
+                return math.pi # opposite direction
+            else:
+                # something went wrong
+                raise err
+
     def direction2(self):
         n = math.atan2(self.y, self.x)
         return fixRotation(n)

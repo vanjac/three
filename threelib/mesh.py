@@ -14,6 +14,9 @@ class MeshVertex:
         self.v = position
         self.references = [ ] # list of MeshFaces that reference this vertex
 
+    def __repr__(self):
+        return "MeshVertex @ " + str(self.v)
+
     def clone(self):
         return MeshVertex(self.v)
 
@@ -54,6 +57,9 @@ class MeshFace:
         self.textureShift = Vector(0, 0)
         self.textureScale = Vector(32, 32)
         self.textureRotate = 0
+
+    def __repr__(self):
+        return "Face with " + str(self.vertices)
 
     def getVertices(self):
         return self.vertices
@@ -162,6 +168,7 @@ class MeshFace:
             return None
 
     def reverse(self):
+        print("reverse!")
         self.vertices.reverse()
 
 
@@ -233,3 +240,47 @@ class Mesh:
     def removeFace(self, face):
         self.faces.remove(face)
         face.clearVertices()
+
+    def cleanUp(self):
+        self.combineDuplicateVertices()
+        self.removeUnusedVertices()
+
+    def removeUnusedVertices(self):
+        verticesToRemove = [ ]
+        for v in self.vertices:
+            if v.numReferences() == 0:
+                verticesToRemove.append(v)
+        for v in verticesToRemove:
+            self.vertices.remove(v)
+
+    def combineDuplicateVertices(self):
+        # remove duplicate vertices in a row for individual faces
+        for face in self.getFaces():
+            verticesToRemove = [ ]
+            i = 0
+            for vertex in face.getVertices():
+                if vertex.vertex.getPosition().isClose(
+                        face.getVertices()[i - 1].vertex.getPosition()):
+                    verticesToRemove.append(vertex)
+                i += 1
+            for v in verticesToRemove:
+                face.removeVertex(v)
+
+        i = 0
+        while i < len(self.vertices):
+            v1 = self.vertices[i]
+            verticesToDelete = [ ]
+            for j in range(i + 1, len(self.vertices)):
+                v2 = self.vertices[j]
+                if v1.getPosition().isClose(v2.getPosition()):
+                    # replace all instances of v2 in every face with v1
+                    for face in v2.getReferences():
+                        for vertex in face.getVertices():
+                            if vertex.vertex == v2:
+                                face.replaceVertex(vertex, MeshFaceVertex(
+                                    vertex=v1, textureVertex=Vector(0,0)))
+                    verticesToDelete.append(v2)
+            for v in verticesToDelete:
+                self.vertices.remove(v)
+
+            i += 1
