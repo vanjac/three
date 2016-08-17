@@ -379,7 +379,7 @@ class EditorUI(EditorActions):
 
         if self.inAdjustMode:
             if self.movingCamera:
-                text += "Fly    | "
+                text += "Fly | "
             else:
                 text += self.adjustor.getDescription() + " | "
             value = self.adjustor.getAxes()
@@ -406,66 +406,72 @@ class EditorUI(EditorActions):
             text += " Grid: " + str(self.state.getGridSize(
                 self.adjustor.gridType())) + " | "
             if self.state.snapEnabled:
-                text += "Snap on  | "
+                text += "Snap | "
             else:
-                text += "Snap off | "
+                text += "Free | "
             if self.state.axisLockEnabled:
-                text += "Lock on  | "
+                text += "Lock    | "
             else:
-                text += "Lock off | "
+                text += "No lock | "
         else: # not in adjust mode
             if self.movingCamera:
-                text += "Fly    | "
+                text += "Fly | "
             else:
-                text += "Ready  | "
 
-            if self.state.selectMode == EditorState.SELECT_OBJECTS:
-                num = len(self.state.selectedObjects)
-                if num == 0:
-                    text += "Object select | "
-                elif num == 1:
-                    text += "1 object  | "
-                    o = self.state.selectedObjects[0]
-                    text += o.getType() + ": \"" + o.getName() + "\" | "
-                    text += "Pos: " + str(o.getPosition()) + " "
-                    text += "Rot: " + str(o.getRotation()) + " "
-                    text += "Size: " + str(o.getDimensions()) + " | "
-                else:
-                    text += str(num) + " objects | "
-            if self.state.selectMode == EditorState.SELECT_FACES:
-                num = len(self.state.selectedFaces)
-                if num == 0:
-                    text += "Face select   | "
-                elif num == 1:
-                    text += "1 face  | "
-                else:
-                    text += str(num) + " faces | "
-            if self.state.selectMode == EditorState.SELECT_VERTICES:
-                num = len(self.state.selectedVertices)
-                if num == 0:
-                    text += "Vertex select | "
-                elif num == 1:
-                    text += "1 vertex   | "
-                    text += "Pos: " + \
-                            str(self.state.selectedVertices[0].vertex \
+                if self.state.selectMode == EditorState.SELECT_OBJECTS:
+                    num = len(self.state.selectedObjects)
+                    if num == 0:
+                        text += "Object select | "
+                    elif num == 1:
+                        text += "1 object  | "
+                        o = self.state.selectedObjects[0]
+                        text += o.getType() + ": \"" + o.getName() + "\" | "
+                        text += "Pos: " + str(o.getPosition()) + " "
+                        text += "Rot: " + str(o.getRotation()) + " "
+                        text += "Dim: " + str(o.getDimensions()) + " | "
+                    else:
+                        text += str(num) + " objects | "
+                elif self.state.selectMode == EditorState.SELECT_FACES:
+                    num = len(self.state.selectedFaces)
+                    if num == 0:
+                        text += "Face select | "
+                    elif num == 1:
+                        text += "1 face  | "
+                        f = self.state.selectedFaces[0].face
+                        text += "Mat: " + self.getMaterialName(f.getMaterial())\
+                                + " "
+                        text += "Pos: " + str(f.textureShift) + " "
+                        text += "Rot: " + str(f.textureRotate) + " "
+                        text += "Scale: " + str(f.textureScale) + " | "
+                    else:
+                        text += str(num) + " faces | "
+                elif self.state.selectMode == EditorState.SELECT_VERTICES:
+                    num = len(self.state.selectedVertices)
+                    if num == 0:
+                        text += "Vertex select | "
+                    elif num == 1:
+                        text += "1 vertex   | "
+                        text += "Pos: " + \
+                                str(self.state.selectedVertices[0].vertex \
                                 .getPosition()) + " | "
-                else:
-                    text += str(num) + " vertices | "
-
-            if self.state.currentMaterial != None:
-                text += "mat " + \
-                        self.state.currentMaterial.getName().split("/")[-1] + \
-                        " | "
-            else:
-                text += "mat none | "
+                    else:
+                        text += str(num) + " vertices | "
+                
+                text += "Paint: " + self.getMaterialName(
+                    self.state.currentMaterial) + " | "
         
         if self.currentCommand == "":
             if self.movingCamera:
-                text += "WASDQE to fly, click to exit, scroll to change speed"
+                text += "WASDQE: fly, click: exit, scroll: change speed"
             elif self.inAdjustMode:
-                text += "Click to complete"
+                text += "Click: complete"
         else:
             text += self.currentCommand
         
         return text
 
+    def getMaterialName(self, material):
+        if material == None:
+            return "none"
+        else:
+            return material.getName().split("/")[-1]
