@@ -1,7 +1,5 @@
 __author__ = "vantjac"
 
-import pdb
-
 import math
 
 from threelib.edit.state import *
@@ -912,7 +910,6 @@ class EditorActions:
                                     self.state.objects.append(objectClone)
                                 self.clipMesh(objectToCarve.getMesh(),
                                               planePoint, -planeNormal)
-                                pdb.set_trace()
                                 if objectToCarve.getMesh().isEmpty():
                                     break
                             if objectToCarve.getMesh().isEmpty():
