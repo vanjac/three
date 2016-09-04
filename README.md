@@ -6,8 +6,7 @@ When three is finished, it will be a 3d game engine with a map editor, written i
 
 three requires at least Python 3.4, and these pip packages:
 - pillow
-- PyOpenGL
-- PyOpenGL_accelerate
+- PyOpenGL and optionally PyOpenGL_accelerate (if you have problems with installation, check [here](http://pyopengl.sourceforge.net/documentation/installation.html) )
 - pyautogui: installation instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html)
 
 To use three, you need a game directory to work with. `gameDirTemplate` has a sample game directory layout with some useful materials.
