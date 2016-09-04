@@ -6,6 +6,7 @@ from threelib.edit.editorActions import EditorActions
 from threelib.edit.state import *
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
+import threelib.vectorMath as vectorMath
 
 class EditorUI(EditorActions):
 
@@ -453,9 +454,11 @@ class EditorUI(EditorActions):
                         f = self.state.selectedFaces[0].face
                         text += "Mat: " + self.getMaterialName(f.getMaterial())\
                                 + " "
-                        text += "Pos: " + str(f.textureShift) + " "
+                        text += "Pos: " + vectorMath.doubleTupleToString(
+                            f.textureShift.getTuple()) + " "
                         text += "Rot: " + str(f.textureRotate) + " "
-                        text += "Scale: " + str(f.textureScale) + " | "
+                        text += "Scale: " + vectorMath.doubleTupleToString(
+                            f.textureScale.getTuple()) + " | "
                     else:
                         text += str(num) + " faces | "
                 elif self.state.selectMode == EditorState.SELECT_VERTICES:

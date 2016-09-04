@@ -16,6 +16,9 @@ def fixRotation(n):
     n = n % CIRCLE
     return n
 
+def doubleTupleToString(t):
+    return numToStr(t[0]) + ',' + numToStr(t[1])
+
 def tripleTupleToString(t):
     return numToStr(t[0]) + ',' + \
         numToStr(t[1]) + ',' + \
