@@ -104,6 +104,8 @@ class MeshObject(EditorObject):
         return self.rotation
     
     def getBounds(self):
+        if len(self.mesh.getVertices()) == 0:
+            return (Vector(0, 0, 0), Vector(0, 0, 0))
         firstVertexPos = self.mesh.getVertices()[0].getPosition()
         lowX = firstVertexPos.x
         lowY = firstVertexPos.y

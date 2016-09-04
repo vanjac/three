@@ -184,6 +184,10 @@ class EditorUI(EditorActions):
             self.clip()
             return True
 
+        if c[0] == 'K':
+            self.carve()
+            return True
+
         if c[0] == 'P':
             if c[len(c) - 1] == '\r':
                 self.setCurrentMaterial( c[1:-1] )

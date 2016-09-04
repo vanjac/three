@@ -178,7 +178,6 @@ class MeshFace:
             return None
 
     def reverse(self):
-        print("reverse!")
         self.vertices.reverse()
 
 
@@ -190,22 +189,24 @@ class Mesh:
 
     def clone(self):
         newMesh = Mesh()
+        newMesh.cloneData(self)
+        return newMesh
 
-        newVertices = [v.clone() for v in self.vertices]
-        for v in newVertices:
-            newMesh.addVertex(v)
+    # replace all vertices and faces from this mesh with a copy of another
+    # mesh's
+    def cloneData(self, other):
+        self.vertices = [v.clone() for v in other.vertices]
+        self.faces = [ ]
         
-        for face in self.faces:
+        for face in other.faces:
             newFace = MeshFace()
             
             for vertex in face.getVertices():
-                vertexIndex = self.vertices.index(vertex.vertex)
-                newFace.addVertex(newVertices[vertexIndex],
+                vertexIndex = other.vertices.index(vertex.vertex)
+                newFace.addVertex(self.vertices[vertexIndex],
                                   vertex.textureVertex)
-
-            newMesh.addFace(newFace)
-
-        return newMesh
+            newFace.copyMaterialInfo(face)
+            self.addFace(newFace)
 
     def getVertices(self):
         return self.vertices
@@ -299,3 +300,6 @@ class Mesh:
                 self.vertices.remove(v)
 
             i += 1
+    
+    def isEmpty(self):
+        return len(self.vertices) == 0

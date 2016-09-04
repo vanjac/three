@@ -1,5 +1,7 @@
 __author__ = "vantjac"
 
+import pdb
+
 import math
 
 from threelib.edit.state import *
@@ -643,20 +645,35 @@ class EditorActions:
             print("Objects must be selected")
 
     def clipSelected(self):
-        print("Clip!")
+        print("Clip")
         planePoint = self.arrowStart
         # arrow points in direction of half to remove
         planeNormal = (planePoint - self.arrowEnd).normalize()
         
+        objectsToRemove = [ ]
         for o in self.state.selectedObjects:
             if o.getMesh() != None:
                 # translate everything relative to mesh
                 relativePoint = planePoint - o.getPosition()
                 self.clipMesh(o.getMesh(), relativePoint, planeNormal)
+                if o.getMesh().isEmpty():
+                    objectsToRemove.append(o)
+        for o in objectsToRemove:
+            print("Removing object")
+            self.state.selectedObjects.remove(o)
+            self.state.objects.remove(o)
 
+    # planePoint must be relative to mesh
+    # the planeNormal should point in the direction of the half to KEEP
     def clipMesh(self, mesh, planePoint, planeNormal):
+        print("Clipping mesh...")
         if planeNormal.isCloseToZero():
             print("Cannot clip: clip plane normal is zero!")
+            return
+
+        # if something goes wrong, use this backup to restore the original mesh
+        # data
+        backupMesh = mesh.clone()
 
         INSIDE = 0
         ON_PLANE = 1 # counts as inside
@@ -690,10 +707,14 @@ class EditorActions:
             #print(vertexLocations)
 
             if (not hasInside) and (not hasOutside):
-                print("Cannot clip: mesh face and clip plane are coplanar!")
-                # TODO if some faces have already been clipped they will not be
-                # restored if an error like this occurs
-                return
+                if planeNormal.isClose(face.getNormal()):
+                    facesToRemove.append(face)
+                elif planeNormal.isClose(-face.getNormal()):
+                    pass
+                else:
+                    print("WARNING: Face and plane are coplanar, but normals"
+                          " do not match")
+                continue
             if hasOnPlane:
                 # search for edges on the plane and add them to the list
                 for i in range(0, len(vertexLocations)):
@@ -805,8 +826,13 @@ class EditorActions:
         for face in facesToRemove:
             mesh.removeFace(face)
 
+        # special case: the plane was coplanar with a face and all faces were
+        # deleted
+        mesh.removeUnusedVertices()
+        if mesh.isEmpty():
+            return
+
         # construct new faces from all of the edges that have been created
-        print("Construct faces from", len(newFaceEdges), "edges")
         while not len(newFaceEdges) == 0:
             newFace = mesh.addFace()
             firstVertex = mesh.addVertex(MeshVertex(newFaceEdges[0][0]))
@@ -849,6 +875,54 @@ class EditorActions:
 
         mesh.cleanUp()
         self.state.world.removeUnusedMaterials()
+        print("Done clipping")
+    # end def clipMesh
+
+
+    def carve(self):
+        if self.state.selectMode == EditorState.SELECT_OBJECTS:
+            if len(self.state.selectedObjects) == 0:
+                print("Objects must be selected")
+            else:
+                print("Carve")
+                objectsToCarve = [ ]
+                for editorObject in self.state.objects:
+                    if (not editorObject in self.state.selectedObjects) \
+                       and editorObject.getMesh() != None:
+                        boundsA = editorObject.getBounds()
+                        for selectedObject in self.state.selectedObjects:
+                            if selectedObject.getMesh() != None:
+                                boundsB = selectedObject.getBounds()
+                                if vectorMath.boxesIntersect(boundsA, boundsB):
+                                    objectsToCarve.append(editorObject)
+                                    break
+                for objectToCarve in objectsToCarve:
+                    for selectedObject in self.state.selectedObjects:
+                        if selectedObject.getMesh() != None:
+                            for face in selectedObject.getMesh().getFaces():
+                                planePoint = face.getVertices()[0].vertex \
+                                             .getPosition()
+                                planePoint += selectedObject.getPosition()
+                                planePoint -= objectToCarve.getPosition()
+                                planeNormal = face.getNormal()
+                                objectClone = objectToCarve.clone()
+                                self.clipMesh(objectClone.getMesh(),
+                                              planePoint, planeNormal)
+                                if not objectClone.getMesh().isEmpty():
+                                    self.state.objects.append(objectClone)
+                                self.clipMesh(objectToCarve.getMesh(),
+                                              planePoint, -planeNormal)
+                                pdb.set_trace()
+                                if objectToCarve.getMesh().isEmpty():
+                                    break
+                            if objectToCarve.getMesh().isEmpty():
+                                break
+                        if objectToCarve.getMesh().isEmpty():
+                            break
+                for objectToCarve in list(objectsToCarve):
+                    self.state.objects.remove(objectToCarve)
+        else:
+            print("Objects must be selected")
 
     
     # add the edge to the list only if it hasn't already been added

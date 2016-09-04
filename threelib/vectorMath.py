@@ -54,6 +54,28 @@ def rotatePlane(point, normal, rotate):
     normal = normal.rotate(rotate)
     return calculatePlaneConstants(point, normal)
 
+# each box is a tuple of 2 Vectors, describing 2 opposite corners of the box
+def boxesIntersect(boxA, boxB):
+    return rangesIntersect(boxA[0].x, boxA[1].x,
+                           boxB[0].x, boxB[1].x) \
+        and rangesIntersect(boxA[0].y, boxA[1].y,
+                            boxB[0].y, boxB[1].y) \
+        and rangesIntersect(boxA[0].z, boxA[1].z,
+                            boxB[0].z, boxB[1].z)
+    
+# check if 2 ranges, a and b, intersect
+# having the edges touch counts as NOT intersecting
+def rangesIntersect(a1, a2, b1, b2):
+    if a1 > a2:
+        a1 = temp
+        a1 = a2
+        a2 = temp
+    if b1 > b2:
+        b1 = temp
+        b1 = b2
+        b2 = temp
+    return not (a2 <= b1 or a1 >= b2)
+
 class Vector:
         
     # computes the normal unit-vector of a triangle, with vertices in
