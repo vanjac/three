@@ -382,6 +382,10 @@ class EditorUI(EditorActions):
         elif axes[0] == EditorActions.Y:
             if quadrant == 1 or quadrant == 2:
                 change[0] = -change[0]
+        
+        # looking up reverses y mouse movement
+        if axes[1] != EditorActions.Z and self.state.cameraRotation.y < math.pi:
+            change[1] = -change[1]
                 
         value = list(self.adjustor.getAxes())
         value[axes[0]] += change[0]
