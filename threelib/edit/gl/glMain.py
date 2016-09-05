@@ -39,6 +39,9 @@ mouseLockY = 0
 mouseLockMargin = 64
 framesSinceMouseLockMove = 0
 
+# Keyboard info
+keysPressed = [ ]
+
 lastFpsTime = time.time()
 fpsCount = 0
 fps = 0
@@ -216,6 +219,21 @@ class GLEditorMain(EditorMain):
                 framesSinceMouseLockMove = 0
         pmouseX = mouseX
         pmouseY = mouseY
+        
+    def keyPressedEvent(key, mouseX, mouseY):
+        global editor, keysPressed
+        if key in keysPressed:
+            # ignore key repeat
+            pass
+        else:
+            keysPressed.append(key)
+            editor.keyPressed(key)
+        
+    def keyReleasedEvent(key, mouseX, mouseY):
+        global editor
+        if key in keysPressed:
+            keysPressed.remove(key)
+        editor.keyReleased(key)
 
     def drawText(text, font, x, y):
         global windowWidth, windowHeight
@@ -271,8 +289,8 @@ class GLEditorMain(EditorMain):
         glutDisplayFunc(GLEditorMain.drawGL)
         glutIdleFunc(GLEditorMain.drawGL)
         glutReshapeFunc(GLEditorMain.resizeGL)
-        glutKeyboardFunc(editor.keyPressed)
-        glutKeyboardUpFunc(editor.keyReleased)
+        glutKeyboardFunc(GLEditorMain.keyPressedEvent)
+        glutKeyboardUpFunc(GLEditorMain.keyReleasedEvent)
         glutMouseFunc(GLEditorMain.mouseEvent)
         glutPassiveMotionFunc(GLEditorMain.mouseMovement)
         

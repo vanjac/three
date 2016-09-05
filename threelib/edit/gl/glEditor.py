@@ -42,10 +42,10 @@ class GLEditor(EditorUI):
         super().__init__(editorMain, state)
         self.graphicsTools = GLGraphicsTools()
 
-    def keyPressed(self, key, mouseX, mouseY):
+    def keyPressed(self, key):
         self.keyPressedEvent(key)
 
-    def keyReleased(self, key, mouseX, mouseY):
+    def keyReleased(self, key):
         self.keyReleasedEvent(key)
         
     # mouse buttons: left=0, middle=1, right=2, 
