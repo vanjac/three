@@ -144,7 +144,7 @@ class MeshFace:
         i = 0
         for oldVertex in self.vertices:
             pos = oldVertex.vertex.getPosition()
-            textureVertex = pos.rotate(-normalRot)
+            textureVertex = pos.inverseRotate(-normalRot)
             textureVertex = Vector(textureVertex.y, textureVertex.z)
 
             textureVertex = textureVertex.rotate2(self.textureRotate)
