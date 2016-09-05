@@ -293,8 +293,10 @@ class GLEditorMain(EditorMain):
         glutKeyboardUpFunc(GLEditorMain.keyReleasedEvent)
         glutMouseFunc(GLEditorMain.mouseEvent)
         glutPassiveMotionFunc(GLEditorMain.mouseMovement)
+
+        glutIgnoreKeyRepeat(True)
         
-        # Initialize our window. 
+        # Initialize the window. 
         GLEditorMain.initGL(width, height)
 
         print("Using OpenGL version", glGetString(GL_VERSION))
