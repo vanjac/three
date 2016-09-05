@@ -36,6 +36,8 @@ class EditorUI(EditorActions):
                 self.fly = self.fly.setZ(1)
         else:
             character = chr(key[0])
+            if character == '\x7f': # backspace on some platforms, delete on others
+            	character = '\b'
             if character == '\b' and len(self.currentCommand) != 0:
                 # delete from command
                 self.currentCommand = self.currentCommand[:-1]
@@ -84,7 +86,7 @@ class EditorUI(EditorActions):
             self.updateSelected()
             return True
         
-        if c[0] == '\b' or c[0] == '\x7f': # backspace or delete
+        if c[0] == '\b': # backspace or delete
             self.deleteSelected()
             return True
 
