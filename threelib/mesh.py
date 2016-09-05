@@ -150,6 +150,18 @@ class MeshFace:
             textureVertex = textureVertex.rotate2(self.textureRotate)
             textureVertex += self.textureShift
             textureVertex /= self.textureScale.setZ(1) # prevent divide z by 0
+            # scale for correct aspect ratio of texture
+            if self.material != None:
+                if self.material.material != None:
+                    mat = self.material.material
+                    if mat.getXLen() != 0 and mat.getYLen() != 0:
+                        if mat.getXLen() > mat.getYLen():
+                            textureVertex *= Vector(1,
+                                                    mat.getXLen()/mat.getYLen(),
+                                                    1)
+                        elif mat.getYLen() > mat.getXLen():
+                            textureVertex *= Vector(mat.getYLen()/mat.getXLen(),
+                                                    1, 1)
 
             newVertex = MeshFaceVertex(vertex = oldVertex.vertex,
                                        textureVertex = textureVertex)
@@ -168,6 +180,7 @@ class MeshFace:
         self.material = material
         if self.material != None:
             self.material.addReference()
+        self.calculateTextureVertices()
 
     def getNormal(self):
         if len(self.vertices) >= 3:
