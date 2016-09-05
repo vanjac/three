@@ -5,13 +5,17 @@ When three is finished, it will be a 3d game engine with a map editor, written i
 ## Starting
 
 three requires at least Python 3.4, and these pip packages:
-- pillow
-- PyOpenGL and optionally PyOpenGL_accelerate (if you have problems with installation, check [here](http://pyopengl.sourceforge.net/documentation/installation.html) )
-- pyautogui: installation instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html)
+- pillow: installation instruction [here](https://pillow.readthedocs.io/en/3.0.0/installation.html). On macOS you will need to run `xcode-select --install` first.
+- PyOpenGL and optionally PyOpenGL_accelerate: installation instructions [here](http://pyopengl.sourceforge.net/documentation/installation.html).
+- pyautogui: installation instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html).
+
+You may have problems with GLUT in Windows.
 
 To use three, you need a game directory to work with. `gameDirTemplate` has a sample game directory layout with some useful materials.
 
-To start three, type `python3 three.py path/to/game/dir mapName`. `mapName` is relative to the `maps` folder in the game directory; if the map does not exist, it will be created. By default, three starts in Run Mode, which doesn't currently exist. To start the editor instead, use the `-edit` flag. The `-run` flag explicitly specifies run mode.
+To start three, type `python3 three.py path/to/game/dir mapName`. `mapName` is relative to the `maps` folder in the game directory; if the map does not exist, it will be created. You can also specify a map number instead - this will look up names in `maps.txt` (starts at 1).
+
+By default, three starts in Run Mode, which doesn't currently exist. To start the editor instead, use the `-edit` flag. The `-run` flag explicitly specifies run mode.
 
 If a window appears with green and blue lines and some text at the bottom, it worked.
 
