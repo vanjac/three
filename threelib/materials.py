@@ -14,31 +14,18 @@ def isPowerOf2(num):
     # code.activestate.com/recipes/577514-chek-if-a-number-is-a-power-of-two/
     return num != 0 and ((num & (num - 1)) == 0)
 
-class Material:
+class Texture:
     
-    def __init__(self):
-        self.texture = [ ]
-        self.xLen = 0
-        self.yLen = 0
-
-    # prevent pickling:
-    # see https://docs.python.org/3/library/pickle.html#object.__getstate__
-
-    def __getstate__(self):
-        return None
-    def __setstate__(self, state):
-        pass
+    def __init__(self, data, dataType, xLen, yLen):
+        self.data = data
+        self.dataType = dataType
+        self.xLen = xLen
+        self.yLen = yLen
     
-    
-    # an array of chars, of size xLen * yLen * 4
-    # ordered RGBA
-    def getTexture(self):
-        return self.texture
-
-    def getPixel(self, x, y):
-        index = (x + y * self.xLen) * 4;
-        return(self.texture[index+0], self.texture[index+1],
-               self.texture[index+2], self.texture[index+3])
+    # for RGBA mode:
+    # an array of chars, of size xLen * yLen * 4, ordered RGBA
+    def getData(self):
+        return self.data
 
     def getXLen(self):
         return self.xLen
@@ -46,33 +33,8 @@ class Material:
     def getYLen(self):
         return self.yLen
 
-    def load(self, name):
-        materialPath = files.getMaterial(name)
-        if materialPath == None:
-            print("Material not found:", name)
-            return
-        
-        print("Reading image at", materialPath)
-        image = Image.open(materialPath)
-        image.load()
-        image = image.convert('RGBA')
-        self.xLen = image.width
-        self.yLen = image.height
-
-        print("Size is", str(self.xLen) + ", " + str(self.yLen))
-            
-        # dimensions need to be a power of 2
-        if not (isPowerOf2(self.xLen) and isPowerOf2(self.yLen)):
-            # search upwards for the next power of 2
-            self.xLen = 2 ** math.ceil(math.log(self.xLen, 2))
-            self.yLen = 2 ** math.ceil(math.log(self.yLen, 2))
-            print("Scaling up to", str(self.xLen) + ", " + str(self.yLen))
-            
-            image = image.resize((self.xLen, self.yLen), Image.BICUBIC)
-        
-        self.texture = list(image.tobytes())
-
-        print("Done loading image")
+    def getDataType(self):
+        return self.dataType
 
 
 class MaterialReference(Resource):
@@ -81,9 +43,8 @@ class MaterialReference(Resource):
         super().__init__()
         self.name = name
         self.number = 0
-        self.material = Material()
-        if load:
-            self.load()
+        self.loaded = False
+        self.aspectRatio = 1.0
 
     def getName(self):
         return self.name
@@ -97,6 +58,48 @@ class MaterialReference(Resource):
     def setNumber(self, number):
         self.number = number
 
-    def load(self):
-        self.material.load(self.name)
-    
+    # used by 3d rendering
+    # flag to determine if texture has been loaded
+    def isLoaded(self):
+        return self.loaded
+
+    def setLoaded(self, loaded=True):
+        self.loaded = loaded
+
+    def getAspectRatio(self):
+        return self.aspectRatio
+
+    def hasAlbedoTexture(self):
+        return self.hasTexture
+
+    def loadAlbedoTexture(self):
+        materialPath = files.getMaterial(self.name)
+        if materialPath == None:
+            print("Material not found:", name)
+            return None
+        
+        print("Reading image at", materialPath)
+        image = Image.open(materialPath)
+        image.load()
+        dataType = 'RGBA'
+        image = image.convert(dataType)
+        xLen = image.width
+        yLen = image.height
+
+        print("Size is", str(xLen) + ", " + str(yLen))
+            
+        # dimensions need to be a power of 2
+        if not (isPowerOf2(xLen) and isPowerOf2(yLen)):
+            # search upwards for the next power of 2
+            xLen = 2 ** math.ceil(math.log(xLen, 2))
+            yLen = 2 ** math.ceil(math.log(yLen, 2))
+            print("Scaling up to", str(xLen) + ", " + str(yLen))
+            
+            image = image.resize((xLen, yLen), Image.BICUBIC)
+        
+        texture = list(image.tobytes())
+
+        print("Done loading image")
+        self.hasTexture = True
+        self.aspectRatio = float(xLen) / float(yLen)
+        return Texture(texture, dataType, xLen, yLen)

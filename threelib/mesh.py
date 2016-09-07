@@ -152,16 +152,12 @@ class MeshFace:
             textureVertex /= self.textureScale.setZ(1) # prevent divide z by 0
             # scale for correct aspect ratio of texture
             if self.material != None:
-                if self.material.material != None:
-                    mat = self.material.material
-                    if mat.getXLen() != 0 and mat.getYLen() != 0:
-                        if mat.getXLen() > mat.getYLen():
-                            textureVertex *= Vector(1,
-                                                    mat.getXLen()/mat.getYLen(),
-                                                    1)
-                        elif mat.getYLen() > mat.getXLen():
-                            textureVertex *= Vector(mat.getYLen()/mat.getXLen(),
-                                                    1, 1)
+                if self.material.isLoaded():
+                    aspect = self.material.getAspectRatio()
+                    if aspect > 1:
+                        textureVertex *= Vector(1, aspect, 1)
+                    elif aspect < 1:
+                        textureVertex *= Vector(1.0 / aspect, 1, 1)
 
             newVertex = MeshFaceVertex(vertex = oldVertex.vertex,
                                        textureVertex = textureVertex)

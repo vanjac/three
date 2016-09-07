@@ -23,7 +23,7 @@ class GLGraphicsTools(GraphicsTools):
 
             mat = f.getMaterial()
             if mat != None:
-                if len(mat.material.texture) != 0:
+                if mat.isLoaded():
                     texture = True
                     glEnable(GL_TEXTURE_2D)
                     glBindTexture(GL_TEXTURE_2D, mat.getNumber())

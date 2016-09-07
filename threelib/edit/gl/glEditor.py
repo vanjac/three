@@ -89,9 +89,8 @@ class GLEditor(EditorUI):
 
     def draw(self):
         for m in self.state.world.getAddedMaterials():
+            texture = m.loadAlbedoTexture()
             print("Sending", m.getName(), "to OpenGL...")
-
-            material = m.material
 
             texName = glGenTextures(1)
             m.setNumber(texName)
@@ -104,21 +103,24 @@ class GLEditor(EditorUI):
                             GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
                             GL_NEAREST);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, material.getXLen(), 
-                         material.getYLen(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-                         material.getTexture());
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getXLen(), 
+                         texture.getYLen(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+                         texture.getData());
+
+            m.setLoaded(True)
             print("Done sending")
 
         for m in self.state.world.getUpdatedMaterials():
-            print("Updating and sending", m.getName(), "to OpenGL...")
-
-            material = m.material
+            texture = m.loadAlbedoTexture()
             texName = m.getNumber()
+            print("Updating and sending", m.getName(), "to OpenGL...")
             
             glBindTexture(GL_TEXTURE_2D, texName);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, material.getXLen(), 
-                         material.getYLen(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-                         material.getTexture());
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getXLen(), 
+                         texture.getYLen(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+                         texture.getData());
+
+            m.setLoaded(True)
             print("Done sending")
         
         for m in self.state.world.getRemovedMaterials():

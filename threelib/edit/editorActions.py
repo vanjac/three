@@ -1036,8 +1036,6 @@ class EditorActions:
                 self.state.setCurrentMaterial(matRef)
         else:
             self.state.world.updateMaterial(self.state.currentMaterial)
-        
-        self.state.currentMaterial.load()
 
     def paint(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
