@@ -9,7 +9,7 @@ three requires at least Python 3.4, and these pip packages:
   - On Mac you will need to run `xcode-select --install` first.
 - PyOpenGL and optionally PyOpenGL_accelerate: installation instructions [here](http://pyopengl.sourceforge.net/documentation/installation.html).
   - PyOpenGL_accelerate seems to have problems on Windows.
-  - On Linux, you will first need to use a package manager to install `python3-dev` (or `python3-devel`).
+  - On Linux, you will first need to use a package manager to install `python3-dev` (or `python3-devel`), and `freeglut` (or equivalent).
     - On Fedora, you might need to run `dnf install redhat-rpm-config` first.
 - pyautogui: installation instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html). Make sure you have installed pillow first.
   - For Linux, the instructions refer to `python3-tk`, which may be called `python3-tkinter` instead; and `python3-dev`, which may be called `python3-devel` instead. 
