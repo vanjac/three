@@ -15,7 +15,7 @@ three requires at least Python 3.4, and these pip packages:
   - For Linux, the instructions refer to `python3-tk`, which may be called `python3-tkinter` instead; and `python3-dev`, which may be called `python3-devel` instead. 
   - On Linux, if you get an Xlib error on the last step, type `xhost +` before you try to install it again. See [here](https://ubuntuforums.org/showthread.php?t=2290602).
 
-You may have problems with GLUT errors on Windows.
+You may have problems with GLUT errors on Windows. Try installing freeglut.
 
 To use three, you need a game directory to work with. `gameDirTemplate` has a sample game directory layout with some useful materials. To start three, type `python3 three.py path/to/game/dir mapName`. `mapName` is relative to the `maps` folder in the game directory; if the map does not exist, it will be created. You can also specify a map number instead - this will look up names in `maps.txt` (starts at 1).
 
