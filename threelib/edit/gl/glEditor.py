@@ -89,12 +89,14 @@ class GLEditor(EditorUI):
 
     def draw(self):
         for m in self.state.world.getAddedMaterials():
+            m.setLoaded(True)
             texture = m.loadAlbedoTexture()
-            print("Sending", m.getName(), "to OpenGL...")
 
             texName = glGenTextures(1)
             m.setNumber(texName)
             
+            # even if the texture was not loaded correctly, it might be
+            # reloaded correctly in the future, so everything has to be set up
             glBindTexture(GL_TEXTURE_2D, texName);
             
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -103,12 +105,13 @@ class GLEditor(EditorUI):
                             GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
                             GL_NEAREST);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getXLen(), 
-                         texture.getYLen(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-                         texture.getData());
-
-            m.setLoaded(True)
-            print("Done sending")
+            
+            if texture != None:
+                print("Sending", m.getName(), "to OpenGL...")
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getXLen(), 
+                             texture.getYLen(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+                             texture.getData());
+                print("Done sending")
 
         for m in self.state.world.getUpdatedMaterials():
             texture = m.loadAlbedoTexture()
