@@ -263,11 +263,9 @@ class EditorActions:
             if len(self.state.selectedObjects) == 0:
                 print("Nothing selected")
             elif len(self.state.selectedObjects) == 1:
-                print("Change origin of object")
                 self.setupAdjustMode(OriginAdjustor(
                     self.state.selectedObjects[0]))
             else:
-                print("Change origin of objects")
                 adjustors = [ ]
                 for o in self.state.selectedObjects:
                     adjustors.append(OriginAdjustor(o))
