@@ -3,6 +3,7 @@ __author__ = "vantjac"
 from threelib.edit.ui.editorMain import EditorMain
 import threelib.edit.gl.glEditor
 import time # for fps
+import threading # for pyautogui mouse movement
 
 import pyautogui
 
@@ -206,16 +207,27 @@ class GLEditorMain(EditorMain):
         framesSinceMouseLockMove += 1
         if mouseLocked and framesSinceMouseLockMove > 4:
             if mouseX > windowWidth - mouseLockMargin:
-                pyautogui.moveRel(-windowWidth + 3*mouseLockMargin, 0)
+                def moveToLeft():
+                    pyautogui.moveRel(-windowWidth + 3*mouseLockMargin, 0)
+                # run in a separate thread to prevent frames being dropped
+                # TODO: threading occasionally causes error when moving the
+                # mouse very fast
+                threading.Thread(target=moveToLeft).start()
                 framesSinceMouseLockMove = 0
             if mouseX < mouseLockMargin:
-                pyautogui.moveRel(windowWidth - 3*mouseLockMargin, 0)
+                def moveToRight():
+                    pyautogui.moveRel(windowWidth - 3*mouseLockMargin, 0)
+                threading.Thread(target=moveToRight).start()
                 framesSinceMouseLockMove = 0
             if mouseY > windowHeight - mouseLockMargin:
-                pyautogui.moveRel(0, -windowHeight + 3*mouseLockMargin)
+                def moveToTop():
+                    pyautogui.moveRel(0, -windowHeight + 3*mouseLockMargin)
+                threading.Thread(target=moveToTop).start()
                 framesSinceMouseLockMove = 0
             if mouseY < mouseLockMargin:
-                pyautogui.moveRel(0, windowHeight - 3*mouseLockMargin)
+                def moveToBottom():
+                    pyautogui.moveRel(0, windowHeight - 3*mouseLockMargin)
+                threading.Thread(target=moveToBottom).start()
                 framesSinceMouseLockMove = 0
         pmouseX = mouseX
         pmouseY = mouseY
