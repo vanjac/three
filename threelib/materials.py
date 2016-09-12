@@ -75,7 +75,7 @@ class MaterialReference(Resource):
     def loadAlbedoTexture(self):
         materialPath = files.getMaterial(self.name)
         if materialPath == None:
-            print("Material not found:", name)
+            print("Material not found:", self.name)
             return None
         
         print("Reading image at", materialPath)
