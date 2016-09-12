@@ -299,7 +299,7 @@ class GLEditorMain(EditorMain):
         # Initialize the window. 
         GLEditorMain.initGL(width, height)
 
-        print("Using OpenGL version", glGetString(GL_VERSION))
+        print("Using OpenGL version:", glGetString(GL_VERSION).decode())
         
         # Start Event Processing Engine	
         glutMainLoop()
