@@ -8,27 +8,35 @@ three requires at least Python 3.4.
 
 ### Windows installation
 three has issues on Windows. It is reccommended that you use Mac or Linux if possible.
-- pillow: installation instructions for Windows [here](https://pillow.readthedocs.io/en/3.0.0/installation.html#windows-installation).
-- PyOpenGL and optionally PyOpenGL_accelerate: installation instructions [here](http://pyopengl.sourceforge.net/documentation/installation.html).
-  - PyOpenGL_accelerate seems to have problems on Windows.
-- pyautogui: installation instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html). Make sure you have installed pillow first.
+- Install pillow: instructions for Windows [here](https://pillow.readthedocs.io/en/3.0.0/installation.html#windows-installation).
+- Install PyOpenGL and PyOpenGL_accelerate: instructions [here](http://pyopengl.sourceforge.net/documentation/installation.html).
+  - PyOpenGL_accelerate seems to have installation problems on Windows. It is optional.
+- Install pyautogui: 
+  - Make sure you have installed pillow first.
+  - Follow the Windows instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html).
 
 You may have problems with GLUT errors on Windows. Try installing freeglut.
 
 ### Mac installation
-- pillow: installation instructions for Mac [here](https://pillow.readthedocs.io/en/3.0.0/installation.html#os-x-installation).
-  - You will need to run `xcode-select --install` first.
-- PyOpenGL and optionally PyOpenGL_accelerate: installation instructions [here](http://pyopengl.sourceforge.net/documentation/installation.html).
-- pyautogui: installation instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html). Make sure you have installed pillow first.
+- Install pillow:
+  - Run `xcode-select --install` in a Terminal first.
+  - Follow the Mac instructions [here](https://pillow.readthedocs.io/en/3.0.0/installation.html#os-x-installation).
+- Install PyOpenGL and PyOpenGL_accelerate: instructions [here](http://pyopengl.sourceforge.net/documentation/installation.html).
+- Install pyautogui: 
+  - Make sure you have installed pillow first.
+  - Follow the Mac instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html).
 
 ### Linux installation
-- pillow: installation instructions for Linux [here](https://pillow.readthedocs.io/en/3.0.0/installation.html#linux-installation).
-- PyOpenGL and optionally PyOpenGL_accelerate: installation instructions [here](http://pyopengl.sourceforge.net/documentation/installation.html).
-  - You will first need to use a package manager to install `python3-dev` (or `python3-devel`), and `freeglut` (or equivalent).
+- Install pillow: instructions for Linux [here](https://pillow.readthedocs.io/en/3.0.0/installation.html#linux-installation).
+- Install PyOpenGL and PyOpenGL_accelerate:
+  - First use a package manager to install `python3-dev` (or `python3-devel`), and `freeglut` (or equivalent).
     - On Fedora, you might need to run `dnf install redhat-rpm-config` first.
-- pyautogui: installation instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html). Make sure you have installed pillow first.
-  - The instructions refer to `python3-tk`, which may be called `python3-tkinter` instead; and `python3-dev`, which may be called `python3-devel` instead. 
-  - If you get an Xlib error on the last step, type `xhost +` before you try to install it again. See [here](https://ubuntuforums.org/showthread.php?t=2290602).
+  - Follow the instructions [here](http://pyopengl.sourceforge.net/documentation/installation.html).
+- Install pyautogui: 
+  - Make sure you have installed pillow first.
+  - Follow the Linux instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html).
+    - The instructions refer to `python3-tk`, which may be called `python3-tkinter` instead; and `python3-dev`, which may be called `python3-devel` instead. 
+    - If you get an Xlib error on the last step, type `xhost +` before you try to install it again. ([reference](https://ubuntuforums.org/showthread.php?t=2290602))
 
 ### Run three
 
