@@ -292,7 +292,7 @@ class GLEditorMain(EditorMain):
         
         # Retain window id to use when closing
         # global variable
-        window = glutCreateWindow("three editor")
+        window = glutCreateWindow(b'three editor') # must be byte string
         
         # Uncomment this line to get full screen.
         #glutFullScreen()

@@ -7,15 +7,18 @@ When three is finished, it will be a 3d game engine with a map editor, written i
 three requires at least Python 3.4.
 
 ### Windows installation
-three has issues on Windows. It is reccommended that you use Mac or Linux if possible.
 - Install pillow: instructions for Windows [here](https://pillow.readthedocs.io/en/3.0.0/installation.html#windows-installation).
-- Install PyOpenGL and PyOpenGL_accelerate: instructions [here](http://pyopengl.sourceforge.net/documentation/installation.html).
-  - PyOpenGL_accelerate seems to have installation problems on Windows. It is optional.
+- Install PyOpenGL and PyOpenGL_accelerate:
+  - First install freeglut:
+    - Download [here](http://www.transmissionzero.co.uk/software/freeglut-devel/) or somewhere else.
+    - Extract, put somewhere where you won't move it.
+    - Add it to the PATH environment variable. Go to: Control Panel > System and Security > System > Advanced system settings > Environment variables. Select PATH, click Edit, and click New in the resulting dialog. Copy in the path to the `bin` folder in the extracted freeglut archive.
+    - Restart your computer.
+  - Follow the instructions [here](http://pyopengl.sourceforge.net/documentation/installation.html).
+    - PyOpenGL_accelerate seems to have installation problems on Windows. It is optional.
 - Install pyautogui: 
   - Make sure you have installed pillow first.
   - Follow the Windows instructions [here](https://pyautogui.readthedocs.io/en/latest/install.html).
-
-You may have problems with GLUT errors on Windows. Try installing freeglut.
 
 ### Mac installation
 - Install pillow:
