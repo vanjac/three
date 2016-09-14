@@ -91,7 +91,6 @@ class GLEditor(EditorUI):
         for m in self.state.world.getAddedMaterials():
             m.setLoaded(True)
             texture = m.loadAlbedoTexture()
-
             texName = glGenTextures(1)
             m.setNumber(texName)
             
@@ -106,25 +105,15 @@ class GLEditor(EditorUI):
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
                             GL_NEAREST);
             
-            if texture != None:
-                print("Sending", m.getName(), "to OpenGL...")
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getXLen(), 
-                             texture.getYLen(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-                             texture.getData());
-                print("Done sending")
+            self.sendTexture(texture)
 
         for m in self.state.world.getUpdatedMaterials():
+            m.setLoaded(True)
             texture = m.loadAlbedoTexture()
             texName = m.getNumber()
-            print("Updating and sending", m.getName(), "to OpenGL...")
             
             glBindTexture(GL_TEXTURE_2D, texName);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getXLen(), 
-                         texture.getYLen(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-                         texture.getData());
-
-            m.setLoaded(True)
-            print("Done sending")
+            self.sendTexture(texture)
         
         for m in self.state.world.getRemovedMaterials():
             texName = m.getNumber()
@@ -251,6 +240,26 @@ class GLEditor(EditorUI):
         glRotate(math.degrees(rotate.y), -1, 0, 0)
         glRotate(math.degrees(rotate.z), 0, 1, 0)
         glCallList(self.drawMiniAxesList2)
+
+
+    def sendTexture(self, texture):
+        if texture != None:
+            mode = texture.getDataType()
+            print("Texture mode is", mode)
+
+            if mode == "RGB":
+                glMode = GL_RGB
+            elif mode == "RGBA":
+                glMode = GL_RGBA
+            else:
+                print("Unrecognized texture mode!")
+                return
+
+            print("Sending texture to OpenGL...")
+            glTexImage2D(GL_TEXTURE_2D, 0, glMode, texture.getXLen(), 
+                         texture.getYLen(), 0, glMode, GL_UNSIGNED_BYTE, 
+                         texture.getData())
+            print("Done sending")
 
 
     def cursorSelect(self):

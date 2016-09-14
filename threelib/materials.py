@@ -81,8 +81,8 @@ class MaterialReference(Resource):
         print("Reading image at", materialPath)
         image = Image.open(materialPath)
         image.load()
-        dataType = 'RGBA'
-        image = image.convert(dataType)
+        if image.mode != 'RGB' and image.mode != 'RGBA':
+            image = image.convert('RGB')
         xLen = image.width
         yLen = image.height
 
@@ -102,4 +102,4 @@ class MaterialReference(Resource):
         print("Done loading image")
         self.hasTexture = True
         self.aspectRatio = float(xLen) / float(yLen)
-        return Texture(texture, dataType, xLen, yLen)
+        return Texture(texture, image.mode, xLen, yLen)
