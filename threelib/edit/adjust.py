@@ -217,17 +217,13 @@ class ScaleAdjustor(Adjustor):
     # the lower edge
     # if resize is true, the adjustor will use a TRANSLATE grid type instead of
     # SCALE, and the values will be the bounds dimensions
-    def __init__(self, editorObject, edges, resize=False):
+    def __init__(self, editorObject, resize=False):
         self.editorObject = editorObject
         
         if resize:
             self.scale = self.editorObject.getDimensions()
         else:
             self.scale = Vector(1.0, 1.0, 1.0)
-
-        self.edges = Vector.fromTuple(edges)
-        self.originPoint = self.editorObject.getCenter() \
-                           - (self.editorObject.getDimensions()/2 * self.edges)
 
         self.resize = resize
 
@@ -243,8 +239,6 @@ class ScaleAdjustor(Adjustor):
         if v.z <= 0:
             v = v.setZ(self.scale.z)
         self.editorObject.scale(v / self.scale)
-        self.editorObject.setPosition(self.originPoint
-            + (self.editorObject.getDimensions()/2 * self.edges))
         self.scale = v
 
     def gridType(self):

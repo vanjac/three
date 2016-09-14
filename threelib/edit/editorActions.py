@@ -321,9 +321,12 @@ class EditorActions:
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
             if len(self.state.selectedObjects) == 0:
                 print("Nothing selected")
-            elif len(self.state.selectedObjects) == 1:
+            elif len(self.state.selectedObjects) == 1 \
+                 and edges[0] == 0 and edges[1] == 0 and edges[2] == 0:
+                # single ScaleAdjustor can't handle scaling from edges
+                # but it doesn't move the origin while scaling
                 self.setupAdjustMode(ScaleAdjustor(
-                    self.state.selectedObjects[0], edges, resize))
+                    self.state.selectedObjects[0], resize))
             else:
                 self.setupAdjustMode(MultiScaleAdjustor(
                     self.state.selectedObjects, edges, resize))
