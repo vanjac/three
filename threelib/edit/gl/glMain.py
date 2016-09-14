@@ -73,13 +73,13 @@ class GLEditorMain(EditorMain):
         return mouseButtonPressed[button]
 
     def shiftPressed():
-        return glutGetModifiers(GLUT_ACTIVE_SHIFT) != 0
+        return glutGetModifiers() & GLUT_ACTIVE_SHIFT
 
     def ctrlPressed():
-        return glutGetModifiers(GLUT_ACTIVE_CTRL) != 0
+        return glutGetModifiers() & GLUT_ACTIVE_CTRL
 
     def altPressed():
-        return glutGetModifiers(GLUT_ACTIVE_ALT) != 0
+        return glutGetModifiers() & GLUT_ACTIVE_CTRL
 
     def mouseX():
         global pmouseX
