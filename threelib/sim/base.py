@@ -85,6 +85,83 @@ class ActionList:
             action(toUpdateList)
         self.actions = [ ]
         return toUpdateList
+        
+        
+class Simulator(SimObject):
+    
+    def __init__(self):
+        self.actions = ActionList()
+        self.objects = [ ]
+        self.simSpeed = 1
+        
+        self.initialized = False
+        self.started = False
+        
+    def getObjects(self):
+        return self.objects
+        
+    def addObject(self, o):
+        def do(toUpdateList):
+            self.objects.append(o)
+            o.setSimulationSpeed(self.simSpeed)
+            if self.initialized:
+                o.init()
+            if self.started:
+                o.start()
+        self.actions.addAction(do)
+
+    def removeObject(self, o):
+        def do(toUpdateList):
+            self.objects.remove(o)
+            if self.started:
+                o.stop()
+            if self.initialized:
+                o.destroy()
+        self.actions.addAction(do)
+        
+    
+    def scan(self, timeElapsed, totalTime):
+        for o in self.objects:
+            o.scan(timeElapsed, totalTime)
+    
+    def setSimulationSpeed(self, speed):
+        self.simSpeed = speed
+        for o in self.objects:
+            o.setSimulationSpeed(speed)
+    
+    def init(self):
+        self.initialized = True
+        for o in self.objects:
+            o.init()
+    
+    def start(self):
+        self.started = True
+        for o in self.objects:
+            o.start()
+    
+    def end(self):
+        self.started = False
+        for o in self.objects:
+            o.end()
+    
+    def destroy(self):
+        self.initialized = False
+        for o in self.objects:
+            o.destroy()
+    
+    def update(self):
+        for o in self.objects:
+            if o.readyToRemove():
+                self.removeObject(o)
+        self.actions.doActions()
+        
+        objectsToUpdate = list(self.objects)
+        while len(objectsToUpdate) != 0:
+            o = objectsToUpdate.pop()
+            addedObjects = o.update()
+            for addedObject in addedObjects:
+                if not addedObject in objectsToUpdate:
+                    objectsToUpdate.append(addedObject)
 
 
 class Entity(SimObject):
