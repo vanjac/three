@@ -71,6 +71,6 @@ except ValueError: # mapName is not a number
 
 if editorMode:
     from threelib.edit.gl.glMain import GLEditorMain
-    GLEditorMain.main(flags, files.loadMapState(files.getCurrentMap()))
+    GLEditorMain(flags, files.loadMapState(files.getCurrentMap()))
 else:
     print("Not supported yet")

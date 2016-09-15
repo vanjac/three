@@ -3,41 +3,41 @@ __author__ = "vantjac"
 
 class EditorMain:
 
-    def getFps():
+    def getFps(self):
         return None
 
-    def windowWidth():
+    def windowWidth(self):
         return None
     
-    def windowHeight():
+    def windowHeight(self):
         return None
 
-    def getAspect():
+    def getAspect(self):
         return None
 
-    def getFOV():
+    def getFOV(self):
         return None
 
-    def buttonPressed(button=0):
+    def buttonPressed(self, button=0):
         return False
 
-    def shiftPressed():
+    def shiftPressed(self):
         return False
 
-    def ctrlPressed():
+    def ctrlPressed(self):
         return False
 
-    def altPressed():
+    def altPressed(self):
         return False
 
-    def mouseX():
+    def mouseX(self):
         return None
 
-    def mouseY():
+    def mouseY(self):
         return None
 
-    def lockMouse():
+    def lockMouse(self):
         pass
 
-    def unlockMouse():
+    def unlockMouse(self):
         pass

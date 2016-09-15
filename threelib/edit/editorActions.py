@@ -42,7 +42,7 @@ class EditorActions:
         self.adjustorOriginalValue = (0.0, 0.0, 0.0)
         self.selectedAxes = (EditorActions.X, EditorActions.Y)
         self.adjustMouseMovement = (0, 0) # in snap mode
-        self.adjustMouseGrid = 24 # number of pixels per grid line
+        self.adjustMouseGrid = 64 # number of pixels per grid line
         self.adjustCompleteAction = None # function that is run after completion
 
         # flags
