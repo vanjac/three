@@ -41,6 +41,7 @@ class GLEditor(EditorInterface):
     def __init__(self, state=None):
         super().__init__(state)
         self.graphicsTools = GLGraphicsTools()
+        print("OpenGL 1 Editor")
     
     def init(self):
         glPolygonStipple(stipplePattern)

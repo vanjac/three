@@ -75,4 +75,7 @@ if editorMode:
     interface = GLEditor(files.loadMapState(files.getCurrentMap()))
     GLAppInstance(interface, flags)
 else:
-    print("Not supported yet")
+    from threelib.appInstance.gl import GLAppInstance
+    from threelib.run.appInterface.gameInterface import GameInterface
+    interface = GameInterface(files.loadMapState(files.getCurrentMap()))
+    GLAppInstance(interface, flags)
