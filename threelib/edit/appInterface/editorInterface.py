@@ -9,7 +9,7 @@ from threelib.vectorMath import Rotate
 import threelib.vectorMath as vectorMath
 from threelib.app import AppInterface
 
-class EditorUI(EditorActions, AppInterface):
+class EditorInterface(EditorActions, AppInterface):
 
     def __init__(self, state=None):
         super().__init__(state)

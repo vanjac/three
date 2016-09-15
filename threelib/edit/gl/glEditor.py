@@ -2,7 +2,7 @@ __author__ = "vantjac"
 
 import math
 
-from threelib.edit.ui.editorUI import EditorUI
+from threelib.edit.appInterface.editorInterface import EditorInterface
 from threelib.edit.state import *
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
@@ -36,7 +36,7 @@ stipplePattern = [
     0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55 ]
 
 
-class GLEditor(EditorUI):
+class GLEditor(EditorInterface):
     
     def __init__(self, state=None):
         super().__init__(state)
