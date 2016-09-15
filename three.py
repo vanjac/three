@@ -70,9 +70,9 @@ except ValueError: # mapName is not a number
         exit()
 
 if editorMode:
-    from threelib.edit.gl.glMain import GLEditorMain
+    from threelib.appInstance.gl import GLAppInstance
     from threelib.edit.gl.glEditor import GLEditor
     interface = GLEditor(files.loadMapState(files.getCurrentMap()))
-    GLEditorMain(interface, flags)
+    GLAppInstance(interface, flags)
 else:
     print("Not supported yet")

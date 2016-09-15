@@ -14,7 +14,7 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
-class GLEditorMain(AppInstance):
+class GLAppInstance(AppInstance):
     
     # pass in an EditorState to initialize the Editor with that state
     def __init__(self, appInterface, flags):
@@ -49,7 +49,7 @@ class GLEditorMain(AppInstance):
         self.appInterface = appInterface
         appInterface.setAppInstance(self)
         
-        print("OpenGL 1 Editor")
+        print("OpenGL 1 App")
         
         # pass arguments to init
         glutInit(sys.argv)
