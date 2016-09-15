@@ -20,12 +20,11 @@ class EditorActions:
 
     ROTATE_GRID_SIZES = [5.0, 10.0, 15.0, 20.0, 30.0, 40.0, 45.0]
 
-    def __init__(self, editorMain, state=None):
+    def __init__(self, state=None):
         if state == None:
             self.state = EditorState()
         else:
             self.state = state
-        self.editorMain = editorMain
         self.movingCamera = False
         self.lookSpeed = .005
         self.flySpeed = 2.0

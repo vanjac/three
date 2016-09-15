@@ -1,7 +1,8 @@
 __author__ = "vantjac"
 
-from threelib.edit.ui.editorMain import EditorMain
-import threelib.edit.gl.glEditor
+from threelib.app import AppInterface
+from threelib.app import AppInstance
+
 import time # for fps
 import threading # for pyautogui mouse movement
 
@@ -13,10 +14,10 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
-class GLEditorMain(EditorMain):
+class GLEditorMain(AppInstance):
     
     # pass in an EditorState to initialize the Editor with that state
-    def __init__(self, flags, state=None):
+    def __init__(self, appInterface, flags):
         # Global projection settings
         # Call resetProjection() if any of these are changed
         self.aspect = 1 # aspect ratio of the window (width / height)
@@ -45,11 +46,10 @@ class GLEditorMain(EditorMain):
         self.fpsCount = 0
         self.fps = 0
         
+        self.appInterface = appInterface
+        appInterface.setAppInstance(self)
         
         print("OpenGL 1 Editor")
-        
-        # the editor
-        self.editor = threelib.edit.gl.glEditor.GLEditor(self, state)
         
         # pass arguments to init
         glutInit(sys.argv)
@@ -162,7 +162,7 @@ class GLEditorMain(EditorMain):
         glutSwapBuffers()
         # done drawing loading screen
 
-        self.editor.init()
+        self.appInterface.init()
     
     # Called when window is resized
     def resizeGL(self, width, height):
@@ -198,7 +198,7 @@ class GLEditorMain(EditorMain):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity() # reset the view
         
-        self.editor.draw()
+        self.appInterface.draw()
         
         if glGetError() != GL_NO_ERROR:
             print("GL Error!")
@@ -215,9 +215,9 @@ class GLEditorMain(EditorMain):
         pressed = args[1] == 0
         self.mouseButtonPressed[button] = pressed
         if pressed:
-            self.editor.mousePressed(button, args[2], args[3])
+            self.appInterface.mousePressed(button, args[2], args[3])
         else:
-            self.editor.mouseReleased(button, args[2], args[3])
+            self.appInterface.mouseReleased(button, args[2], args[3])
 
     def mouseMovement(self, mouseX, mouseY):
         # ignore mouse movements created by locking
@@ -227,7 +227,7 @@ class GLEditorMain(EditorMain):
             self.pmouseY = mouseY
             return
 
-        self.editor.mouseMoved(mouseX, mouseY, self.pmouseX, self.pmouseY)
+        self.appInterface.mouseMoved(mouseX, mouseY, self.pmouseX, self.pmouseY)
         self.framesSinceMouseLockMove += 1
         if self.mouseLocked and self.framesSinceMouseLockMove > 4:
             if mouseX > self.width - self.mouseLockMargin:
@@ -266,12 +266,12 @@ class GLEditorMain(EditorMain):
             pass
         else:
             self.keysPressed.append(key)
-            self.editor.keyPressed(key)
+            self.appInterface.keyPressed(key)
         
     def keyReleasedEvent(self, key, mouseX, mouseY):
         if key in self.keysPressed:
             self.keysPressed.remove(key)
-        self.editor.keyReleased(key)
+        self.appInterface.keyReleased(key)
 
     def drawText(self, text, font, x, y):
         depthEnabled = glIsEnabled(GL_DEPTH_TEST)
@@ -291,8 +291,4 @@ class GLEditorMain(EditorMain):
 
         glPopMatrix()
         glMatrixMode(GL_MODELVIEW)
-        
-        
-if __name__=="__main__":
-    GLEditorMain()
 

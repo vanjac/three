@@ -7,18 +7,22 @@ from threelib.edit.state import *
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 import threelib.vectorMath as vectorMath
+from threelib.app import AppInterface
 
-class EditorUI(EditorActions):
+class EditorUI(EditorActions, AppInterface):
 
-    def __init__(self, editorMain, state=None):
-        super().__init__(editorMain, state)
+    def __init__(self, state=None):
+        super().__init__(state)
         self.currentCommand = ""
+        
+    def setAppInstance(self, instance):
+        self.editorMain = instance
 
     def escape(self):
         super().escape()
         self.currentCommand = ""
 
-    def keyPressedEvent(self, key):
+    def keyPressed(self, key):
         if key[0] == 27: # escape
             self.escape()
         elif self.movingCamera:
@@ -56,7 +60,7 @@ class EditorUI(EditorActions):
             if clearCommand:
                 self.currentCommand = ""
 
-    def keyReleasedEvent(self, key):
+    def keyReleased(self, key):
         if self.movingCamera:
             if key == b'w':
                 self.fly = self.fly.setX(0)
@@ -275,7 +279,7 @@ class EditorUI(EditorActions):
 
     # mouse buttons: left=0, middle=1, right=2, 
     #   scroll-up=3, scroll-down=4, scroll-left=5, scroll-right=6
-    def mousePressedEvent(self, button, mouseX, mouseY):
+    def mousePressed(self, button, mouseX, mouseY):
         if button == 0:
             if self.inAdjustMode:
                 self.completeAdjust()
@@ -296,10 +300,10 @@ class EditorUI(EditorActions):
         if button == 4:
             self.flySpeed /= 1.1
     
-    def mouseReleasedEvent(self, button, mouseX, mouseY):
+    def mouseReleased(self, button, mouseX, mouseY):
         pass
 
-    def mouseMovedEvent(self, mouseX, mouseY, pmouseX, pmouseY):
+    def mouseMoved(self, mouseX, mouseY, pmouseX, pmouseY):
         if self.movingCamera:
             movement = Rotate(0,
                               -float(mouseY - pmouseY) * self.lookSpeed,

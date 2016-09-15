@@ -38,26 +38,9 @@ stipplePattern = [
 
 class GLEditor(EditorUI):
     
-    def __init__(self, editorMain, state=None):
-        super().__init__(editorMain, state)
+    def __init__(self, state=None):
+        super().__init__(state)
         self.graphicsTools = GLGraphicsTools()
-
-    def keyPressed(self, key):
-        self.keyPressedEvent(key)
-
-    def keyReleased(self, key):
-        self.keyReleasedEvent(key)
-        
-    # mouse buttons: left=0, middle=1, right=2, 
-    #   scroll-up=3, scroll-down=4, scroll-left=5, scroll-right=6
-    def mousePressed(self, button, mouseX, mouseY):
-        self.mousePressedEvent(button, mouseX, mouseY)
-        
-    def mouseReleased(self, button, mouseX, mouseY):
-        self.mouseReleasedEvent(button, mouseX, mouseY)
-    
-    def mouseMoved(self, mouseX, mouseY, pmouseX, pmouseY):
-        self.mouseMovedEvent(mouseX, mouseY, pmouseX, pmouseY)
     
     def init(self):
         glPolygonStipple(stipplePattern)

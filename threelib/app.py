@@ -1,7 +1,7 @@
-__author__ = "vantjac"
+__author__ = "jacobvanthoog"
 
 
-class EditorMain:
+class AppInstance:
 
     def getFps(self):
         return None
@@ -41,3 +41,31 @@ class EditorMain:
 
     def unlockMouse(self):
         pass
+        
+
+class AppInterface:
+
+    def setAppInstance(self, instance):
+        pass
+
+    def init(self):
+        pass
+        
+    def draw(self):
+        pass
+
+    def keyPressed(self, key):
+        pass
+    
+    def keyReleased(self, key):
+        pass
+        
+    def mousePressed(self, button, mouseX, mouseY):
+        pass
+        
+    def mouseReleased(self, button, mouseX, mouseY):
+        pass
+    
+    def mouseMoved(self, mouseX, mouseY, pmouseX, pmouseY):
+        pass
+
