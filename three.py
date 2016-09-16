@@ -76,6 +76,6 @@ if editorMode:
     GLAppInstance(interface, flags)
 else:
     from threelib.appInstance.gl import GLAppInstance
-    from threelib.run.appInterface.gameInterface import GameInterface
-    interface = GameInterface(files.loadMapState(files.getCurrentMap()))
+    from threelib.run.gl.glRunner import GLRunner
+    interface = GLRunner(files.loadMapState(files.getCurrentMap()))
     GLAppInstance(interface, flags)

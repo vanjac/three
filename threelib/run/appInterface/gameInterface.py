@@ -8,16 +8,9 @@ class GameInterface(AppInterface):
     def __init__(self, state):
         self.state = state
         self.instance = None
-        print("Game Runner")
 
     def setAppInstance(self, instance):
         self.instance = instance
-
-    def init(self):
-        pass
-        
-    def draw(self):
-        pass
 
     def keyPressed(self, key):
         pass

@@ -49,8 +49,6 @@ class GLAppInstance(AppInstance):
         self.appInterface = appInterface
         appInterface.setAppInstance(self)
         
-        print("OpenGL 1 App")
-        
         # pass arguments to init
         glutInit(sys.argv)
         
