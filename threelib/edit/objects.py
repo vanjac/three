@@ -47,7 +47,7 @@ class PointObject(EditorObject):
         self.drawSelectHull((1.0, 1.0, 1.0), graphicsTools)
     
     def drawSelectHull(self, color, graphicsTools):
-        graphicsTools.drawPoint(self.position, color, 10)
+        graphicsTools.drawPoint(Vector(0,0,0), color, 10)
     
     def getProperties(self):
         return super().getProperties()
