@@ -113,6 +113,9 @@ class EditorInterface(EditorActions, AppInterface):
             if c[1] == 'b':
                 self.createBox()
                 return True
+            if c[1] == 'p':
+                self.createPoint()
+                return True
 
         if c[0] == 'a':
             self.selectAll()

@@ -177,6 +177,11 @@ class EditorActions:
         print("Create box")
         box = MeshObject(self.state.translateGridSize)
         self.createObject(box)
+        
+    def createPoint(self):
+        print("Create point")
+        point = PointObject()
+        self.createObject(point)
 
     def createObject(self, newObject):
         self.selectMode(EditorState.SELECT_OBJECTS)
