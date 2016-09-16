@@ -244,6 +244,8 @@ class EditorInterface(EditorActions, AppInterface):
         if c[0] == 'r':
             self.toggleRelativeCoordinates()
             return True
+        if c[0] == 'l':
+            self.toggleAxisLock()
         if c[0] == 'g':
             if len(c) == 1 or c[-1].isdigit() or c[-1] == '.':
                 return False
@@ -353,49 +355,57 @@ class EditorInterface(EditorActions, AppInterface):
         else:
             change[0] = float(mouseXDiff) / float(mouseGrid) * grid
             change[1] = float(mouseYDiff) / float(mouseGrid) * grid
-
-        # 0 - 3
-        # 0 is looking down -x, 1 is looking down +y,
-        # 2 is looking down +x, 3 is looking down -y
-        quarter = round(self.state.cameraRotation.z / (math.pi / 2)) % 4
-        
-        # 0 - 3
-        # 0 is towards -x/+y, 1 is towards +x/+y,
-        # 2 is towards +x/-y, 3 is towards -x/-y
-        quadrant = math.floor(self.state.cameraRotation.z / (math.pi / 2))
-        
-        axes = self.selectedAxes
-        if axes[0] > axes[1]: # put axes in order
-            axes = (axes[1], axes[0])
             
-        if axes[0] == EditorActions.X and axes[1] == EditorActions.Y:
-            if quarter == 0:
-                axes = (EditorActions.Y, EditorActions.X)
-                change[1] = -change[1]
-            if quarter == 1:
-                pass
-            if quarter == 2:
-                axes = (EditorActions.Y, EditorActions.X)
-                change[0] = -change[0]
-            if quarter == 3:
-                change[0] = -change[0]
-                change[1] = -change[1]
-        elif axes[0] == EditorActions.X:
-            if quadrant == 2 or quadrant == 3:
-                change[0] = -change[0]
-        elif axes[0] == EditorActions.Y:
-            if quadrant == 1 or quadrant == 2:
-                change[0] = -change[0]
-        
-        # looking up reverses y mouse movement
-        if axes[1] != EditorActions.Z and self.state.cameraRotation.y < math.pi:
-            change[1] = -change[1]
+        if self.state.axisLockEnabled:
+            value = list(self.adjustor.getAxes())
+            value[0] += change[0]
+            value[1] += change[0]
+            value[2] += change[0]
+            self.adjustor.setAxes(tuple(value))
+        else:
+            # 0 - 3
+            # 0 is looking down -x, 1 is looking down +y,
+            # 2 is looking down +x, 3 is looking down -y
+            quarter = round(self.state.cameraRotation.z / (math.pi / 2)) % 4
+            
+            # 0 - 3
+            # 0 is towards -x/+y, 1 is towards +x/+y,
+            # 2 is towards +x/-y, 3 is towards -x/-y
+            quadrant = math.floor(self.state.cameraRotation.z / (math.pi / 2))
+            
+            axes = self.selectedAxes
+            if axes[0] > axes[1]: # put axes in order
+                axes = (axes[1], axes[0])
                 
-        value = list(self.adjustor.getAxes())
-        value[axes[0]] += change[0]
-        value[axes[1]] += change[1]
-        
-        self.adjustor.setAxes(tuple(value))
+            if axes[0] == EditorActions.X and axes[1] == EditorActions.Y:
+                if quarter == 0:
+                    axes = (EditorActions.Y, EditorActions.X)
+                    change[1] = -change[1]
+                if quarter == 1:
+                    pass
+                if quarter == 2:
+                    axes = (EditorActions.Y, EditorActions.X)
+                    change[0] = -change[0]
+                if quarter == 3:
+                    change[0] = -change[0]
+                    change[1] = -change[1]
+            elif axes[0] == EditorActions.X:
+                if quadrant == 2 or quadrant == 3:
+                    change[0] = -change[0]
+            elif axes[0] == EditorActions.Y:
+                if quadrant == 1 or quadrant == 2:
+                    change[0] = -change[0]
+            
+            # looking up reverses y mouse movement
+            if axes[1] != EditorActions.Z \
+                    and self.state.cameraRotation.y < math.pi:
+                change[1] = -change[1]
+                    
+            value = list(self.adjustor.getAxes())
+            value[axes[0]] += change[0]
+            value[axes[1]] += change[1]
+            
+            self.adjustor.setAxes(tuple(value))
 
 
     def getStatusBar(self):

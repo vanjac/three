@@ -97,3 +97,4 @@ Adjust mode is used to translate, rotate, and scale objects. It has a completely
 - `o` to jump to the Origin
 - A number, terminated by an `x` `y` or `z`, to set the value of a certain axis.
 - `r` to toggle Relative / absolute coordinates when entering axis values. Relative coordinates are relative to the starting position. Absolute is relative to the origin.
+- `l` to toggle Axis Lock. When this is enabled, adjustments are made using only horizontal movement of the mouse, and they change all axes at once.

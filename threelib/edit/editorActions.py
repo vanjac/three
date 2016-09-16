@@ -994,10 +994,11 @@ class EditorActions:
         self.adjustor.setAxes((0.0, 0.0, 0.0))
 
     def toggleRelativeCoordinates(self):
-        if self.state.relativeCoordinatesEnabled:
-            self.state.relativeCoordinatesEnabled = False
-        else:
-            self.state.relativeCoordinatesEnabled = True
+        self.state.relativeCoordinatesEnabled = \
+            not self.state.relativeCoordinatesEnabled
+            
+    def toggleAxisLock(self):
+        self.state.axisLockEnabled = not self.state.axisLockEnabled
 
     def setAdjustAxisValue(self, axis, number):
         value = list(self.adjustor.getAxes())
