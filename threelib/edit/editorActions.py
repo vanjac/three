@@ -400,6 +400,7 @@ class EditorActions:
         self.adjustor = adjustor
         self.adjustorOriginalValue = adjustor.getAxes()
         self.adjustMouseMovement = (0, 0)
+        self.adjustCompleteAction = None
         self.editorMain.lockMouse()
 
     def setupArrowAction(self, action):
