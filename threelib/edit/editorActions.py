@@ -329,6 +329,9 @@ class EditorActions:
                  and edges[0] == 0 and edges[1] == 0 and edges[2] == 0:
                 # single ScaleAdjustor can't handle scaling from edges
                 # but it doesn't move the origin while scaling
+                if self.state.selectedObjects[0].getMesh() == None:
+                    print("Cannot scale a point")
+                    return
                 self.setupAdjustMode(ScaleAdjustor(
                     self.state.selectedObjects[0], resize))
             else:

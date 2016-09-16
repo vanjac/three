@@ -355,6 +355,13 @@ class MultiScaleAdjustor(Adjustor):
             self.scale = dimensions
         else:
             self.scale = Vector(1.0, 1.0, 1.0)
+        # fix for zero dimensions caused by points
+        if self.scale.x == 0:
+            self.scale = self.scale.setX(1)
+        if self.scale.y == 0:
+            self.scale = self.scale.setY(1)
+        if self.scale.z == 0:
+            self.scale = self.scale.setZ(1)
 
         self.edges = Vector.fromTuple(edges)
         self.originPoint = center - (dimensions/2 * self.edges)
@@ -373,7 +380,8 @@ class MultiScaleAdjustor(Adjustor):
         if v.z <= 0:
             v = v.setZ(self.scale.z)
         for o in self.editorObjects:
-            o.scale(v / self.scale)
+            if o.getMesh() != None:
+                o.scale(v / self.scale)
             pos = o.getPosition()
             pos = (pos - self.originPoint) * (v / self.scale) + self.originPoint
             o.setPosition(pos)
