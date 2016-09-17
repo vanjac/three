@@ -39,7 +39,7 @@ class RenderMesh(Entity):
     def setBlockUseables(self, enabled):
         """
         Set whether the RenderMesh should block useables (see
-        `blocksUseables()`). No effect until update().
+        ``blocksUseables()``). No effect until update().
         """
         def do(toUpdateList):
             self.blockUseables = enabled

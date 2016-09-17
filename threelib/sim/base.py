@@ -4,6 +4,9 @@ from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 
 class SimObject:
+    """
+    An object in the game simulation.
+    """
     
     def scan(self, timeElapsed, totalTime):
         """
@@ -65,20 +68,25 @@ class SimObject:
         
         
 class ActionList:
+    """
+    A list of actions that accumulates, until they are all run at once and the
+    list is cleared.
+    """
     
     def __init__(self):
         self.actions = [ ]
         
     def addAction(self, action):
         """
-        action takes a single argument: a List of things to update, which it may
-        add to.
+        ``action`` should be a function that takes a single argument: a List of
+        things to update, which it may add to.
         """
         self.actions.append(action)
         
     def doActions(self):
         """
-        Return a List of things to update.
+        Do all of the actions that have been added so far, and clear the list.
+        Return the total List of things to update.
         """
         toUpdateList = [ ]
         for action in self.actions:
@@ -88,6 +96,10 @@ class ActionList:
         
         
 class Simulator(SimObject):
+    """
+    A special SimObject that contains multiple SimObjects, which are all
+    simulated at once.
+    """
     
     def __init__(self):
         self.actions = ActionList()
@@ -98,9 +110,15 @@ class Simulator(SimObject):
         self.started = False
         
     def getObjects(self):
+        """
+        Get all simulated objects.
+        """
         return self.objects
         
     def addObject(self, o):
+        """
+        Add an object to simulation. No effect until update().
+        """
         def do(toUpdateList):
             self.objects.append(o)
             o.setSimulationSpeed(self.simSpeed)
@@ -111,6 +129,9 @@ class Simulator(SimObject):
         self.actions.addAction(do)
 
     def removeObject(self, o):
+        """
+        Remove an object from simulation. No effect until update().
+        """
         def do(toUpdateList):
             self.objects.remove(o)
             if self.started:
@@ -165,6 +186,12 @@ class Simulator(SimObject):
 
 
 class Entity(SimObject):
+    """
+    A SimObject that has:
+    - A position and rotation
+    - A set of "children," and a reference to its parent.
+    - Built in implementations for ``update()`` and ``readyToRemove()``.
+    """
     
     def __init__(self, position=Vector(0, 0, 0), rotation=Rotate(0, 0, 0)):
         super().__init__()
@@ -178,6 +205,10 @@ class Entity(SimObject):
         self.remove = False
         
     def kill(self, children=False):
+        """
+        Mark this Entity, and optionally its children, as ready to remove. No
+        effect until update().
+        """
         if children:
             childList = list(self.children)
     
@@ -196,6 +227,10 @@ class Entity(SimObject):
         return self.rotation
         
     def translate(self, vector, moveChildren=True):
+        """
+        Change the position of this Entity, and optionally its children. No
+        effect until update().
+        """
         # if new children are added after this, they won't be moved
         if moveChildren:
             childrenToMove = list(self.children)
@@ -209,6 +244,10 @@ class Entity(SimObject):
         self.actions.addAction(do)
         
     def rotate(self, rotate, moveChildren=True):
+        """
+        Rotate this Entity, and optionally its children (they will be rotated
+        around this Entity). No effect until update().
+        """
         # if new children are added after this, they won't be moved
         if moveChildren:
             childrenToMove = list(self.children)
@@ -227,6 +266,9 @@ class Entity(SimObject):
         self.actions.addAction(do)
 
     def getParent(self):
+        """
+        Get the Entity that has this Entity as a child. Automatically set.
+        """
         return self.parent
 
     def setParent(self, parent):
@@ -238,6 +280,9 @@ class Entity(SimObject):
         return self.children
 
     def addChild(self, child):
+        """
+        Add a child. No effect until update().
+        """
         def do(toUpdateList):
             self.children.append(child)
             child.setParent(self)
@@ -245,6 +290,9 @@ class Entity(SimObject):
         self.actions.addAction(do)
 
     def removeChild(self, child):
+        """
+        Remove a child. No effect until update().
+        """
         def do(toUpdateList):
             self.children.remove(child)
             child.setParent(None)
