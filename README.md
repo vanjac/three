@@ -49,6 +49,8 @@ By default, three starts in Run Mode, which doesn't currently exist. To start th
 
 Try navigating to the root of this repository and typing `python3 three.py gameDirTemplate 1 -edit`. If a window appears with green and blue lines and some text at the bottom, it worked.
 
+You should keep the terminal window that you used to start three open. It is used for messages and errors.
+
 ## Controls
 
 ### General
