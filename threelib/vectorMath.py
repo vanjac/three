@@ -354,7 +354,8 @@ class Vector:
         sinX = math.sin(amount)
         cosX = math.cos(amount)
         return Vector( self.x * cosX - self.y * sinX,
-                       self.y * cosX + self.x * sinX )
+                       self.y * cosX + self.x * sinX,
+                       self.z )
     
     def rotate2Around(self, amount, center):
         """
