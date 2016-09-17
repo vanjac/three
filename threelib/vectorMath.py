@@ -36,7 +36,7 @@ def numToStr(num):
     if num % 1.0 == 0.0:
         return str(int(num))
     else:
-        return str(num)
+        return "{0:.3f}".format(num)
 
 def isclose(a, b, rel_tol=1e-9, abs_tol=1e-9):
     """

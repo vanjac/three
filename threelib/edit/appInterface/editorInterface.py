@@ -425,10 +425,7 @@ class EditorInterface(EditorActions, AppInterface):
                 value = (value[0]-origin[0],
                          value[1]-origin[1],
                          value[2]-origin[2])
-            text += "(" + \
-                    ("{0:.2f}".format(value[0])) + "," + \
-                    ("{0:.2f}".format(value[1])) + "," + \
-                    ("{0:.2f}".format(value[2])) + ")"
+            text += vectorMath.tripleTupleToString(value)
             if self.state.relativeCoordinatesEnabled:
                 text += " relative | "
             else:
