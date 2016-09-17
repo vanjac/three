@@ -7,6 +7,8 @@ class World:
         self.addedMaterials = [ ]
         self.removedMaterials = [ ]
         self.updatedMaterials = [ ]
+        
+        self.renderMeshes = [ ]
 
     def onLoad(self):
         for mat in self.materials:

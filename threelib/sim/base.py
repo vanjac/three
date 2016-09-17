@@ -175,6 +175,20 @@ class Entity(SimObject):
         self.parent = None
         self.children = [ ]
         
+        self.remove = False
+        
+    def kill(self, children=False):
+        if children:
+            childList = list(self.children)
+    
+        def do(toUpdateList):
+            self.remove = True
+            if children:
+                for child in childList:
+                    child.kill(children=True)
+                    toUpdateList.append(child)
+        self.actions.addAction(do)
+        
     def getPosition(self):
         return self.position
 
@@ -239,4 +253,7 @@ class Entity(SimObject):
 
     def update(self, time):
         return self.actions.doActions()
+        
+    def readyToRemove(self):
+        return remove
         
