@@ -58,6 +58,7 @@ You should keep the terminal window that you used to start three open. It is use
 - `` ` `` to save
 - Right click, then use the mouse and `WASDQE` keys to fly around. Use the mouse wheel to control fly speed.
 - `nb` to create a New Box and enter translate-adjust mode to move it (see below)
+- `np` to create a New Point and enter translate-adjust mode to move it
 - Left click to select objects; hold shift to select multiple.
 - `a` to select none or All objects
 - `Backspace` to delete objects
