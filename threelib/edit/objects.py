@@ -44,7 +44,10 @@ class PointObject(EditorObject):
         return None
     
     def drawObject(self, graphicsTools):
-        self.drawSelectHull((1.0, 1.0, 1.0), graphicsTools)
+        if self.isSelected():
+            graphicsTools.drawPoint(Vector(0,0,0), (0.0, 1.0, 1.0), 12)
+        else:
+            graphicsTools.drawPoint(Vector(0,0,0), (1.0, 1.0, 1.0), 12)
     
     def drawSelectHull(self, color, graphicsTools):
         graphicsTools.drawPoint(Vector(0,0,0), color, 10)
