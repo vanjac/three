@@ -62,6 +62,9 @@ class PointObject(EditorObject):
     
     def addToClone(self, clone):
         super().addToClone(clone)
+        clone.setRotation(self.baseRotation)
+        clone.applyRotation()
+        clone.setRotation(self.rotation)
 
 
 class MeshObject(EditorObject):
