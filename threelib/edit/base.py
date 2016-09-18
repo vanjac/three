@@ -222,12 +222,6 @@ class EditorObject:
         Add a representation to the world.
         """
         pass
-        
-    def removeFromWorld(self, world):
-        """
-        Remove the representation created by ``addToWorld()``.
-        """
-        pass
 
 
 class WorldObject(EditorObject):
