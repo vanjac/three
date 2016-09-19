@@ -3,6 +3,7 @@ __author__ = "vantjac"
 import math
 
 from threelib.edit.base import EditorObject
+from threelib.edit.base import stringToBoolean
 from threelib.vectorMath import *
 from threelib.mesh import *
 
@@ -184,29 +185,92 @@ class SolidMeshObject(MeshObject):
 
     def __init__(self, scale=1):
         super().__init__(scale)
-        self.blockUseables = True
+        
+        # properties:
         self.visible = True
+        self.blockUseables = True
         self.useAction = ""
+        
+        self.generateWalls = True
+        self.wallCollideAction = ""
+        
+        self.generateFloor = True
+        self.floorStartTouchAction = ""
+        self.floorEndTouchAction = ""
+        
+        self.generateCeiling = True
+        self.ceilingStartTouchAction = ""
+        self.ceilingEndTouchAction = ""
+        
+        self.generateVolume = False
+        self.volumeStartTouchAction = ""
+        self.volumeEndTouchAction = ""
     
     def addToWorld(self, world):
         renderMesh = RenderMesh(self.getMesh())
+        renderMesh.setVisible(self.visible)
+        renderMesh.setUseAction(self.useAction)
+        renderMesh.setBlockUseables(self.blockUseables)
         world.renderMeshes.append(renderMesh)
+        
+        return renderMesh
         
     def getProperties(self):
         props = super().getProperties()
-        props.update({ "blockUseables" : str(self.blockUseables),
-                       "visible" : str(self.visible),
-                       "useAction" : self.useAction
+        props.update({ "visible" : str(self.visible),
+                       "blockUseables" : str(self.blockUseables),
+                       "useAction" : self.useAction,
+                       
+                       "generateWalls" : str(self.generateWalls),
+                       "wallCollideAction" : self.wallCollideAction,
+                       
+                       "generateFloor" : str(self.generateFloor),
+                       "floorStartTouchAction" : self.floorStartTouchAction,
+                       "floorEndTouchAction" : self.floorEndTouchAction,
+                       
+                       "generateCeiling" : str(self.generateCeiling),
+                       "ceilingStartTouchAction" : self.ceilingStartTouchAction,
+                       "ceilingEndTouchAction" : self.ceilingEndTouchAction,
+                       
+                       "generateVolume" : str(self.generateVolume),
+                       "volumeStartTouchAction" : self.volumeStartTouchAction,
+                       "volumeEndTouchAction" : self.volumeEndTouchAction
                      })
         return props
         
     def setProperties(self, properties):
         super().setProperties(properties)
         for key, value in properties.items():
-            if key == "blockUseables":
-                self.blockUseables = value.lower() == "true"
             if key == "visible":
-                self.visible = value.lower() == "true"
+                self.visible = stringToBoolean(value)
+            if key == "blockUseables":
+                self.blockUseables = stringToBoolean(value)
             if key == "useAction":
                 self.useAction = value
+            
+            if key == "generateWalls":
+                self.generateWalls = stringToBoolean(value)
+            if key == "wallCollideAction":
+                self.wallCollideAction = value
+                
+            if key == "generateFloor":
+                self.generateFloor = stringToBoolean(value)
+            if key == "floorStartTouchAction":
+                self.floorStartTouchAction = value
+            if key == "floorEndTouchAction":
+                self.floorEndTouchAction = value
+            
+            if key == "generateCeiling":
+                self.generateCeiling = stringToBoolean(value)
+            if key == "ceilingStartTouchAction":
+                self.ceilingStartTouchAction = value
+            if key == "ceilingEndTouchAction":
+                self.ceilingEndTouchAction = value
+                
+            if key == "generateVolume":
+                self.generateVolume = stringToBoolean(value)
+            if key == "volumeStartTouchAction":
+                self.volumeStartTouchAction = value
+            if key == "volumeEndTouchAction":
+                self.volumeEndTouchAction = value
 

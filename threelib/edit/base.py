@@ -7,6 +7,14 @@ from threelib.vectorMath import Rotate
 import ast
 
 
+# utilities for parsing properties
+def stringToTripleTuple(s):
+    return ast.literal_eval(s)
+    
+def stringToBoolean(s):
+    s = s.lower().strip()
+    return not (s == 'false' or s == '0' or s == '')
+
 class EditorObject:
     """
     An abstract class for objects that can be manipulated in the editor, and
@@ -139,9 +147,10 @@ class EditorObject:
             if key == "name":
                 self.setName(value)
             if key == "position":
-                self.setPosition(Vector.fromTuple(ast.literal_eval(value)))
+                self.setPosition(Vector.fromTuple(stringToTripleTuple(value)))
             if key == "rotation":
-                self.setRotation(Rotate.fromTuple(ast.literal_eval(value)))
+                self.setRotation(Rotate.fromDegreesTuple(
+                    stringToTripleTuple(value)))
 
     def getParent(self):
         """

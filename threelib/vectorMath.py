@@ -469,6 +469,12 @@ class Rotate:
     @staticmethod
     def fromTuple(t):
         return Rotate(t[0], t[1], t[2])
+        
+    @staticmethod
+    def fromDegreesTuple(t):
+        return Rotate(math.radians(t[0]),
+                      math.radians(t[1]),
+                      math.radians(t[2]))
 
     def __init__(self, x, y, z):
         """
@@ -480,7 +486,7 @@ class Rotate:
         self.z = fixRotation(z)
     
     def __repr__(self):
-        return tripleTupleToString(self.getTuple())
+        return tripleTupleToString(self.getDegreesTuple())
     
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -497,6 +503,14 @@ class Rotate:
         x, y, and z axes.
         """
         return (self.x, self.y, self.z)
+        
+    def getDegreesTuple(self):
+        """
+        Similar to ``getTuple()``, uses degrees instead of radians
+        """
+        return (math.degrees(self.x),
+                math.degrees(self.y),
+                math.degrees(self.z))
     
     def isZero(self):
         """
