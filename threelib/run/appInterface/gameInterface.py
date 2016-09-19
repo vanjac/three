@@ -1,13 +1,20 @@
 __author__ = "jacobvanthoog"
 
 from threelib.app import AppInterface
+import threelib.world
 
 
 class GameInterface(AppInterface):
 
     def __init__(self, state):
-        self.state = state
         self.instance = None
+        
+        print("Building world...")
+        threelib.world.buildWorld(state)
+        print("Done building world")
+        
+        self.world = state.world
+        
 
     def setAppInstance(self, instance):
         self.instance = instance

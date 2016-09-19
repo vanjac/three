@@ -69,13 +69,17 @@ except ValueError: # mapName is not a number
         print("Map", mapName, "not found")
         exit()
 
+state = files.loadMapState(files.getCurrentMap())
 if editorMode:
     from threelib.appInstance.gl import GLAppInstance
     from threelib.edit.gl.glEditor import GLEditor
-    interface = GLEditor(files.loadMapState(files.getCurrentMap()))
+    interface = GLEditor(state)
     GLAppInstance(interface, flags)
 else:
+    if state == None:
+        print("Map", mapName, "not found")
+        exit()
     from threelib.appInstance.gl import GLAppInstance
     from threelib.run.gl.glRunner import GLRunner
-    interface = GLRunner(files.loadMapState(files.getCurrentMap()))
+    interface = GLRunner(state)
     GLAppInstance(interface, flags)

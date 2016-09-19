@@ -15,6 +15,7 @@ class GLRunner(GameInterface):
         print("OpenGL 1 Game Runner")
         
     def init(self):
+        self.instance.updateMaterials(self.world)
         pass
         
     def draw(self):

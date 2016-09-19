@@ -289,4 +289,60 @@ class GLAppInstance(AppInstance):
 
         glPopMatrix()
         glMatrixMode(GL_MODELVIEW)
+        
+    # gl-specific and three-specific functions:
+    
+    def updateMaterials(self, world):
+        """
+        Should be called every loop
+        """
+        for m in world.getAddedMaterials():
+            m.setLoaded(True)
+            texture = m.loadAlbedoTexture()
+            texName = glGenTextures(1)
+            m.setNumber(texName)
+            
+            # even if the texture was not loaded correctly, it might be
+            # reloaded correctly in the future, so everything has to be set up
+            glBindTexture(GL_TEXTURE_2D, texName);
+            
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 
+                            GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
+                            GL_NEAREST);
+            
+            self.sendTexture(texture)
+
+        for m in world.getUpdatedMaterials():
+            m.setLoaded(True)
+            texture = m.loadAlbedoTexture()
+            texName = m.getNumber()
+            
+            glBindTexture(GL_TEXTURE_2D, texName);
+            self.sendTexture(texture)
+        
+        for m in world.getRemovedMaterials():
+            texName = m.getNumber()
+            glDeleteTextures([texName])
+    
+    def sendTexture(self, texture):
+        if texture != None:
+            mode = texture.getDataType()
+            print("Texture mode is", mode)
+
+            if mode == "RGB":
+                glMode = GL_RGB
+            elif mode == "RGBA":
+                glMode = GL_RGBA
+            else:
+                print("Unrecognized texture mode!")
+                return
+
+            print("Sending texture to OpenGL...")
+            glTexImage2D(GL_TEXTURE_2D, 0, glMode, texture.getXLen(), 
+                         texture.getYLen(), 0, glMode, GL_UNSIGNED_BYTE, 
+                         texture.getData())
+            print("Done sending")
 

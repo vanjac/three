@@ -83,3 +83,11 @@ class Resource:
 
     def hasNoReferences(self):
         return self.references == 0
+        
+        
+
+def buildWorld(editorState):
+    world = editorState.world
+    for o in editorState.objects:
+        o.addToWorld(world)
+
