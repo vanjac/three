@@ -275,6 +275,16 @@ class Entity(SimObject):
         def do(toUpdateList):
             self.parent = parent
         self.actions.addAction(do)
+        
+    def removeFromParent(self):
+        """
+        Remove this Entity as a child from its parent.
+        """
+        def do(toUpdateList):
+            if self.parent != None:
+                self.parent.removeChild(self)
+                toUpdateList.append(parent)
+        self.actions.addAction(do)
     
     def getChildren(self):
         return self.children
@@ -285,6 +295,7 @@ class Entity(SimObject):
         """
         def do(toUpdateList):
             self.children.append(child)
+            child.removeFromParent()
             child.setParent(self)
             toUpdateList.append(child)
         self.actions.addAction(do)

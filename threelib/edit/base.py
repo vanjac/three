@@ -192,7 +192,7 @@ class EditorObject:
         Remove this object as a child from its parent. 
         """
         if self.parent != None:
-            self.parent().removeChild(self)
+            self.parent.removeChild(self)
     
     def isSelected(self):
         """
