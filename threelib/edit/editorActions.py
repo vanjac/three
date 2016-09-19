@@ -7,6 +7,7 @@ from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 import threelib.vectorMath as vectorMath
 from threelib.edit.objects import *
+from threelib.edit.base import PointObject
 from threelib.edit.adjust import *
 from threelib.materials import MaterialReference
 
