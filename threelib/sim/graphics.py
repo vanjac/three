@@ -1,8 +1,8 @@
 __author__ = "jacobvanthoog"
 
-import threelib.sim.base.Entity
+import threelib.sim.base
 
-class RenderMesh(Entity):
+class RenderMesh(threelib.sim.base.Entity):
     """
     A mesh that is shown in the game.
     """

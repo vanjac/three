@@ -219,7 +219,8 @@ class EditorObject:
         
     def addToWorld(self, world):
         """
-        Add a representation to the world.
+        Add a representation to the world. Return a SimObject that represents
+        this EditorObject.
         """
         pass
 

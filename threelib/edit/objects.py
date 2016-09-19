@@ -6,6 +6,8 @@ from threelib.edit.base import EditorObject
 from threelib.vectorMath import *
 from threelib.mesh import *
 
+from threelib.sim.graphics import RenderMesh
+
 
 class PointObject(EditorObject):
     
@@ -176,3 +178,10 @@ class MeshObject(EditorObject):
     def addToClone(self, clone):
         super().addToClone(clone)
         clone.setMesh(self.mesh.clone())
+      
+        
+class SolidMeshObject(MeshObject):
+    
+    def addToWorld(self, world):
+        renderMesh = RenderMesh(self.getMesh())
+        world.renderMeshes.append(renderMesh)

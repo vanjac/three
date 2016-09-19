@@ -175,7 +175,7 @@ class EditorActions:
 
     def createBox(self):
         print("Create box")
-        box = MeshObject(self.state.translateGridSize)
+        box = SolidMeshObject(self.state.translateGridSize)
         self.createObject(box)
         
     def createPoint(self):
