@@ -181,7 +181,32 @@ class MeshObject(EditorObject):
       
         
 class SolidMeshObject(MeshObject):
+
+    def __init__(self, scale=1):
+        super().__init__(scale)
+        self.blockUseables = True
+        self.visible = True
+        self.useAction = ""
     
     def addToWorld(self, world):
         renderMesh = RenderMesh(self.getMesh())
         world.renderMeshes.append(renderMesh)
+        
+    def getProperties(self):
+        props = super().getProperties()
+        props.update({ "blockUseables" : str(self.blockUseables),
+                       "visible" : str(self.visible),
+                       "useAction" : self.useAction
+                     })
+        return props
+        
+    def setProperties(self, properties):
+        super().setProperties(properties)
+        for key, value in properties.items():
+            if key == "blockUseables":
+                self.blockUseables = value.lower() == "true"
+            if key == "visible":
+                self.visible = value.lower() == "true"
+            if key == "useAction":
+                self.useAction = value
+
