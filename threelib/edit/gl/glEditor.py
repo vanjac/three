@@ -123,9 +123,15 @@ class GLEditor(EditorInterface):
             
             if select:
                 glDisable(GL_POLYGON_STIPPLE)
+                # a green line is used for the direction
+                glColor(0.0, 1.0, 0.0)
+                glBegin(GL_LINES)
+                glVertex(0, 0, 0)
+                endPoint = Vector(32, 0, 0).rotate(o.getRotation())
+                glVertex(endPoint.y, endPoint.z, endPoint.x)
+                glEnd()
                 if o.getMesh() != None:
                     # a green point is used for the origin
-                    glColor(0.0, 1.0, 0.0)
                     glPointSize(12)
                     glBegin(GL_POINTS)
                     glVertex(0, 0, 0)
