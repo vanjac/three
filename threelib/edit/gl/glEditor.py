@@ -81,9 +81,12 @@ class GLEditor(EditorInterface):
         glRotate(math.degrees(rotate.y), -1, 0, 0)
         glRotate(math.degrees(rotate.z), 0, 1, 0)
         glTranslate(translate.y, translate.z, translate.x)
-
-        self.state.cameraPosition += (-self.fly * self.flySpeed).rotate(
-            -self.state.cameraRotation)
+        
+        fps = float(self.editorMain.getFps())
+        if fps == 0:
+            fps = 60
+        self.state.cameraPosition += (-self.fly * self.flySpeed / fps) \
+            .rotate(-self.state.cameraRotation)
         
         drawVertices = self.state.selectMode == EditorState.SELECT_VERTICES
         

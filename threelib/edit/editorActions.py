@@ -28,7 +28,7 @@ class EditorActions:
             self.state = state
         self.movingCamera = False
         self.lookSpeed = .005
-        self.flySpeed = 2.0
+        self.flySpeed = 128.0
         self.fly = Vector(0, 0, 0) # each component can be 0, 1, or -1
 
         # clip arrow
