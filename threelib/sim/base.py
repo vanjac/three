@@ -310,7 +310,7 @@ class Entity(SimObject):
             toUpdateList.append(child)
         self.actions.addAction(do)
 
-    def update(self, time):
+    def update(self):
         return self.actions.doActions()
         
     def readyToRemove(self):

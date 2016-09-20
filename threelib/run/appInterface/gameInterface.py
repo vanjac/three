@@ -15,6 +15,10 @@ class GameInterface(AppInterface):
         
         self.world = state.world
         
+        # temporary fix
+        for renderMesh in self.world.renderMeshes:
+            renderMesh.update()
+        
 
     def setAppInstance(self, instance):
         self.instance = instance

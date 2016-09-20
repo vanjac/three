@@ -209,8 +209,7 @@ class EditorObject:
     def clone(self):
         """
         Clone this object. The new object will NOT have a parent or children.
-        Don't override this to add functionality. Instead override
-        ``addToClone``.
+        Override this.
         """
         clone = EditorObject()
         self.addToClone(clone)

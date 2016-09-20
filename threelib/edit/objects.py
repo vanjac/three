@@ -35,6 +35,8 @@ class SolidMeshObject(MeshObject):
     
     def addToWorld(self, world):
         renderMesh = RenderMesh(self.getMesh())
+        renderMesh.translate(self.getPosition())
+        renderMesh.rotate(self.getRotation())
         renderMesh.setVisible(self.visible)
         renderMesh.setUseAction(self.useAction)
         renderMesh.setBlockUseables(self.blockUseables)
@@ -100,4 +102,31 @@ class SolidMeshObject(MeshObject):
                 self.volumeStartTouchAction = value
             if key == "volumeEndTouchAction":
                 self.volumeEndTouchAction = value
+                
+    def clone(self):
+        clone = SolidMeshObject()
+        self.addToClone(clone)
+        return clone
+
+    def addToClone(self, clone):
+        super().addToClone(clone)
+        
+        clone.visible = self.visible
+        clone.blockUseables = self.blockUseables
+        clone.useAction = self.useAction
+        
+        clone.generateWalls = self.generateWalls
+        clone.wallCollideAction = self.wallCollideAction
+        
+        clone.generateFloor = self.generateFloor
+        clone.floorStartTouchAction = self.floorStartTouchAction
+        clone.floorEndTouchAction = self.floorEndTouchAction
+        
+        clone.generateCeiling = self.generateCeiling
+        clone.ceilingStartTouchAction = self.ceilingStartTouchAction
+        clone.ceilingEndTouchAction = self.ceilingEndTouchAction
+        
+        clone.generateVolume = self.generateVolume
+        clone.volumeStartTouchAction = self.volumeStartTouchAction
+        clone.volumeEndTouchAction = self.volumeEndTouchAction
 
