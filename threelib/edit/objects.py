@@ -38,7 +38,9 @@ class SolidMeshObject(MeshObject):
         renderMesh.translate(self.getPosition())
         renderMesh.rotate(self.getRotation())
         renderMesh.setVisible(self.visible)
-        renderMesh.setUseAction(self.useAction)
+        def useAction():
+            exec(self.useAction)
+        renderMesh.setUseAction(useAction)
         renderMesh.setBlockUseables(self.blockUseables)
         world.renderMeshes.append(renderMesh)
         
