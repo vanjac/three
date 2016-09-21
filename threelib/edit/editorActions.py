@@ -7,7 +7,6 @@ from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 import threelib.vectorMath as vectorMath
 from threelib.edit.objects import *
-from threelib.edit.base import PointObject
 from threelib.edit.adjust import *
 from threelib.materials import MaterialReference
 
@@ -130,6 +129,9 @@ class EditorActions:
                     return
             else: # in multi line
                 if line == "~~~":
+                    if len(multiLineValue) > 0:
+                        # delete the last line break
+                        multiLineValue = multiLineValue[:-1]
                     inMultiLine = False
                     props[multiLineKey] = multiLineValue
                 else:
@@ -181,7 +183,7 @@ class EditorActions:
         
     def createPoint(self):
         print("Create point")
-        point = PointObject()
+        point = ScriptPointObject()
         self.createObject(point)
 
     def createObject(self, newObject):

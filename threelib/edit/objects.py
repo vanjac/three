@@ -3,6 +3,7 @@ __author__ = "vantjac"
 import math
 
 from threelib.edit.base import MeshObject
+from threelib.edit.base import PointObject
 from threelib.edit.base import stringToBoolean
 
 from threelib.sim.graphics import RenderMesh
@@ -131,4 +132,45 @@ class SolidMeshObject(MeshObject):
         clone.generateVolume = self.generateVolume
         clone.volumeStartTouchAction = self.volumeStartTouchAction
         clone.volumeEndTouchAction = self.volumeEndTouchAction
+
+
+class ScriptPointObject(PointObject):
+
+    def __init__(self):
+        super().__init__()
+        
+        # properties
+        self.variableName = "" # will be a global that other scripts can access
+        self.constructor = ""
+        self.script = "\n\n"
+
+    def getProperties(self):
+        props = super().getProperties()
+        props.update({ "variableName" : self.variableName,
+                       "constructor" : self.constructor,
+                       "script" : self.script
+                      })
+        return props
+        
+    def setProperties(self, properties):
+        super().setProperties(properties)
+        for key, value in properties.items():
+            if key == "variableName":
+                self.variableName = value
+            if key == "constructor":
+                self.constructor = value
+            if key == "script":
+                self.script = value
+    
+    def clone(self):
+        clone = ScriptPointObject()
+        self.addToClone(clone)
+        return clone
+
+    def addToClone(self, clone):
+        super().addToClone(clone)
+        
+        clone.variableName = self.variableName
+        clone.constructor = self.constructor
+        clone.script = self.script
 
