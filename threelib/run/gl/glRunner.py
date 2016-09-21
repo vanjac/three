@@ -23,6 +23,8 @@ class GLRunner(GameInterface):
         self.instance.updateMaterials(self.world)
         
     def draw(self):
+        self.step()
+    
         for renderMesh in self.world.renderMeshes:
             if not renderMesh.isVisible():
                 continue

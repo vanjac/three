@@ -314,5 +314,5 @@ class Entity(SimObject):
         return self.actions.doActions()
         
     def readyToRemove(self):
-        return remove
+        return self.remove
         
