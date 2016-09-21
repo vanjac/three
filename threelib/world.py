@@ -1,8 +1,12 @@
 __author__ = "vantjac"
 
+from threelib.sim.base import Simulator
+
 class World:
     
     def __init__(self):
+        self.simulator = None
+    
         self.materials = [ ] # list of MaterialReference's
         self.addedMaterials = [ ]
         self.removedMaterials = [ ]
@@ -88,6 +92,8 @@ class Resource:
 
 def buildWorld(editorState):
     world = editorState.world
+    world.simulator = Simulator()
+    
     for o in editorState.objects:
         o.addToWorld(world)
 

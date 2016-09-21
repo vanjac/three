@@ -1,7 +1,6 @@
 __author__ = "jacobvanthoog"
 
 from threelib.app import AppInterface
-from threelib.sim.base import Simulator
 from threelib.run.runner import GameRunner
 import threelib.world
 
@@ -17,16 +16,11 @@ class GameInterface(AppInterface):
         print("Done building world")
         
         self.world = state.world
-        self.simulator = Simulator()
-        
-        # temporary fix
-        for renderMesh in self.world.renderMeshes:
-            self.simulator.addObject(renderMesh)
             
-        self.simulator.init()
-        self.simulator.start()
+        self.world.simulator.init()
+        self.world.simulator.start()
         
-        self.runner = GameRunner(self.simulator, time.time())
+        self.runner = GameRunner(self.world.simulator, time.time())
         
     # called by interface implementation every draw
     def step(self):

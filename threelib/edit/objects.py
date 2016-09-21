@@ -45,6 +45,8 @@ class SolidMeshObject(MeshObject):
         renderMesh.setBlockUseables(self.blockUseables)
         world.renderMeshes.append(renderMesh)
         
+        world.simulator.addObject(renderMesh)
+        
         return renderMesh
         
     def getProperties(self):
