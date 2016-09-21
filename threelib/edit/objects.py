@@ -7,6 +7,8 @@ from threelib.edit.base import PointObject
 from threelib.edit.base import stringToBoolean
 
 from threelib.sim.graphics import RenderMesh
+
+import threelib.script
       
         
 class SolidMeshObject(MeshObject):
@@ -145,6 +147,12 @@ class ScriptPointObject(PointObject):
         self.variableName = "" # will be a global that other scripts can access
         self.constructor = ""
         self.script = "\n\n"
+    
+    def addToWorld(self, world):
+        threelib.script.runScript(self.script)
+        simObject = threelib.script.setVariable(self.constructor,
+                                                self.variableName)
+        world.simulator.addObject(simObject)
 
     def getProperties(self):
         props = super().getProperties()
