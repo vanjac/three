@@ -14,6 +14,7 @@ def setVariable(script, varName):
     Set a variable from the value of the script. Return the value.
     """
     value = eval(script, globals(), localDict)
-    localDict[varName] = value
+    if varName != "":
+        localDict[varName] = value
     return value
 

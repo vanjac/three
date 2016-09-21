@@ -30,8 +30,9 @@ class EditorObject:
     
     def getName(self):
         """
-        Return the name of the EditorObject as a string. Names have no meaning
-        and are for organization only.
+        Return the name of the EditorObject as a string. Names usually have no
+        meaning and are for organization only, but for ScriptPointObjects they
+        are the variable name of the Entity.
         """
         return self.name
 

@@ -144,20 +144,18 @@ class ScriptPointObject(PointObject):
         super().__init__()
         
         # properties
-        self.variableName = "" # will be a global that other scripts can access
         self.constructor = ""
         self.script = "\n\n"
     
     def addToWorld(self, world):
         threelib.script.runScript(self.script)
         simObject = threelib.script.setVariable(self.constructor,
-                                                self.variableName)
+                                                self.getName())
         world.simulator.addObject(simObject)
 
     def getProperties(self):
         props = super().getProperties()
-        props.update({ "variableName" : self.variableName,
-                       "constructor" : self.constructor,
+        props.update({ "constructor" : self.constructor,
                        "script" : self.script
                       })
         return props
@@ -165,8 +163,6 @@ class ScriptPointObject(PointObject):
     def setProperties(self, properties):
         super().setProperties(properties)
         for key, value in properties.items():
-            if key == "variableName":
-                self.variableName = value
             if key == "constructor":
                 self.constructor = value
             if key == "script":
@@ -180,7 +176,6 @@ class ScriptPointObject(PointObject):
     def addToClone(self, clone):
         super().addToClone(clone)
         
-        clone.variableName = self.variableName
         clone.constructor = self.constructor
         clone.script = self.script
 
