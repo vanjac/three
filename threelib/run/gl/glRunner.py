@@ -24,6 +24,9 @@ class GLRunner(GameInterface):
         
     def draw(self):
         for renderMesh in self.world.renderMeshes:
+            if not renderMesh.isVisible():
+                continue
+            
             glPushMatrix()
             meshTranslate = renderMesh.getPosition()
             meshRotate = renderMesh.getRotation()
