@@ -94,6 +94,7 @@ def buildWorld(editorState):
     world = editorState.world
     world.simulator = Simulator()
     
+    editorState.worldObject.addToWorld(world)
     for o in editorState.objects:
         o.addToWorld(world)
 
