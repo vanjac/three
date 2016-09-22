@@ -1,11 +1,15 @@
 __author__ = "vantjac"
 
 from threelib.sim.base import Simulator
+from threelib.sim.base import Entity
+import threelib.script
 
 class World:
     
     def __init__(self):
         self.simulator = None
+        
+        self.camera = None # special Entity
     
         self.materials = [ ] # list of MaterialReference's
         self.addedMaterials = [ ]
@@ -91,10 +95,19 @@ class Resource:
         
 
 def buildWorld(editorState):
+    threelib.script.runScript("from threelib.vectorMath import *")
+    threelib.script.runScript("from threelib.mesh import *")
+    threelib.script.runScript("from threelib.sim.base import *")
+    threelib.script.runScript("from threelib.sim.graphics import *")
+    
     world = editorState.world
     world.simulator = Simulator()
     
     editorState.worldObject.addToWorld(world)
     for o in editorState.objects:
-        o.addToWorld(world)
+        entity = o.addToWorld(world)
+        
+    if world.camera == None:
+        world.camera = Entity()
+        world.simulator.addObject(world.camera)
 

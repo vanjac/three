@@ -149,9 +149,16 @@ class ScriptPointObject(PointObject):
     
     def addToWorld(self, world):
         threelib.script.runScript(self.script)
-        simObject = threelib.script.setVariable(self.constructor,
+        entity = threelib.script.setVariable(self.constructor,
                                                 self.getName())
-        world.simulator.addObject(simObject)
+        if entity != None:
+            entity.translate(self.getPosition())
+            entity.rotate(self.getRotation())
+            
+            world.simulator.addObject(entity)
+            
+            if self.getName() == "cam":
+                world.camera = entity
 
     def getProperties(self):
         props = super().getProperties()

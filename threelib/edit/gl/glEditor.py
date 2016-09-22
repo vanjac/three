@@ -130,8 +130,7 @@ class GLEditor(EditorInterface):
                 glColor(0.0, 1.0, 0.0)
                 glBegin(GL_LINES)
                 glVertex(0, 0, 0)
-                endPoint = Vector(32, 0, 0).rotate(o.getRotation())
-                glVertex(endPoint.y, endPoint.z, endPoint.x)
+                glVertex(0, 0, 32)
                 glEnd()
                 if o.getMesh() != None:
                     # a green point is used for the origin
