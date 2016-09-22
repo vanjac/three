@@ -17,6 +17,9 @@ class SolidMeshObject(MeshObject):
         super().__init__(scale)
         
         # properties:
+        self.constructor = ""
+        self.script = "\n\n"
+        
         self.visible = True
         self.blockUseables = True
         self.useAction = ""
@@ -37,23 +40,39 @@ class SolidMeshObject(MeshObject):
         self.volumeEndTouchAction = ""
     
     def addToWorld(self, world):
+        threelib.script.runScript(self.script)
+        entity = threelib.script.setVariable(self.constructor,
+                                             self.getName())
+        
         renderMesh = RenderMesh(self.getMesh())
+        
+        if entity != None:
+            entity.translate(self.getPosition())
+            entity.rotate(self.getRotation())
+            entity.addChild(renderMesh)
+            world.simulator.addObject(entity)
+        
         renderMesh.translate(self.getPosition())
         renderMesh.rotate(self.getRotation())
         renderMesh.setVisible(self.visible)
         def useAction():
-            exec(self.useAction)
+            threelib.script.runScript(self.script)
         renderMesh.setUseAction(useAction)
         renderMesh.setBlockUseables(self.blockUseables)
         world.renderMeshes.append(renderMesh)
         
         world.simulator.addObject(renderMesh)
         
-        return renderMesh
+        if entity != None:
+            return entity
+        else:
+            return renderMesh
         
     def getProperties(self):
         props = super().getProperties()
-        props.update({ "visible" : str(self.visible),
+        props.update({ "constructor" : self.constructor,
+                       "script" : self.script,
+                       "visible" : str(self.visible),
                        "blockUseables" : str(self.blockUseables),
                        "useAction" : self.useAction,
                        
@@ -77,6 +96,11 @@ class SolidMeshObject(MeshObject):
     def setProperties(self, properties):
         super().setProperties(properties)
         for key, value in properties.items():
+            if key == "constructor":
+                self.constructor = value
+            if key == "script":
+                self.script = value
+            
             if key == "visible":
                 self.visible = stringToBoolean(value)
             if key == "blockUseables":
@@ -117,6 +141,9 @@ class SolidMeshObject(MeshObject):
 
     def addToClone(self, clone):
         super().addToClone(clone)
+        
+        clone.constructor = self.constructor
+        clone.script = self.script
         
         clone.visible = self.visible
         clone.blockUseables = self.blockUseables
