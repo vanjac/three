@@ -71,36 +71,40 @@ Additionally, when you select an object some more indicators will appear:
 - `` ` `` to save
 - Right click, then use the mouse and `WASDQE` keys to fly around. Use the mouse wheel to control fly speed.
 - `nb` to create a New Box and enter translate-adjust mode to move it (see below)
-- `np` to create a New Point and enter translate-adjust mode to move it
+- `np` to create a New Point and enter translate-adjust mode to move it. See the Scripting section for more information on Points.
 - Left click to select objects; hold shift to select multiple.
+- `mv` to switch to Vertex select mode, `mf` for Face select and `mo` for Object select mode (default)
 - `a` to select none or All objects
 - `Backspace` to delete objects
 - `c` to duplicate ("Copy") selected objects and enter translate-adjust mode to move them (see below)
-- `mv` to switch to Vertex select mode, `mf` for Face select and `mo` for Object select mode (default)
-- `Enter` to edit the properties of selected objects using your default text editor. When you are finished editing properties and have saved the file, press `u` ("Update") with the same objects selected to update their properties. If nothing is selected world properties will be edited.
+- `Enter` to edit the properties of selected objects using your default text editor. When you are finished editing properties and have saved the file, press `u` ("Update") with the same objects selected to update their properties. If nothing is selected world properties will be edited. See the Scripting section for more information on properties.
 - `g` to enter translate ("Grab") adjust mode for the selected objects (see below)
 - `r` to enter Rotate adjust mode
 - `s Enter` to enter reSize adjust mode, which changes the dimensions of the selected object(s). Before pressing Enter you can type any of the letters `nsewtb` (North South East West Top Bottom). With these you can choose to resize in just one direction along an axis.
 - `Shift-s Enter` to enter Scale adjust mode. You can use the same direction letters as in Resize.
 - `o` to adjust the Origins of selected objects in adjust mode.
-- `t` to set the parent of selected objects ("Tie" them to a parent). The most recently selected object will become the parent for the rest.
+- `t` to set the parent of selected objects ("Tie" them to a parent). The most recently selected object will become the parent for the rest. See the Scripting section for more information on parents and children.
 - `Shift-t` to remove the parents for all of the selected objects.
 - `,` to select the parents of the selected objects. `Shift-,` to add to the existing selection.
 - `.` to select the children of the selected objects. `Shift-.` to add to the existing selection.
  
 ### Mesh Editing
-- With the two vertices of an edge selected, `d` to Divide the edge
+
+three is designed to work with only closed, "solid" meshes. This means that you can't delete faces or create a "hole" in the mesh. Using only the built-in editing tools it should be very difficult to create non-solid mesh, but if you do note that some of the mesh editing tools will not work properly with non-solid meshes.
+
+- With the two vertices of an edge selected, `d` to Divide the edge with a new vertex
 - With two vertices selected, `Shift-d` to merge the second with the first ("undivide")
-- With two non-edge vertices on the same face selected, `e` to divide that face with an Edge connecting them
+- With two vertices selected that are on the same face but not the same edge, `e` to divide that face with an Edge connecting them
 - With two vertices of an edge selected that divides two coplanar polygons, `Shift-e` to merge the polygons and remove the edge.
 - `h` to enter adjust mode to extrude the selected faces. If objects are selected, all faces will be extruded and the original object will be deleted afterwards ("Hollow").
 - `k` with meshes selected to "clip" the selected meshes, using a plane to slice off part of them. Adjust mode is used to set a point on the clip plane, followed by the normal of the plane. The normal points in the direction of the half that is removed. 
-- `Shift-k` to use the selected meshes to "carve" into all other meshes.
+- `Shift-k` to use the selected meshes to "carve" into all other meshes
 
-### Material
+### Materials
 - `Shift-p path/to/texture Enter` to choose the current material. The texture must be in the the `materials` subdirectory of the game directory. Even if you are on Windows you must use `/` as a path separator and match the case of the file name. Textures can sometimes take a while to transfer to OpenGL, during which the editor will be unresponsive.
-- `p` to "Paint" the current material on the selected faces or objects.
+- `p` to "Paint" the current material on the selected faces or objects
 - `Shift-p Enter` to reload the current material's texture. Everything with that material will be updated.
+- `fg`, `fr`, or `fs` to enter translate, rotate, or scale adjust mode to align the face's material in 2 dimensions
 
 ### Adjust Mode
 
@@ -118,4 +122,38 @@ Adjust mode is used to translate, rotate, and scale objects. It has a completely
 - A number, terminated by an `x` `y` or `z`, to set the value of a certain axis.
 - `r` to toggle Relative / absolute coordinates when entering axis values. Relative coordinates are relative to the starting position. Absolute is relative to the origin.
 - `l` to toggle Axis Lock. When this is enabled, adjustments are made using only horizontal movement of the mouse, and they change all axes at once.
+
+## Scripting
+
+Objects created in the editor correspond to objects that are added to the game world, represented by the `threelib.world.World` object. Most of the time these are Entities, which represent objects in 3d space with a position and rotation. Entities also have parents and children - when the parent moves, the children move along with it.
+
+There are various tools availible in the editor to control the creation of Entities. Setting the parents and children of objects (using the `t` command and others) will cause the same parent-child relationships to be set up in the game world.
+
+There are 2 main types of objects in the editor: Meshes and Points. Points are normally invisible to the player, but through the parent-child system they can control other objects, and you can assign custom scripts to them. Meshes are automatically given a child RenderMesh object, which is a special entity that is drawn on the screen.
+
+Through an object's properties (viewed by pressing `Enter` and updated with `u`, see above) you can control the behavior of Entities generated from the objects. A list of properties is below.
+
+### Properties
+
+Note that properties are not ordered, and may actually appear in a different order each time you look at them.
+
+#### For all types of objects
+
+- `position`: The position of the object in 3d space
+- `rotation`: The orientation of the object about the X, Y, and Z axes
+- `name`: The name of the object. If you assign a constructor, this name will be available as a variable to all scripts.
+- `script`: A script that should be run before the Entity is created. The script has nothing to do with the object and doesn't necessarily have to do with it.
+- `constructor`: If provided, this will be used to create the entity. This should be a expression that returns an Entity. If not provided, a default one may be used instead.
+
+#### For mesh objects
+
+- `visible`: Whether the RenderMesh should be drawn. This value can change.
+
+There are some other properties but they are currently not implemented.
+
+#### The camera
+
+The camera is a special Entity in the game world - it points towards the view that is shown on the screen. You can create one by making a Point in the editor and giving it the name `cam`, optionally with extra scripts. By default, an Entity at the origin facing negative-X is used.
+
+Note that if you set a custom `rotation` value for the camera, it will point the *opposite* direction of the green forward vector shown in the editor - it will be pointing backward.
 
