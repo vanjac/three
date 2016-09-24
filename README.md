@@ -85,6 +85,8 @@ Additionally, when you select an object some more indicators will appear:
 - `o` to adjust the Origins of selected objects in adjust mode.
 - `t` to set the parent of selected objects ("Tie" them to a parent). The most recently selected object will become the parent for the rest.
 - `Shift-t` to remove the parents for all of the selected objects.
+- `,` to select the parents of the selected objects. `Shift-,` to add to the existing selection.
+- `.` to select the children of the selected objects. `Shift-.` to add to the existing selection.
  
 ### Mesh Editing
 - With the two vertices of an edge selected, `d` to Divide the edge
