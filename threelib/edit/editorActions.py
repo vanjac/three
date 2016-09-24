@@ -426,6 +426,7 @@ class EditorActions:
                         face.editorObject,
                         self.state))
                 self.setupAdjustMode(MultiExtrudeAdjustor(adjustors))
+    
 
     def setupAdjustMode(self, adjustor):
         self.inAdjustMode = True
@@ -1092,3 +1093,49 @@ class EditorActions:
 
     def setFaceMaterial(self, face, materialReference):
         face.setMaterial(materialReference)
+        
+    def translateMaterials(self):
+        if self.state.selectMode == EditorState.SELECT_FACES and \
+                len(self.state.selectedFaces) != 0:
+            faces = [f.face for f in self.state.selectedFaces]
+            self.setupAdjustMode(MaterialTranslateAdjustor(faces))
+        elif self.state.selectMode == EditorState.SELECT_OBJECTS and \
+                len(self.state.selectedObjects) != 0:
+            faces = [ ]
+            for o in self.state.selectedObjects:
+                if o.getMesh() != None:
+                    faces += o.getMesh().getFaces()
+            self.setupAdjustMode(MaterialTranslateAdjustor(faces))
+        else:
+            print("Faces must be selected")
+    
+    def rotateMaterials(self):
+        if self.state.selectMode == EditorState.SELECT_FACES and \
+                len(self.state.selectedFaces) != 0:
+            faces = [f.face for f in self.state.selectedFaces]
+            self.setupAdjustMode(MaterialRotateAdjustor(faces))
+        elif self.state.selectMode == EditorState.SELECT_OBJECTS and \
+                len(self.state.selectedObjects) != 0:
+            faces = [ ]
+            for o in self.state.selectedObjects:
+                if o.getMesh() != None:
+                    faces += o.getMesh().getFaces()
+            self.setupAdjustMode(MaterialRotateAdjustor(faces))
+        else:
+            print("Faces must be selected")
+    
+    def scaleMaterials(self):
+        if self.state.selectMode == EditorState.SELECT_FACES and \
+                len(self.state.selectedFaces) != 0:
+            faces = [f.face for f in self.state.selectedFaces]
+            self.setupAdjustMode(MaterialScaleAdjustor(faces))
+        elif self.state.selectMode == EditorState.SELECT_OBJECTS and \
+                len(self.state.selectedObjects) != 0:
+            faces = [ ]
+            for o in self.state.selectedObjects:
+                if o.getMesh() != None:
+                    faces += o.getMesh().getFaces()
+            self.setupAdjustMode(MaterialScaleAdjustor(faces))
+        else:
+            print("Faces must be selected")
+

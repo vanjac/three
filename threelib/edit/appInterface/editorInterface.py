@@ -216,6 +216,19 @@ class EditorInterface(EditorActions, AppInterface):
         if c[0] == 'p':
             self.paint()
             return True
+        
+        if c[0] == 'f':
+            if len(c) == 1:
+                return False
+            if c[1] == 'g':
+                self.translateMaterials()
+                return True
+            if c[1] == 'r':
+                self.rotateMaterials()
+                return True
+            if c[1] == 's':
+                self.scaleMaterials()
+                return True
 
         # if no match
         print("Unrecognized command " + c)

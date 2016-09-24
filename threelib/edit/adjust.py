@@ -548,3 +548,86 @@ class ArrowEndAdjustor(Adjustor):
 
     def getDescription(self):
         return "Arrow end"
+        
+
+class MaterialTranslateAdjustor(Adjustor):
+
+    def __init__(self, faces):
+        self.faces = list(faces)
+
+        self.value = Vector(0, 0)
+
+    def getAxes(self):
+        return self.value.getTuple()
+
+    def setAxes(self, values):
+        newValue = Vector.fromTuple(values)
+        diff = newValue - self.value
+        self.value = newValue
+        
+        for face in self.faces:
+            face.textureShift += diff
+            face.calculateTextureVertices()
+
+    def gridType(self):
+        return Adjustor.TRANSLATE
+
+    def getDescription(self):
+        return "Translate " + str(len(self.faces)) + " face materials"
+
+class MaterialRotateAdjustor(Adjustor):
+
+    def __init__(self, faces):
+        self.faces = list(faces)
+
+        self.value = 0.0 # in degrees
+
+    def getAxes(self):
+        return (self.value, 0.0, 0.0)
+
+    def setAxes(self, values):
+        newValue = values[0]
+        diff = newValue - self.value
+        self.value = newValue
+        
+        for face in self.faces:
+            face.textureRotate += math.radians(diff)
+            face.calculateTextureVertices()
+
+    def gridType(self):
+        return Adjustor.ROTATE
+
+    def getDescription(self):
+        return "Rotate " + str(len(self.faces)) + " face materials"
+
+class MaterialScaleAdjustor(Adjustor):
+
+    def __init__(self, faces):
+        self.faces = list(faces)
+
+        self.value = Vector(1, 1, 1)
+
+    def getAxes(self):
+        return self.value.getTuple()
+
+    def setAxes(self, values):
+        newValue = Vector.fromTuple(values)
+        if newValue.x <= 0:
+            newValue = newValue.setX(self.value.x)
+        if newValue.y <= 0:
+            newValue = newValue.setY(self.value.y)
+        if newValue.z <= 0:
+            newValue = newValue.setZ(self.value.z)
+        factor = newValue / self.value
+        self.value = newValue
+        
+        for face in self.faces:
+            face.textureScale *= factor
+            face.calculateTextureVertices()
+
+    def gridType(self):
+        return Adjustor.SCALE
+
+    def getDescription(self):
+        return "Scale " + str(len(self.faces)) + " face materials"
+
