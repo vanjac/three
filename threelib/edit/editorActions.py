@@ -198,6 +198,27 @@ class EditorActions:
             self.state.createPosition = \
                 Vector.fromTuple(self.adjustor.getAxes())
         self.adjustCompleteAction = setCreatePosition
+        
+    def setParent(self):
+        if self.state.selectMode == EditorState.SELECT_OBJECTS and \
+                len(self.state.selectedObjects) > 1:
+            print("Set parent for", len(self.state.selectedObjects) - 1,
+                  "objects")
+            parent = self.state.selectedObjects[-1]
+            for child in self.state.selectedObjects[:-1]:
+                parent.addChild(child)
+        else:
+            print("At least 2 objects must be selected")
+            
+    def clearParent(self):
+        if self.state.selectMode == EditorState.SELECT_OBJECTS and \
+                len(self.state.selectedObjects) > 0:
+            print("Clear parent for", len(self.state.selectedObjects),
+                  "objects")
+            for child in self.state.selectedObjects:
+                child.removeFromParent()
+        else:
+            print("Objects must be selected")
 
 
     def selectAll(self):

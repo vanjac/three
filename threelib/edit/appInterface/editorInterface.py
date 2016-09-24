@@ -124,6 +124,14 @@ class EditorInterface(EditorActions, AppInterface):
         if c[0] == 'c':
             self.duplicateSelected()
             return True
+            
+        if c[0] == 't':
+            self.setParent()
+            return True
+            
+        if c[0] == 'T':
+            self.clearParent()
+            return True
 
         if c[0] == 'g':
             self.translateSelected()

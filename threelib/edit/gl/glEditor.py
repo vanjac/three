@@ -126,17 +126,38 @@ class GLEditor(EditorInterface):
             
             if select:
                 glDisable(GL_POLYGON_STIPPLE)
+                
                 # a green line is used for the direction
                 glColor(0.0, 1.0, 0.0)
                 glBegin(GL_LINES)
                 glVertex(0, 0, 0)
                 glVertex(0, 0, 32)
                 glEnd()
+                
                 if o.getMesh() != None:
                     # a green point is used for the origin
                     glPointSize(12)
                     glBegin(GL_POINTS)
                     glVertex(0, 0, 0)
+                    glEnd()
+                
+                # a magenta line is drawn to the parent object
+                if o.getParent() != None:
+                    glColor(1.0, 0.0, 1.0)
+                    glBegin(GL_LINES)
+                    glVertex(0, 0, 0)
+                    parentPos = o.getParent().getPosition() - o.getPosition()
+                    glVertex(parentPos.y, parentPos.z, parentPos.x)
+                    glEnd()
+                    
+                # cyan lines are drawn to child objects
+                if len(o.getChildren()) > 0:
+                    glColor(0.0, 1.0, 1.0)
+                    glBegin(GL_LINES)
+                    for child in o.getChildren():
+                        glVertex(0, 0, 0)
+                        childPos = child.getPosition() - o.getPosition()
+                        glVertex(childPos.y, childPos.z, childPos.x)
                     glEnd()
 
             if drawVertices and o.getMesh() != None:

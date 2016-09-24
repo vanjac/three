@@ -51,6 +51,19 @@ Try navigating to the root of this repository and typing `python3 three.py gameD
 
 You should keep the terminal window that you used to start three open. It is used for messages and errors.
 
+## HUD
+
+On the screen you will see:
+- A framerate count in the top left corner
+- A status bar on the bottom. This will give information about the current state of the editor, the selected objects, and any commands that you are in the middle of typing.
+- Mini-axes in the bottom right corner. These show the direction you are currently looking, even when the real axes aren't visible. Red is X, green is Y, and blue is Z.
+
+Additionally, when you select an object some more indicators will appear:
+- A green square, showing the origin of the object
+- A green line, showing the forward vector of the object
+- A pink line to the objects parent, if it exists
+- Light-blue lines to the object's children, if any
+
 ## Controls
 
 ### General
@@ -70,7 +83,9 @@ You should keep the terminal window that you used to start three open. It is use
 - `s Enter` to enter reSize adjust mode, which changes the dimensions of the selected object(s). Before pressing Enter you can type any of the letters `nsewtb` (North South East West Top Bottom). With these you can choose to resize in just one direction along an axis.
 - `Shift-s Enter` to enter Scale adjust mode. You can use the same direction letters as in Resize.
 - `o` to adjust the Origins of selected objects in adjust mode.
-
+- `t` to set the parent of selected objects ("Tie" them to a parent). The most recently selected object will become the parent for the rest.
+- `Shift-t` to remove the parents for all of the selected objects.
+ 
 ### Mesh Editing
 - With the two vertices of an edge selected, `d` to Divide the edge
 - With two vertices selected, `Shift-d` to merge the second with the first ("undivide")
@@ -101,3 +116,4 @@ Adjust mode is used to translate, rotate, and scale objects. It has a completely
 - A number, terminated by an `x` `y` or `z`, to set the value of a certain axis.
 - `r` to toggle Relative / absolute coordinates when entering axis values. Relative coordinates are relative to the starting position. Absolute is relative to the origin.
 - `l` to toggle Axis Lock. When this is enabled, adjustments are made using only horizontal movement of the mouse, and they change all axes at once.
+
