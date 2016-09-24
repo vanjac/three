@@ -61,7 +61,7 @@ On the screen you will see:
 Additionally, when you select an object some more indicators will appear:
 - A green square, showing the origin of the object
 - A green line, showing the forward vector of the object
-- A pink line to the objects parent, if it exists
+- A pink line to the object's parent, if it exists
 - Light-blue lines to the object's children, if any
 
 ## Controls
