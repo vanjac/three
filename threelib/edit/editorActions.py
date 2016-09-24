@@ -219,6 +219,42 @@ class EditorActions:
                 child.removeFromParent()
         else:
             print("Objects must be selected")
+            
+    def selectParent(self, addToSelection=False):
+        if self.state.selectMode == EditorState.SELECT_OBJECTS and \
+                len(self.state.selectedObjects) > 0:
+            objectsToSelect = [ ]
+            for o in self.state.selectedObjects:
+                if o.getParent() != None:
+                    if not o.getParent() in objectsToSelect:
+                        objectsToSelect.append(o.getParent())
+            if len(objectsToSelect) == 0:
+                print("Objects have no parent")
+                return
+            if not addToSelection:
+                self.state.deselectAll()
+            for o in objectsToSelect:
+                self.state.select(o)
+        else:
+            print("Objects must be selected")
+    
+    def selectChildren(self, addToSelection=False):
+        if self.state.selectMode == EditorState.SELECT_OBJECTS and \
+                len(self.state.selectedObjects) > 0:
+            objectsToSelect = [ ]
+            for o in self.state.selectedObjects:
+                for child in o.getChildren():
+                    if not child in objectsToSelect:
+                        objectsToSelect.append(child)
+            if len(objectsToSelect) == 0:
+                print("Objects have no children")
+                return
+            if not addToSelection:
+                self.state.deselectAll()
+            for o in objectsToSelect:
+                self.state.select(o)
+        else:
+            print("Objects must be selected")
 
 
     def selectAll(self):

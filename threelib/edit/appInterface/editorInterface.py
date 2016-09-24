@@ -132,6 +132,22 @@ class EditorInterface(EditorActions, AppInterface):
         if c[0] == 'T':
             self.clearParent()
             return True
+        
+        if c[0] == ',':
+            self.selectParent()
+            return True
+            
+        if c[0] == '<':
+            self.selectParent(addToSelection=True)
+            return True
+        
+        if c[0] == '.':
+            self.selectChildren()
+            return True
+            
+        if c[0] == '>':
+            self.selectChildren(addToSelection=True)
+            return True
 
         if c[0] == 'g':
             self.translateSelected()
