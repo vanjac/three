@@ -125,11 +125,11 @@ Adjust mode is used to translate, rotate, and scale objects. It has a completely
 
 ## Scripting
 
-Objects created in the editor correspond to objects that are added to the game world, represented by the `threelib.world.World` object. Most of the time these are Entities, which represent objects in 3d space with a position and rotation. Entities also have parents and children - when the parent moves, the children move along with it.
+Objects created in the editor correspond to objects that are added to the game world, represented by the `threelib.world.World` object. Most of the time these are Entities (`threelib.sim.base.Entity`), which represent objects in 3d space with a position and rotation. Entities can have a parent and children - when the parent moves, the children move along with it.
 
-There are various tools availible in the editor to control the creation of Entities. Setting the parents and children of objects (using the `t` command and others) will cause the same parent-child relationships to be set up in the game world.
+There are various tools availible in the editor to control the creation of Entities. Setting the parents and children of objects (using the `t` command and others, see above) will cause the same parent-child relationships to be set up in the game world.
 
-There are 2 main types of objects in the editor: Meshes and Points. Points are normally invisible to the player, but through the parent-child system they can control other objects, and you can assign custom scripts to them. Meshes are automatically given a child RenderMesh object, which is a special entity that is drawn on the screen.
+There are 2 main types of objects in the editor: Meshes and Points. Points are normally invisible to the player, but through the parent-child system they can control other objects, and you can assign custom scripts to them. Meshes are automatically given a child RenderMesh object (`threelib.sim.graphics.RenderMesh`), which is a special entity that is drawn on the screen.
 
 Through an object's properties (viewed by pressing `Enter` and updated with `u`, see above) you can control the behavior of Entities generated from the objects. A list of properties is below.
 
@@ -142,7 +142,7 @@ Note that properties are not ordered, and may actually appear in a different ord
 - `position`: The position of the object in 3d space
 - `rotation`: The orientation of the object about the X, Y, and Z axes
 - `name`: The name of the object. If you assign a constructor, this name will be available as a variable to all scripts.
-- `script`: A script that should be run before the Entity is created. The script has nothing to do with the object and doesn't necessarily have to do with it.
+- `script`: A script that will be run before the Entity is created.
 - `constructor`: If provided, this will be used to create the entity. This should be a expression that returns an Entity. If not provided, a default one may be used instead.
 
 #### For mesh objects
