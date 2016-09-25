@@ -28,6 +28,12 @@ class EditorObject:
         self.parent = None
         self.selected = False
     
+    def __repr__(self):
+        if name == "":
+            return "[Unnamed object]"
+        else:
+            return self.getName()
+    
     def getName(self):
         """
         Return the name of the EditorObject as a string. Names usually have no

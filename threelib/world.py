@@ -104,8 +104,25 @@ def buildWorld(editorState):
     world.simulator = Simulator()
     
     editorState.worldObject.addToWorld(world)
+    
+    objectEntities = { }
+    
     for o in editorState.objects:
-        entity = o.addToWorld(world)
+        objectEntities[o] = o.addToWorld(world)
+    
+    # add children
+    for editorObject, entity in objectEntities.items():
+        if entity != None:
+            for child in editorObject.getChildren():
+                try:
+                    childEntity = objectEntities[child]
+                except KeyError:
+                    childEntity = None
+                if childEntity == None:
+                    print("WARNING: Cannot add", child, "as a child of",
+                          editorObject, "- No corresponding entity")
+                else:
+                    entity.addChild(childEntity)
         
     if world.camera == None:
         world.camera = Entity()
