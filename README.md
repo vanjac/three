@@ -135,8 +135,6 @@ Through an object's properties (viewed by pressing `Enter` and updated with `u`,
 
 ### Properties
 
-Note that properties are not ordered, and may actually appear in a different order each time you look at them.
-
 #### For all types of objects
 
 - `position`: The position of the object in 3d space

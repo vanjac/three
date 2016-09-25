@@ -80,7 +80,7 @@ class EditorActions:
 
     def makePropsFile(self, props):
         text = ""
-        for key, value in props.items():
+        for key, value in sorted(props.items()):
             multiLine = '\n' in value
             if multiLine:
                 text += key + ":\n" + value + "\n~~~\n"
