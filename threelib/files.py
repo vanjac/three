@@ -116,6 +116,18 @@ def getMaterial(name):
     """
     return getResourcePath(getMaterialDir(), name)
 
+def getScriptDir():
+    """
+    Get the Path to the directory containing scripts.
+    """
+    return getGameDir() / "scripts"
+
+def getScript(name):
+    """
+    Get the Path to the script with the specified name.
+    """
+    return getResourcePath(getScriptDir(), name)
+
 def saveMapState(path, state):
     """
     Save map state to a file. ``path`` is a Path to the map file. ``state`` is
