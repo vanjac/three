@@ -52,28 +52,31 @@ try:
 except FileNotFoundError:
     print("Game directory not found")
     exit()
+    
+
+mapPath = None
 
 try:
     mapNumber = int(mapName) - 1
-    files.setCurrentMap(files.getMapNumber(mapNumber))
-    if files.getCurrentMap() == None:
+    mapPath = files.getMapNumber(mapNumber)
+    if mapPath == None:
         print("Map number", mapNumber + 1, "not found")
         exit()
 except ValueError: # mapName is not a number
     try:
-        files.setCurrentMap(files.getMap(mapName))
-        if files.getCurrentMap() == None:
+        mapPath = files.getMap(mapName, createIfNotFound=editorMode)
+        if mapPath == None:
             print("Map", mapName, "not found")
             exit()
     except FileNotFoundError:
         print("Map", mapName, "not found")
         exit()
 
-state = files.loadMapState(files.getCurrentMap())
+state = files.loadMapState(mapPath)
 if editorMode:
     from threelib.appInstance.gl import GLAppInstance
     from threelib.edit.gl.glEditor import GLEditor
-    interface = GLEditor(state)
+    interface = GLEditor(mapPath, state)
     GLAppInstance(interface, flags)
 else:
     if state == None:
@@ -83,3 +86,4 @@ else:
     from threelib.run.gl.glRunner import GLRunner
     interface = GLRunner(state)
     GLAppInstance(interface, flags)
+

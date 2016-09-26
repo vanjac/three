@@ -6,9 +6,11 @@ import pickle
 import webbrowser
 
 gameDirPath = None
-mapPath = None
 
 def setGameDir(path):
+    """
+    Set the Path to the game directory - required for most files operations.
+    """
     global gameDirPath
     if path == None:
         gameDirPath = None
@@ -16,34 +18,45 @@ def setGameDir(path):
         gameDirPath = path.resolve()
 
 def getGameDir():
+    """
+    Get the Path to the game directory.
+    """
     return gameDirPath
 
-def setCurrentMap(path):
-    global mapPath
-    if path == None:
-        mapPath = None
-    else:
-        mapPath = path.resolve()
-
-def getCurrentMap():
-    return mapPath
-
 def getMapDir():
+    """
+    Get the Path to the directory containing maps.
+    """
     return getGameDir() / "maps"
 
 def getMapList():
+    """
+    Get the Path to the text file containing a list of maps.
+    """
     return getGameDir() / "maps.txt"
 
-# create map if it doesn't exist
-def getMap(name):
+def getMap(name, createIfNotFound=True):
+    """
+    Get the Path to the map with the specified name. If it doesn't exist, 
+    optionally create an empty file with that name and return it, otherwise
+    return None.
+    """
     try:
         return (getMapDir() / name).resolve()
     except FileNotFoundError:
-        with open(os.path.join(str(getMapDir()), name), 'a') as f:
-            pass
-        return (getMapDir() / name).resolve()
+        if createIfNotFound:
+            with open(os.path.join(str(getMapDir()), name), 'a') as f:
+                pass
+            return (getMapDir() / name).resolve()
+        else:
+            return None
 
 def getMapNumber(number):
+    """
+    Get the Path to the map with the name at the specified index in the maps
+    list file (starts at 1). If it doesn't exist, create an empty file with that 
+    name and return it.
+    """
     if number < 0:
         print("Map number out of range!")
         return None
@@ -58,10 +71,14 @@ def getMapNumber(number):
                 print("Map number out of range!")
                 return None
     except FileNotFoundError:
-        print("File not found!")
+        print("Maps list file not found!")
         return None
 
 def getResourcePath(directoryPath, name):
+    """
+    Given a root resource directory path, and a file name with '/' used as the
+    path separator, return the full Path.
+    """
     try:
         dirs = name.split('/')
         parentDir = directoryPath
@@ -88,20 +105,30 @@ def getResourcePath(directoryPath, name):
         return None
 
 def getMaterialDir():
+    """
+    Get the Path to the directory containing materials.
+    """
     return getGameDir() / "materials"
 
 def getMaterial(name):
+    """
+    Get the Path to the material with the specified name.
+    """
     return getResourcePath(getMaterialDir(), name)
 
-
-# path is a Path to the map file
-# state is an EditorState object
 def saveMapState(path, state):
+    """
+    Save map state to a file. ``path`` is a Path to the map file. ``state`` is
+    an EditorState object
+    """
     with path.open('wb') as f:
         pickle.dump(state, f, protocol=4)
 
-# return an EditorState object, or None
 def loadMapState(path):
+    """
+    Load the map state at the specified file Path. Return an EditorState object,
+    or None.
+    """
     try:
         with path.open('rb') as f:
             editorState = pickle.load(f)
@@ -110,15 +137,21 @@ def loadMapState(path):
     except EOFError: # map is empty
         return None
 
-
-# create a temporary file for properties, then open it in an editor
 def openProperties(text):
+    """
+    Create a temporary file for properties containing the specified text, then
+    open it in a text editor.
+    """
     path = getGameDir() / "propsTemp.txt"
     with path.open('w') as f:
         f.write(text)
     webbrowser.open(str(path))
 
 def readProperties():
+    """
+    Read the contents of the temporary properties file.
+    """
     path = getGameDir() / "propsTemp.txt"
     with path.open() as f:
         return f.read()
+

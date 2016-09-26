@@ -20,11 +20,13 @@ class EditorActions:
 
     ROTATE_GRID_SIZES = [5.0, 10.0, 15.0, 20.0, 30.0, 40.0, 45.0]
 
-    def __init__(self, state=None):
+    def __init__(self, mapPath, state=None):
         if state == None:
             self.state = EditorState()
         else:
             self.state = state
+        self.mapPath = mapPath
+        
         self.movingCamera = False
         self.lookSpeed = .005
         self.flySpeed = 128.0
@@ -61,7 +63,7 @@ class EditorActions:
     
     def saveFile(self):
         print("Saving map... ", end="")
-        files.saveMapState(files.getCurrentMap(), self.state)
+        files.saveMapState(self.mapPath, self.state)
         print("Done")
 
     def editPropertiesOfSelected(self):

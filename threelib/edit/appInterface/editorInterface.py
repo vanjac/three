@@ -11,8 +11,8 @@ from threelib.app import AppInterface
 
 class EditorInterface(EditorActions, AppInterface):
 
-    def __init__(self, state=None):
-        super().__init__(state)
+    def __init__(self, mapPath, state=None):
+        super().__init__(mapPath, state)
         self.currentCommand = ""
         
     def setAppInstance(self, instance):

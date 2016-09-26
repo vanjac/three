@@ -38,8 +38,8 @@ stipplePattern = [
 
 class GLEditor(EditorInterface):
     
-    def __init__(self, state=None):
-        super().__init__(state)
+    def __init__(self, mapPath, state=None):
+        super().__init__(mapPath, state)
         self.graphicsTools = GLGraphicsTools()
         print("OpenGL 1 Editor")
     
