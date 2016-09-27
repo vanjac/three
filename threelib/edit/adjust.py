@@ -212,9 +212,6 @@ class MultiRotateAdjustor(Adjustor):
 
 class ScaleAdjustor(Adjustor):
 
-    # edges is a tuple of 3 values for each axis. the values can be 0, to scale
-    # in both directions; 1 to scale only the higher edge; or -1, to scale only
-    # the lower edge
     # if resize is true, the adjustor will use a TRANSLATE grid type instead of
     # SCALE, and the values will be the bounds dimensions
     def __init__(self, editorObject, resize=False):
@@ -253,6 +250,9 @@ class ScaleAdjustor(Adjustor):
 
 class MultiVertexScaleAdjustor(Adjustor):
     
+    # edges is a tuple of 3 values for each axis. the values can be 0, to scale
+    # in both directions; 1 to scale only the higher edge; or -1, to scale only
+    # the lower edge
     def __init__(self, vertices, edges, resize=False):
         self.vertices = list(vertices)
         
