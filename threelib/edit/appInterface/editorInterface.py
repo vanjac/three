@@ -511,7 +511,7 @@ class EditorInterface(EditorActions, AppInterface):
                         f = self.state.selectedFaces[0].face
                         text += "Mat: " + self.getMaterialName(f.getMaterial())\
                                 + " "
-                        text += "Pos: " + vectorMath.doubleTupleToString(
+                        text += "Shift: " + vectorMath.doubleTupleToString(
                             f.textureShift.getTuple()) + " "
                         text += "Rot: " + str(f.textureRotate) + " "
                         text += "Scale: " + vectorMath.doubleTupleToString(
@@ -548,3 +548,4 @@ class EditorInterface(EditorActions, AppInterface):
             return "none"
         else:
             return material.getName().split("/")[-1]
+

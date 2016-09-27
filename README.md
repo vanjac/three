@@ -55,14 +55,34 @@ You should keep the terminal window that you used to start three open. It is use
 
 On the screen you will see:
 - A framerate count in the top left corner
-- A status bar on the bottom. This will give information about the current state of the editor, the selected objects, and any commands that you are in the middle of typing.
+- A status bar on the bottom. See below.
 - Mini-axes in the bottom right corner. These show the direction you are currently looking, even when the real axes aren't visible. Red is X, green is Y, and blue is Z.
 
-Additionally, when you select an object some more indicators will appear:
+When you select an object some more indicators will appear:
 - A green square, showing the origin of the object
 - A green line, showing the forward vector of the object
 - A pink line to the object's parent, if it exists
 - Light-blue lines to the object's children, if any
+
+### Status bar
+
+By default, the status bar will show:
+- The selection mode (Object/Face/Vertex) and the number of things selected
+- Information about the selected object
+  - For objects, the position (`Pos`), rotation (`Rot`), and dimensions (`Dim`) of the object
+  - For faces, the material name, and its translation (`Shift`), rotation, and scale
+  - For vertices, the position of the vertex
+- The current material name (`Paint`)
+- The current command being typed, if it is more than a single keystroke
+- Occasionally additional instructions
+
+When in adjust mode (see below), the status bar will show:
+- A description of what is being adjusted
+- The values of the X, Y, and Z axes. If in relative mode, these will be relative to the starting position; if in absolute mode, these will be absolute numbers
+- The two selected axes to adjust
+- The grid size
+- `Snap` if grid snapping is enabled, `Free` otherwise
+- Whether axis lock is enabled
 
 ## Controls
 
