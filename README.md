@@ -55,7 +55,7 @@ You should keep the terminal window that you used to start three open. It is use
 
 On the screen you will see:
 - A framerate count in the top left corner
-- A status bar on the bottom. See below.
+- A status bar on the bottom (see below)
 - Mini-axes in the bottom right corner. These show the direction you are currently looking, even when the real axes aren't visible. Red is X, green is Y, and blue is Z.
 
 When you select an object some more indicators will appear:
@@ -78,7 +78,7 @@ By default, the status bar will show:
 
 When in adjust mode (see below), the status bar will show:
 - A description of what is being adjusted
-- The values of the X, Y, and Z axes. If in relative mode, these will be relative to the starting position; if in absolute mode, these will be absolute numbers
+- The values of the X, Y, and Z axes. If in relative mode, these will be relative to the starting position; if in absolute mode, these will be absolute numbers.
 - The two selected axes to adjust
 - The grid size
 - `Snap` if grid snapping is enabled, `Free` otherwise
@@ -102,9 +102,9 @@ When in adjust mode (see below), the status bar will show:
 - `r` to enter Rotate adjust mode
 - `s Enter` to enter reSize adjust mode, which changes the dimensions of the selected object(s). Before pressing Enter you can type any of the letters `nsewtb` (North South East West Top Bottom). With these you can choose to resize in just one direction along an axis.
 - `Shift-s Enter` to enter Scale adjust mode. You can use the same direction letters as in Resize.
-- `o` to adjust the Origins of selected objects in adjust mode.
+- `o` to adjust the Origins of selected objects in adjust mode
 - `t` to set the parent of selected objects ("Tie" them to a parent). The most recently selected object will become the parent for the rest. See the Scripting section for more information on parents and children.
-- `Shift-t` to remove the parents for all of the selected objects.
+- `Shift-t` to remove the parents for all of the selected objects
 - `,` to select the parents of the selected objects. `Shift-,` to add to the existing selection.
 - `.` to select the children of the selected objects. `Shift-.` to add to the existing selection.
  
@@ -115,7 +115,7 @@ three is designed to work with only closed, "solid" meshes. This means that you 
 - With the two vertices of an edge selected, `d` to Divide the edge with a new vertex
 - With two vertices selected, `Shift-d` to merge the second with the first ("undivide")
 - With two vertices selected that are on the same face but not the same edge, `e` to divide that face with an Edge connecting them
-- With two vertices of an edge selected that divides two coplanar polygons, `Shift-e` to merge the polygons and remove the edge.
+- With two vertices of an edge selected that divides two coplanar polygons, `Shift-e` to merge the polygons and remove the edge
 - `h` to enter adjust mode to extrude the selected faces. If objects are selected, all faces will be extruded and the original object will be deleted afterwards ("Hollow").
 - `k` with meshes selected to "clip" the selected meshes, using a plane to slice off part of them. Adjust mode is used to set a point on the clip plane, followed by the normal of the plane. The normal points in the direction of the half that is removed. 
 - `Shift-k` to use the selected meshes to "carve" into all other meshes
@@ -135,7 +135,7 @@ Adjust mode is used to translate, rotate, and scale objects. It has a completely
 - Left click or `Enter` to confirm and exit adjust mode
 - `Esc` to cancel
 - `[` and `]` to increase / decrease the grid size. The grid is different for translating, rotating, and scaling.
-- `g` followed by a number and `Enter` to manually set the grid size.
+- `g` followed by a number and `Enter` to manually set the grid size
 - `s` to toggle Snap to grid. The grid is relative, so if you are already off the grid you will continue to be off the grid, but you will still move in grid size increments.
 - `a` to move to the nearest, Absolute grid point for the selected axes
 - `o` to jump to the Origin
@@ -160,7 +160,7 @@ Through an object's properties (viewed by pressing `Enter` and updated with `u`,
 - `position`: The position of the object in 3d space
 - `rotation`: The orientation of the object about the X, Y, and Z axes
 - `name`: The name of the object. If you assign a constructor, this name will be available as a variable to all scripts.
-- `script`: A script that will be run before the Entity is created.
+- `script`: A script that will be run before the Entity is created
 - `constructor`: If provided, this will be used to create the entity. This should be a expression that returns an Entity. If not provided, a default one may be used instead.
 
 #### For mesh objects
