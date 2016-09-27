@@ -1,4 +1,4 @@
-__author__ = "vantjac"
+__author__ = "jacobvanthoog"
 
 from vectorMath import Vector
 from vectorMath import Rotate

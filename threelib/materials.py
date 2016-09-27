@@ -1,4 +1,4 @@
-__author__ = "vantjac"
+__author__ = "jacobvanthoog"
 
 from threelib import files
 from array import array

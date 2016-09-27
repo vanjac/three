@@ -1,4 +1,4 @@
-__author__ = "vantjac"
+__author__ = "jacobvanthoog"
 
 import math
 from threelib.vectorMath import Vector

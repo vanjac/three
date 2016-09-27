@@ -1,4 +1,4 @@
-__author__ = "vantjac"
+__author__ = "jacobvanthoog"
 
 from threelib.app import AppInterface
 from threelib.app import AppInstance
