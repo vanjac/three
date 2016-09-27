@@ -3,6 +3,7 @@ __author__ = "jacobvanthoog"
 from threelib.app import AppInterface
 from threelib.run.runner import GameRunner
 import threelib.world
+from threelib.sim.input import SimpleAxisInput
 
 import time
 
@@ -21,6 +22,9 @@ class GameInterface(AppInterface):
         self.world.simulator.start()
         
         self.runner = GameRunner(self.world.simulator, time.time())
+        
+        self.mouseXInput = SimpleAxisInput()
+        self.mouseYInput = SimpleAxisInput()
         
     # called by interface implementation every draw
     def step(self):
@@ -42,4 +46,6 @@ class GameInterface(AppInterface):
         pass
     
     def mouseMoved(self, mouseX, mouseY, pmouseX, pmouseY):
-        pass
+        self.mouseXInput.changeValue(mouseX - pmouseX)
+        self.mouseYInput.changeValue(mouseY - pmouseY)
+

@@ -17,6 +17,9 @@ class World:
         self.updatedMaterials = [ ]
         
         self.renderMeshes = [ ]
+        
+        self.buttonInputs = { }
+        self.axisInputs = { }
 
     def onLoad(self):
         for mat in self.materials:

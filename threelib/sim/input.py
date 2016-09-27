@@ -31,7 +31,7 @@ class ButtonInput:
             event = ButtonInput.RELEASED_EVENT
         
         self._lastPressed = pressed
-        return event
+        return event        
 
 class AxisInput:
 
@@ -53,4 +53,32 @@ class AxisInput:
         change = newValue - self._lastValue
         self._lastValue = newValue
         return change
+
+
+class SimpleButtonInput(ButtonInput):
+
+    def __init__(self):
+        self.pressed = True
+        super().__init__()
+        
+    def isPressed(self):
+        return self.pressed
+        
+    def setPressed(self, pressed):
+        self.pressed = pressed
+
+class SimpleAxisInput(AxisInput):
+    
+    def __init__(self):
+        self.value = 0
+        super().__init__()
+
+    def getValue(self):
+        return self.value
+        
+    def setValue(self, value):
+        self.value = value
+        
+    def changeValue(self, amount):
+        self.value += amount
 
