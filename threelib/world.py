@@ -100,6 +100,8 @@ def buildWorld(editorState):
     threelib.script.runScript("from threelib.sim.base import *")
     threelib.script.runScript("from threelib.sim.graphics import *")
     
+    threelib.script.setVariableValue("world", editorState.world)
+    
     world = editorState.world
     world.simulator = Simulator()
     

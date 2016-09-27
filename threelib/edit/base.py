@@ -3,6 +3,8 @@ __author__ = "vantjac"
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 from threelib.mesh import *
+import threelib.files
+import threelib.script
 
 # for ast.literal_eval, used for parsing properties
 import ast
@@ -245,6 +247,10 @@ class WorldObject(EditorObject):
     
     def __init__(self):
         super().__init__()
+        
+        # properties
+        self.script = "\n\n"
+        self.externalScripts = ['default'] # list of script names
     
     def getType(self):
         return "World"
@@ -260,16 +266,32 @@ class WorldObject(EditorObject):
 
     def getMesh(self):
         return None
+        
+    def addToWorld(self, world):
+        for scriptName in self.externalScripts:
+            path = threelib.files.getScript(scriptName)
+            if path == None:
+                print("Script file", scriptName, "not found!")
+                continue
+            script = threelib.files.loadScript(path)
+            threelib.script.runScript(script)
+        
+        threelib.script.runScript(self.script)
     
     def getProperties(self):
         properties = { "name": self.getName(),
-                       }
+                       "script": self.script,
+                       "externalScripts": ','.join(self.externalScripts) }
         return properties
 
     def setProperties(self, properties):
         for key, value in properties.items():
             if key == "name":
                 self.setName(value)
+            if key == "script":
+                self.script = value
+            if key == "externalScripts":
+                self.externalScripts = value.split(',')
     
     def clone(self):
         clone = WorldObject()

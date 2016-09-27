@@ -22,3 +22,9 @@ def setVariable(script, varName):
         localDict[varName] = value
     return value
 
+def setVariableValue(varName, value):
+    """
+    Set a variable directly from a provided value.
+    """
+    localDict[varName] = value
+

@@ -77,7 +77,8 @@ def getMapNumber(number):
 def getResourcePath(directoryPath, name):
     """
     Given a root resource directory path, and a file name with '/' used as the
-    path separator, return the full Path.
+    path separator and no extension, return the full Path. Return None if not
+    found.
     """
     try:
         dirs = name.split('/')
@@ -127,6 +128,13 @@ def getScript(name):
     Get the Path to the script with the specified name.
     """
     return getResourcePath(getScriptDir(), name)
+    
+def loadScript(path):
+    """
+    Load the text contents of a script file path.
+    """
+    with path.open() as f:
+        return f.read()
 
 def saveMapState(path, state):
     """
