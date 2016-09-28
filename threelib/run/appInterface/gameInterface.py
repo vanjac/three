@@ -45,18 +45,33 @@ class GameInterface(AppInterface):
         self.mouseMiddleInput = SimpleButtonInput()
         self.mouseRightInput = SimpleButtonInput()
         
+        self.keyInputs = { }
+        
     # called by interface implementation every draw
     def step(self):
         self.runner.tick(time.time())
 
     def setAppInstance(self, instance):
         self.instance = instance
+        
+    
+    def _getKeyInput(self, char):
+        if char in self.keyInputs:
+            return self.keyInputs[char]
+        else:
+            button = SimpleButtonInput()
+            self.keyInputs[char] = button
+            return button
 
     def keyPressed(self, key):
         char = unshift(key.decode("utf-8"))
+        if char in self.keyInputs:
+            self.keyInputs[char].setPressed(True)
     
     def keyReleased(self, key):
         char = unshift(key.decode("utf-8"))
+        if char in self.keyInputs:
+            self.keyInputs[char].setPressed(False)
         
     def mousePressed(self, button, mouseX, mouseY):
         buttonInput = self._inputForMouseButtonCode(button)
