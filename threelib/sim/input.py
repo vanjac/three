@@ -58,7 +58,7 @@ class AxisInput:
 class SimpleButtonInput(ButtonInput):
 
     def __init__(self):
-        self.pressed = True
+        self.pressed = False
         super().__init__()
         
     def isPressed(self):
