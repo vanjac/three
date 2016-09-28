@@ -7,7 +7,6 @@ import math
 # test constructors and basic operations
 
 a = Vector(1, 2, 3)
-assert str(a) == str(a.getTuple())
 assert a.x == 1 and a.y == 2 and a.z == 3
 
 b = Vector(1, 2)
