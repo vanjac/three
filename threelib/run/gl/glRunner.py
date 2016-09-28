@@ -17,13 +17,15 @@ class GLRunner(GameInterface):
         print("OpenGL 1 Game Runner")
         
     def init(self):
+        super().init()
+        
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1) # for getting select pixels
                                               # and storing textures
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
         self.instance.updateMaterials(self.world)
         
     def draw(self):
-        self.step()
+        super().draw()
         
         glPushMatrix()
         rotate = -self.world.camera.getRotation()

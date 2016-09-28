@@ -27,16 +27,7 @@ class GameInterface(AppInterface):
     def __init__(self, state):
         self.instance = None
         
-        print("Building world...")
-        threelib.world.buildWorld(state)
-        print("Done building world")
-        
         self.world = state.world
-            
-        self.world.simulator.init()
-        self.world.simulator.start()
-        
-        self.runner = GameRunner(self.world.simulator, time.time())
         
         self.mouseXInput = SimpleAxisInput()
         self.mouseYInput = SimpleAxisInput()
@@ -47,8 +38,23 @@ class GameInterface(AppInterface):
         
         self.keyInputs = { }
         
-    # called by interface implementation every draw
-    def step(self):
+        self.world.axisInputs['mouse-x'] = self.mouseXInput
+        self.world.axisInputs['mouse-y'] = self.mouseYInput
+        
+        
+        print("Building world...")
+        threelib.world.buildWorld(state)
+        print("Done building world")
+            
+        self.world.simulator.init()
+        self.world.simulator.start()
+        
+        self.runner = GameRunner(self.world.simulator, time.time())
+        
+    def init(self):
+        self.instance.lockMouse()
+    
+    def draw(self):
         self.runner.tick(time.time())
 
     def setAppInstance(self, instance):
@@ -64,6 +70,9 @@ class GameInterface(AppInterface):
             return button
 
     def keyPressed(self, key):
+        if key[0] == 27: # escape
+            self.instance.unlockMouse()
+        
         char = unshift(key.decode("utf-8"))
         if char in self.keyInputs:
             self.keyInputs[char].setPressed(True)
@@ -74,6 +83,8 @@ class GameInterface(AppInterface):
             self.keyInputs[char].setPressed(False)
         
     def mousePressed(self, button, mouseX, mouseY):
+        self.instance.lockMouse()
+        
         buttonInput = self._inputForMouseButtonCode(button)
         if buttonInput != None:
             buttonInput.setPressed(True)

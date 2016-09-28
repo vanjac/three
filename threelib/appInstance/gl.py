@@ -123,10 +123,11 @@ class GLAppInstance(AppInstance):
         return self.pmouseY
 
     def lockMouse(self):
+        if not self.mouseLocked:
+            self.mouseLockX = self.pmouseX
+            self.mouseLockY = self.pmouseY
         self.mouseLocked = True
         glutSetCursor(GLUT_CURSOR_NONE)
-        self.mouseLockX = self.pmouseX
-        self.mouseLockY = self.pmouseY
 
     def unlockMouse(self):
         if self.mouseLocked:

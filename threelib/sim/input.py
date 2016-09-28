@@ -82,3 +82,14 @@ class SimpleAxisInput(AxisInput):
     def changeValue(self, amount):
         self.value += amount
 
+
+class AxisInputScale(AxisInput):
+
+    def __init__(self, axis, scale):
+        self.axis = axis
+        self.scale = scale
+        super().__init__()
+        
+    def getValue(self):
+        return self.axis.getValue() * self.scale
+
