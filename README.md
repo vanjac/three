@@ -2,7 +2,7 @@
 
 When three is finished, it will be a 3d game engine with a map editor, written in Python and with Python scripting. But right now it is nowhere near finished.
 
-## Starting
+## Install
 
 three requires at least Python 3.4.
 
@@ -41,11 +41,11 @@ three requires at least Python 3.4.
     - The instructions refer to `python3-tk`, which may be called `python3-tkinter` instead; and `python3-dev`, which may be called `python3-devel` instead. 
     - If you get an Xlib error on the last step, type `xhost +` before you try to install it again. ([reference](https://ubuntuforums.org/showthread.php?t=2290602))
 
-### Run three
+## Start
 
 To use three, you need a game directory to work with. `gameDirTemplate` has a sample game directory layout with some useful materials. To start three, type `python3 three.py path/to/game/dir mapName`. `mapName` is relative to the `maps` folder in the game directory; if the map does not exist, it will be created. You can also specify a map number instead - this will look up names in `maps.txt` (starts at 1).
 
-By default, three starts in Run Mode, which is currently unfinished. To start the editor instead, use the `-edit` flag. The `-run` flag explicitly specifies run mode.
+By default, three starts in Run Mode, which starts the game with the specified map. To start the map editor instead, use the `-edit` flag.
 
 Try navigating to the root of this repository and typing `python3 three.py gameDirTemplate 1 -edit`. If a window appears with green and blue lines and some text at the bottom, it worked.
 

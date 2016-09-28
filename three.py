@@ -23,8 +23,6 @@ if len(sys.argv) > 1:
                 flag = arg[1:]
                 if flag.lower() == "edit":
                     editorMode = True
-                elif flag.lower() == "run":
-                    editorMode = False
                 else:
                     flags.append(arg[1:])
             else:
@@ -38,12 +36,11 @@ if len(sys.argv) > 1:
             print("Invalid argument", arg)
 
 if mapName == None:
-    print("To run, three needs:")
+    print("three takes two arguments:")
     print("  - A game directory path with a maps folder")
     print("  - A map name or number")
     print("     (a number will read map names from maps.txt in the game"
         + " directory)")
-    print("  - A mode: r or e for run or edit mode. Default is run mode.")
     print("See the README")
     exit()
 
