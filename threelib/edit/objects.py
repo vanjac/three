@@ -7,6 +7,7 @@ from threelib.edit.base import PointObject
 from threelib.edit.base import stringToBoolean
 
 from threelib.sim.graphics import RenderMesh
+from threelib.sim.playerPhysics import CollisionMesh
 
 import threelib.script
       
@@ -24,20 +25,11 @@ class SolidMeshObject(MeshObject):
         self.blockUseables = True
         self.useAction = ""
         
-        self.generateWalls = True
+        self.generateCollision = True
+        self.isSolid = True
         self.wallCollideAction = ""
-        
-        self.generateFloor = True
-        self.floorStartTouchAction = ""
-        self.floorEndTouchAction = ""
-        
-        self.generateCeiling = True
-        self.ceilingStartTouchAction = ""
-        self.ceilingEndTouchAction = ""
-        
-        self.generateVolume = False
-        self.volumeStartTouchAction = ""
-        self.volumeEndTouchAction = ""
+        self.startTouchAction = ""
+        self.endTouchAction = ""
     
     def addToWorld(self, world):
         threelib.script.runScript(self.script)
@@ -51,6 +43,11 @@ class SolidMeshObject(MeshObject):
             entity.rotate(self.getRotation())
             entity.addChild(renderMesh)
             world.simulator.addObject(entity)
+            
+        if self.generateCollision:
+            collisionMesh = CollisionMesh(self.getMesh())
+            renderMesh.addChild(collisionMesh)
+            world.simulator.addObject(collisionMesh)
         
         renderMesh.translate(self.getPosition())
         renderMesh.rotate(self.getRotation())
@@ -76,20 +73,11 @@ class SolidMeshObject(MeshObject):
                        "blockUseables" : str(self.blockUseables),
                        "useAction" : self.useAction,
                        
-                       "generateWalls" : str(self.generateWalls),
+                       "generateCollision" : str(self.generateCollision),
+                       "isSolid" : str(self.isSolid),
                        "wallCollideAction" : self.wallCollideAction,
-                       
-                       "generateFloor" : str(self.generateFloor),
-                       "floorStartTouchAction" : self.floorStartTouchAction,
-                       "floorEndTouchAction" : self.floorEndTouchAction,
-                       
-                       "generateCeiling" : str(self.generateCeiling),
-                       "ceilingStartTouchAction" : self.ceilingStartTouchAction,
-                       "ceilingEndTouchAction" : self.ceilingEndTouchAction,
-                       
-                       "generateVolume" : str(self.generateVolume),
-                       "volumeStartTouchAction" : self.volumeStartTouchAction,
-                       "volumeEndTouchAction" : self.volumeEndTouchAction
+                       "startTouchAction" : self.startTouchAction,
+                       "endTouchAction" : self.endTouchAction,
                      })
         return props
         
@@ -108,31 +96,16 @@ class SolidMeshObject(MeshObject):
             if key == "useAction":
                 self.useAction = value
             
-            if key == "generateWalls":
-                self.generateWalls = stringToBoolean(value)
+            if key == "generateCollision":
+                self.generateCollision = stringToBoolean(value)
+            if key == "isSolid":
+                self.isSolid = stringToBoolean(value)
             if key == "wallCollideAction":
                 self.wallCollideAction = value
-                
-            if key == "generateFloor":
-                self.generateFloor = stringToBoolean(value)
-            if key == "floorStartTouchAction":
-                self.floorStartTouchAction = value
-            if key == "floorEndTouchAction":
-                self.floorEndTouchAction = value
-            
-            if key == "generateCeiling":
-                self.generateCeiling = stringToBoolean(value)
-            if key == "ceilingStartTouchAction":
-                self.ceilingStartTouchAction = value
-            if key == "ceilingEndTouchAction":
-                self.ceilingEndTouchAction = value
-                
-            if key == "generateVolume":
-                self.generateVolume = stringToBoolean(value)
-            if key == "volumeStartTouchAction":
-                self.volumeStartTouchAction = value
-            if key == "volumeEndTouchAction":
-                self.volumeEndTouchAction = value
+            if key == "startTouchAction":
+                self.startTouchAction = value
+            if key == "endTouchAction":
+                self.endTouchAction = value
                 
     def clone(self):
         clone = SolidMeshObject()
@@ -149,20 +122,11 @@ class SolidMeshObject(MeshObject):
         clone.blockUseables = self.blockUseables
         clone.useAction = self.useAction
         
-        clone.generateWalls = self.generateWalls
+        clone.generateCollision = self.generateCollision
+        clone.isSolid = self.isSolid
         clone.wallCollideAction = self.wallCollideAction
-        
-        clone.generateFloor = self.generateFloor
-        clone.floorStartTouchAction = self.floorStartTouchAction
-        clone.floorEndTouchAction = self.floorEndTouchAction
-        
-        clone.generateCeiling = self.generateCeiling
-        clone.ceilingStartTouchAction = self.ceilingStartTouchAction
-        clone.ceilingEndTouchAction = self.ceilingEndTouchAction
-        
-        clone.generateVolume = self.generateVolume
-        clone.volumeStartTouchAction = self.volumeStartTouchAction
-        clone.volumeEndTouchAction = self.volumeEndTouchAction
+        clone.startTouchAction = self.startTouchAction
+        clone.endTouchAction = self.endTouchAction
 
 
 class ScriptPointObject(PointObject):

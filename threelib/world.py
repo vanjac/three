@@ -103,6 +103,7 @@ def buildWorld(editorState):
     threelib.script.runScript("from threelib.sim.base import *")
     threelib.script.runScript("from threelib.sim.graphics import *")
     threelib.script.runScript("from threelib.sim.input import *")
+    threelib.script.runScript("from threelib.sim.playerPhysics import *")
     threelib.script.runScript("from threelib.sim.tools.firstPerson import *")
     
     threelib.script.setVariableValue("world", editorState.world)
