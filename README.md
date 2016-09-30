@@ -121,7 +121,7 @@ three is designed to work with only closed, "solid" meshes. This means that you 
 - `Shift-k` to use the selected meshes to "carve" into all other meshes
 
 ### Materials
-- `Shift-p path/to/texture Enter` to choose the current material. The texture must be in the the `materials` subdirectory of the game directory. Even if you are on Windows you must use `/` as a path separator and match the case of the file name. Textures can sometimes take a while to transfer to OpenGL, during which the editor will be unresponsive.
+- `Shift-p path/to/texture Enter` to choose the current material. The texture must be in the the `materials` subdirectory of the game directory. The file extension should not be given. Even if you are on Windows you must use `/` as a path separator and match the case of the file name. Textures can sometimes take a while to transfer to OpenGL, during which the editor will be unresponsive.
 - `p` to "Paint" the current material on the selected faces or objects
 - `Shift-p Enter` to reload the current material's texture. Everything with that material will be updated.
 - `fg`, `fr`, or `fs` to enter translate, rotate, or scale adjust mode to align the face's material in 2 dimensions
@@ -165,9 +165,15 @@ Through an object's properties (viewed by pressing `Enter` and updated with `u`,
 
 #### For mesh objects
 
+- `generateVisibleMesh`: Whether a `threelib.sim.graphics.RenderMesh` should be created as a child of the Entity, allowing to be visible in the game.
 - `visible`: Whether the RenderMesh should be drawn. This value can change.
 
 There are some other properties but they are currently not implemented.
+
+#### For the world
+
+- `script`: A script to be run before the world is built
+- `externalScripts`: A list of script names, separated by commas, to also be run before the world is built. The names are relative to the `scripts` subdirectory of the game directory, and should not have extensions.
 
 #### The camera
 
