@@ -18,13 +18,13 @@ def setVariable(script, varName):
         value = None
     else:
         value = eval(script, localDict, localDict)
-    if varName != "":
-        localDict[varName] = value
+    setVariableValue(varName, value)
     return value
 
 def setVariableValue(varName, value):
     """
     Set a variable directly from a provided value.
     """
-    localDict[varName] = value
+    if varName != "":
+        localDict[varName] = value
 

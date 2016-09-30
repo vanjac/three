@@ -6,6 +6,7 @@ from threelib.edit.base import MeshObject
 from threelib.edit.base import PointObject
 from threelib.edit.base import stringToBoolean
 
+from threelib.sim.base import Entity
 from threelib.sim.graphics import RenderMesh
 from threelib.sim.playerPhysics import CollisionMesh
 
@@ -21,63 +22,84 @@ class SolidMeshObject(MeshObject):
         self.constructor = ""
         self.script = "\n\n"
         
+        self.generateVisibleMesh = True
         self.visible = True
         self.blockUseables = True
         self.useAction = ""
         
         self.generateCollision = True
+        self.collisionEnabled = True
         self.isSolid = True
         self.wallCollideAction = ""
-        self.startTouchAction = ""
-        self.endTouchAction = ""
+        self.floorStartTouchAction = ""
+        self.floorEndTouchAction = ""
+        self.ceilingCollideAction = ""
     
     def addToWorld(self, world):
         threelib.script.runScript(self.script)
         entity = threelib.script.setVariable(self.constructor,
                                              self.getName())
+        if entity == None:
+            entity = Entity()
+            threelib.script.setVariableValue(self.getName(), entity)
         
-        renderMesh = RenderMesh(self.getMesh())
+        world.simulator.addObject(entity)
         
-        if entity != None:
-            entity.translate(self.getPosition())
-            entity.rotate(self.getRotation())
-            entity.addChild(renderMesh)
-            world.simulator.addObject(entity)
+        if self.generateVisibleMesh:
+            renderMesh = RenderMesh(self.getMesh())
+            renderMesh.setVisible(self.visible)
+            renderMesh.setBlockUseables(self.blockUseables)
+            def useAction():
+                threelib.script.runScript(self.script)
+            renderMesh.setUseAction(useAction)
             
+            world.simulator.addObject(renderMesh)
+            world.renderMeshes.append(renderMesh)
+            entity.addChild(renderMesh)
+        
         if self.generateCollision:
             collisionMesh = CollisionMesh(self.getMesh())
-            renderMesh.addChild(collisionMesh)
+            collisionMesh.setEnabled(self.collisionEnabled)
+            collisionMesh.setSolid(self.isSolid)
+            def wallCollideAction():
+                threelib.script.runScript(self.wallCollideAction)
+            collisionMesh.setWallCollideAction(wallCollideAction)
+            def floorStartTouchAction():
+                threelib.script.runScript(self.floorStartTouchAction)
+            collisionMesh.setFloorStartTouchAction(floorStartTouchAction)
+            def floorEndTouchAction():
+                threelib.script.runScript(self.floorEndTouchAction)
+            collisionMesh.setFloorEndTouchAction(floorEndTouchAction)
+            def ceilingCollideAction():
+                threelib.script.runScript(self.ceilingCollideAction)
+            collisionMesh.setCeilingCollideAction(ceilingCollideAction)
+            
             world.simulator.addObject(collisionMesh)
+            world.collisionMeshes.append(collisionMesh)
+            entity.addChild(collisionMesh)
         
-        renderMesh.translate(self.getPosition())
-        renderMesh.rotate(self.getRotation())
-        renderMesh.setVisible(self.visible)
-        def useAction():
-            threelib.script.runScript(self.script)
-        renderMesh.setUseAction(useAction)
-        renderMesh.setBlockUseables(self.blockUseables)
-        world.renderMeshes.append(renderMesh)
         
-        world.simulator.addObject(renderMesh)
+        entity.translate(self.getPosition())
+        entity.rotate(self.getRotation())
         
-        if entity != None:
-            return entity
-        else:
-            return renderMesh
+        return entity
         
     def getProperties(self):
         props = super().getProperties()
         props.update({ "constructor" : self.constructor,
                        "script" : self.script,
+                       "generateVisibleMesh" : str(self.generateVisibleMesh),
                        "visible" : str(self.visible),
                        "blockUseables" : str(self.blockUseables),
                        "useAction" : self.useAction,
                        
                        "generateCollision" : str(self.generateCollision),
+                       "collisionEnabled" : str(self.collisionEnabled),
                        "isSolid" : str(self.isSolid),
                        "wallCollideAction" : self.wallCollideAction,
-                       "startTouchAction" : self.startTouchAction,
-                       "endTouchAction" : self.endTouchAction,
+                       "floorStartTouchAction" : self.floorStartTouchAction,
+                       "floorEndTouchAction" : self.floorEndTouchAction,
+                       "ceilingCollideAction" : self.ceilingCollideAction
                      })
         return props
         
@@ -89,6 +111,8 @@ class SolidMeshObject(MeshObject):
             if key == "script":
                 self.script = value
             
+            if key == "generateVisibleMesh":
+                self.generateVisibleMesh = stringToBoolean(value)
             if key == "visible":
                 self.visible = stringToBoolean(value)
             if key == "blockUseables":
@@ -98,14 +122,18 @@ class SolidMeshObject(MeshObject):
             
             if key == "generateCollision":
                 self.generateCollision = stringToBoolean(value)
+            if key == "collisionEnabled":
+                self.collisionEnabled = stringToBoolean(value)
             if key == "isSolid":
                 self.isSolid = stringToBoolean(value)
             if key == "wallCollideAction":
                 self.wallCollideAction = value
-            if key == "startTouchAction":
-                self.startTouchAction = value
-            if key == "endTouchAction":
-                self.endTouchAction = value
+            if key == "floorStartTouchAction":
+                self.floorStartTouchAction = value
+            if key == "floorEndTouchAction":
+                self.floorEndTouchAction = value
+            if key == "ceilingCollideAction":
+                self.ceilingCollideAction = value
                 
     def clone(self):
         clone = SolidMeshObject()
@@ -118,15 +146,18 @@ class SolidMeshObject(MeshObject):
         clone.constructor = self.constructor
         clone.script = self.script
         
+        clone.generateVisibleMesh = self.generateVisibleMesh
         clone.visible = self.visible
         clone.blockUseables = self.blockUseables
         clone.useAction = self.useAction
         
         clone.generateCollision = self.generateCollision
+        clone.collisionEnabled = self.collisionEnabled
         clone.isSolid = self.isSolid
         clone.wallCollideAction = self.wallCollideAction
-        clone.startTouchAction = self.startTouchAction
-        clone.endTouchAction = self.endTouchAction
+        clone.floorStartTouchAction = self.floorStartTouchAction
+        clone.floorEndTouchAction = self.floorEndTouchAction
+        clone.ceilingCollideAction = self.ceilingCollideAction
 
 
 class ScriptPointObject(PointObject):
@@ -142,14 +173,17 @@ class ScriptPointObject(PointObject):
         threelib.script.runScript(self.script)
         entity = threelib.script.setVariable(self.constructor,
                                                 self.getName())
-        if entity != None:
-            entity.translate(self.getPosition())
-            entity.rotate(self.getRotation())
-            
-            world.simulator.addObject(entity)
-            
-            if self.getName() == "cam":
-                world.camera = entity
+        if entity == None:
+            entity = Entity()
+            threelib.script.setVariableValue(self.getName(), entity)
+        
+        entity.translate(self.getPosition())
+        entity.rotate(self.getRotation())
+        
+        world.simulator.addObject(entity)
+        
+        if self.getName() == "cam":
+            world.camera = entity
 
     def getProperties(self):
         props = super().getProperties()

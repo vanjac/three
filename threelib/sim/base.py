@@ -210,13 +210,11 @@ class Entity(SimObject):
         Mark this Entity, and optionally its children, as ready to remove. No
         effect until update().
         """
-        if children:
-            childList = list(self.children)
     
         def do(toUpdateList):
             self.remove = True
             if children:
-                for child in childList:
+                for child in list(self.children):
                     child.kill(children=True)
                     toUpdateList.append(child)
         self.actions.addAction(do)
@@ -232,14 +230,11 @@ class Entity(SimObject):
         Change the position of this Entity, and optionally its children. No
         effect until update().
         """
-        # if new children are added after this, they won't be moved
-        if moveChildren:
-            childrenToMove = list(self.children)
         
         def do(toUpdateList):
             self.position += vector
             if moveChildren:
-                for child in childrenToMove:
+                for child in list(self.children):
                     child.translate(vector, True)
                     toUpdateList.append(child)
         self.actions.addAction(do)
@@ -249,19 +244,15 @@ class Entity(SimObject):
         Rotate this Entity, and optionally its children (they will be rotated
         around this Entity). No effect until update().
         """
-        # if new children are added after this, they won't be moved
-        if moveChildren:
-            childrenToMove = list(self.children)
-            selfPosition = self.getPosition()
         
         def do(toUpdateList):
             self.rotation = self.rotation.rotate(rotate)
             if moveChildren:
-                for child in childrenToMove:
+                for child in self.children:
                     child.rotate(rotate, True)
                     startPosition = child.getPosition()
                     endPosition = startPosition.rotateAround(rotate,
-                        selfPosition)
+                        self.getPosition())
                     child.translate(endPosition - startPosition)
                     toUpdateList.append(child)
         self.actions.addAction(do)
