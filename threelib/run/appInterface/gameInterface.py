@@ -38,8 +38,14 @@ class GameInterface(AppInterface):
         
         self.keyInputs = { }
         
+        
+        # remove these once input customization has been added!
         self.world.axisInputs['mouse-x'] = self.mouseXInput
         self.world.axisInputs['mouse-y'] = self.mouseYInput
+        self.world.buttonInputs['w'] = self._getKeyInput('w')
+        self.world.buttonInputs['a'] = self._getKeyInput('a')
+        self.world.buttonInputs['s'] = self._getKeyInput('s')
+        self.world.buttonInputs['d'] = self._getKeyInput('d')
         
         
         print("Building world...")

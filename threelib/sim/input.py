@@ -70,26 +70,85 @@ class SimpleButtonInput(ButtonInput):
 class SimpleAxisInput(AxisInput):
     
     def __init__(self):
-        self.value = 0
+        self.value = 0.0
         super().__init__()
 
     def getValue(self):
         return self.value
         
     def setValue(self, value):
-        self.value = value
+        self.value = float(value)
         
     def changeValue(self, amount):
         self.value += amount
 
 
-class AxisInputScale(AxisInput):
+class ButtonAxis(AxisInput):
+
+    def __init__(self, button, offValue, onValue):
+        self.button = button
+        self.offValue = float(offValue)
+        self.onValue = float(onValue)
+        super().__init__()
+        
+    def getValue(self):
+        return self.onValue if self.button.isPressed() else self.offValue
+
+class AxisOffset(AxisInput):
+
+    def __init__(self, axis, offset):
+        self.axis = axis
+        self.offset = float(offset)
+        super().__init__()
+        
+    def getValue(self):
+        return self.axis.getValue() + self.offset
+
+class AxisScale(AxisInput):
 
     def __init__(self, axis, scale):
         self.axis = axis
-        self.scale = scale
+        self.scale = float(scale)
         super().__init__()
         
     def getValue(self):
         return self.axis.getValue() * self.scale
+        
+class AxisOpposite(AxisInput):
+
+    def __init__(self, axis):
+        self.axis = axis
+        super().__init__()
+        
+    def getValue(self):
+        return -float(self.axis.getValue())
+
+class AxisReciprocal(AxisInput):
+
+    def __init__(self, axis):
+        self.axis = axis
+        super().__init__()
+        
+    def getValue(self):
+        return 1.0 / self.axis.getValue()
+
+class AxisSum(AxisInput):
+
+    def __init__(self, axis1, axis2):
+        self.axis1 = axis1
+        self.axis2 = axis2
+        super().__init__()
+        
+    def getValue(self):
+        return float(self.axis1.getValue()) + float(self.axis2.getValue())
+
+class AxisProduct(AxisInput):
+
+    def __init__(self, axis1, axis2):
+        self.axis1 = axis1
+        self.axis2 = axis2
+        super().__init__()
+        
+    def getValue(self):
+        return float(self.axis1.getValue()) * float(self.axis2.getValue())
 
