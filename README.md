@@ -43,7 +43,9 @@ three requires at least Python 3.4.
 
 ## Start
 
-To use three, you need a game directory to work with. `gameDirTemplate` has a sample game directory layout with some useful materials. To start three, type `python3 three.py path/to/game/dir mapName`. `mapName` is relative to the `maps` folder in the game directory; if the map does not exist, it will be created. You can also specify a map number instead - this will look up names in `maps.txt` (starts at 1).
+To use three, you need a game directory to work with. Game directories contain all the data needed for a complete game, including maps, textures, materials, and scripts. A sample game directory with some useful materials has been included in the `gameDirTemplate` directory.
+
+To start three, type `python3 three.py path/to/game/dir mapName`. `mapName` is relative to the `maps` folder in the game directory; if the map does not exist, it will be created. You can also specify a map number instead - this will look up names in `maps.txt` (starts at 1).
 
 By default, three starts in Run Mode, which starts the game with the specified map. To start the map editor instead, use the `-edit` flag.
 
