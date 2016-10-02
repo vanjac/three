@@ -72,6 +72,34 @@ class CollisionMesh(threelib.sim.base.Entity):
                 nextVertex = nextVertexCandidate
         
         print("Convex hull points:", self.convexHullPoints)
+        
+        
+    def isInBounds(self, point):
+        """
+        Check if the 2d vector (z coordinate ignored) is in the convex bounds
+        created by this object. The point should be in absolute world
+        coordinates.
+        """
+        # the algorithm is sort of based on this:
+        # demonstrations.wolfram.com/AnEfficientTestForAPointToBeInAConvexPolygon/
+    
+        # first translate all the points of the convex hull, to factor in the
+        # translation and Z rotation of this object
+        
+        translatedConvexHull = [ v.rotate2(self.getRotation().z) \
+            + self.getPosition() \
+            for v in self.convexHullPoints]
+            
+        # triangles are made from adjacent vertices and the point
+        # all of them should be counterclockwise
+        # if any aren't, the point is outside the polygon
+        for i in range(0, len(self.convexHullPoints)):
+            orientation = self._orientation(translatedConvexHull[i - 1],
+                                            translatedConvexHull[i],
+                                            point)
+            if orientation == 1:
+                return False
+        return True
                         
     def _orientation(self, p, q, r):
         # for 2d vectors (Z coordinate is ignored)
