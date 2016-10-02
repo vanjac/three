@@ -302,7 +302,7 @@ class GLEditor(EditorInterface):
                 # block selecting vertices through objects
                 o.drawSelectHull((0, 0, 0), self.graphicsTools)
 
-                if o.getMesh != None:
+                if o.getMesh() != None:
                     glBegin(GL_POINTS)
                     j = 0
                     for v in o.getMesh().getVertices():
@@ -321,7 +321,7 @@ class GLEditor(EditorInterface):
                 glPushMatrix()
                 self.transformObject(o)
                 
-                if o.getMesh != None:
+                if o.getMesh() != None:
                     j = 0
                     for f in o.getMesh().getFaces():
                         glBegin(GL_POLYGON)
