@@ -113,10 +113,28 @@ class CollisionMesh(threelib.sim.base.Entity):
         # first translate all the points of the convex hull, to factor in the
         # translation and Z rotation of this object
         
-        point = (point - self.getPosition()).rotate2(-(self.getRotation().z))
+        point = self._translatePointForConvexHull(point)
         return self._pointOnFace(point, self.convexHullPoints)
         
+    
+    def topNormalAt(self, point):
+        """
+        Get the normal at the specified 2d point on the top of this mesh. Return
+        None if there is nothing at that point. Instead of relying on this
+        method returning None, you should first check ``isInBounds``, which is
+        more efficient.
+        """
+        point = self._translatePointForConvexHull(point)
+        for face in self.topFaces:
+            if self._pointOnMeshFace(point, face):
+                return face.getNormal().rotate2(self.getRotation().z)
+        return None
         
+    def _translatePointForConvexHull(self, point):
+        # translate the point to factor in the translation and Z rotation of the
+        # convex hull
+        return (point - self.getPosition()).rotate2(-(self.getRotation().z))
+    
     def _pointOnFace(self, point, facePoints):
         # triangles are made from adjacent vertices and the point
         # all of them should be counterclockwise
@@ -125,6 +143,17 @@ class CollisionMesh(threelib.sim.base.Entity):
             orientation = self._orientation(facePoints[i - 1],
                                             facePoints[i],
                                             point)
+            if orientation == 1:
+                return False
+        return True
+        
+    def _pointOnMeshFace(self, point, meshFace):
+        vertices = meshFace.getVertices()
+        for i in range(0, len(vertices)):
+            orientation = self._orientation(
+                vertices[i - 1].vertex.getPosition(),
+                vertices[i].vertex.getPosition(),
+                point)
             if orientation == 1:
                 return False
         return True
