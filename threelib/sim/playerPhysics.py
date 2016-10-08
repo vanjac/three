@@ -70,7 +70,11 @@ class CollisionMesh(threelib.sim.base.Entity):
                     break
                 
                 verticesToRemove = [ ]
-                nextVertexCandidate = None
+                if nextVertex != self.mesh.getVertices()[0]:
+                    # to potentially complete the polygon
+                    nextVertexCandidate = self.mesh.getVertices()[0]
+                else:
+                    nextVertexCandidate = None
                 for vertex in vertices:
                     pos = vertex.getPosition().setZ(0)
                     
@@ -88,6 +92,10 @@ class CollisionMesh(threelib.sim.base.Entity):
                             nextVertexCandidate = vertex
                 for vertex in verticesToRemove:
                     vertices.remove(vertex)
+                
+                if nextVertexCandidate == self.mesh.getVertices()[0]:
+                    # reached beginning again
+                    break
                 nextVertex = nextVertexCandidate
         
         print("Convex hull points:", self.convexHullPoints)
@@ -105,16 +113,17 @@ class CollisionMesh(threelib.sim.base.Entity):
         # first translate all the points of the convex hull, to factor in the
         # translation and Z rotation of this object
         
-        translatedConvexHull = [ v.rotate2(self.getRotation().z) \
-            + self.getPosition() \
-            for v in self.convexHullPoints]
-            
+        point = (point - self.getPosition()).rotate2(-(self.getRotation().z))
+        return self._pointOnFace(point, self.convexHullPoints)
+        
+        
+    def _pointOnFace(self, point, facePoints):
         # triangles are made from adjacent vertices and the point
         # all of them should be counterclockwise
         # if any aren't, the point is outside the polygon
-        for i in range(0, len(self.convexHullPoints)):
-            orientation = self._orientation(translatedConvexHull[i - 1],
-                                            translatedConvexHull[i],
+        for i in range(0, len(facePoints)):
+            orientation = self._orientation(facePoints[i - 1],
+                                            facePoints[i],
                                             point)
             if orientation == 1:
                 return False
