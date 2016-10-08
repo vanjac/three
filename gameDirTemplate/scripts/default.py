@@ -1,9 +1,5 @@
 
 def makePlayer():
-    camera = FirstPersonCamera( AxisScale(world.axisInputs['mouse-y'], .005) )
-    world.simulator.addObject(camera)
-    world.camera = camera
-    
     forwardButtonAxis = ButtonAxis(world.buttonInputs['w'], 0.0, 1.0)
     backButtonAxis = ButtonAxis(world.buttonInputs['s'], 0.0, 1.0)
     leftButtonAxis = ButtonAxis(world.buttonInputs['a'], 0.0, 1.0)
@@ -16,7 +12,8 @@ def makePlayer():
     
     player = FirstPersonPlayer( world,
                                 AxisScale(world.axisInputs['mouse-x'], .005),
+                                AxisScale(world.axisInputs['mouse-y'], .005),
                                 xWalkAxis, yWalkAxis )
-    player.addChild(camera)
+    world.camera = player
     return player
 
