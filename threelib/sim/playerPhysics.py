@@ -30,10 +30,29 @@ class CollisionMesh(threelib.sim.base.Entity):
         # 2d convex hull of the object on the XY plane
         self.convexHullPoints = [ ]
         
+        # lists of MeshFaces
+        self.topFaces = [ ]
+        self.bottomFaces = [ ]
+        
         self._generateHull()
         
     def _generateHull(self):
+        print("Generate hull")
         # TODO: These algorithms ignore the X and Y rotation of the object!
+        
+        # split mesh faces into "top" and "bottom" based on normal
+        for face in self.mesh.getFaces():
+            normal = face.getNormal()
+            if normal != None:
+                normalZ = normal.z
+                if vectorMath.isclose(normalZ, 0):
+                    pass # not top or bottom
+                elif normalZ > 0:
+                    self.topFaces.append(face)
+                else:
+                    self.bottomFaces.append(face)
+        print(len(self.topFaces), "top faces")
+        print(len(self.bottomFaces), "bottom faces")
     
         # find the 2d convex hull with Jarvis's algorithm
         # geeksforgeeks.org/convex-hull-set-1-jarviss-algorithm-or-wrapping
