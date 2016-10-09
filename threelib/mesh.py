@@ -2,6 +2,7 @@ __author__ = "jacobvanthoog"
 
 from threelib.vectorMath import Vector
 from collections import namedtuple
+from threelib import vectorMath
 
 # vertex is a MeshVertex
 # textureVertex is a Vector
@@ -183,6 +184,16 @@ class MeshFace:
             return Vector.normal(self.vertices[0].vertex.getPosition(),
                                  self.vertices[1].vertex.getPosition(),
                                  self.vertices[2].vertex.getPosition())
+        else:
+            return None
+            
+    # (a, b, c, d)
+    # ax + by + cz + d = 0
+    def getPlane(self):
+        if len(self.vertices) >= 3:
+            return vectorMath.calculatePlaneConstants(
+                self.vertices[0].vertex.getPosition(),
+                self.getNormal())
         else:
             return None
 
