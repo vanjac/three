@@ -34,6 +34,14 @@ class FirstPersonPlayer(Entity):
             toUpdateList.append(self)
         self.actions.addAction(do)
         
-        #for collision in self.world.collisionMeshes:
-        #    print("in" if collision.isInBounds(self.position) else "out")
+        for collision in self.world.collisionMeshes:
+            if collision.isInBounds(self.position):
+                point = collision.topPointAt(self.position)
+                if point == None:
+                    print("Collision error!")
+                else:
+                    z = point.height + 16
+                    def do(toUpdateList):
+                        self.position = self.position.setZ(z)
+                    self.actions.addAction(do)
 
