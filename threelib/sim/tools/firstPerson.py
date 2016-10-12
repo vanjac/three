@@ -30,7 +30,7 @@ class FirstPersonPlayer(Entity):
             if yRot > math.pi and yRot < math.pi*3/2:
                 self.rotation = self.rotation.setY(math.pi*3/2)
             
-            self.position += translation.rotate(self.rotation)
+            self.position += translation.rotate2(self.rotation.z)
             toUpdateList.append(self)
         self.actions.addAction(do)
         
