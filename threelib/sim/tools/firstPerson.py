@@ -46,7 +46,8 @@ class FirstPersonPlayer(Entity):
             self.position += Vector(0, 0, self.zVelocity * timeElapsed)
             
             for collision in self.world.collisionMeshes:
-                if collision.isInBounds(self.position):
+                if collision.isEnabled() \
+                        and collision.isInBounds(self.position):
                     point = collision.topPointAt(self.position)
                     if point == None:
                         print("Collision error!")
