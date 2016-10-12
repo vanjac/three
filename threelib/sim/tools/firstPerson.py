@@ -72,22 +72,23 @@ class FirstPersonPlayer(Entity):
                                 self.zVelocity = 0.0
                                 self.currentFloor = collision
             
+            if self.currentFloor != None:
+                if self.currentFloor.isInBounds(self.position):
+                    point = self.currentFloor.topPointAt(self.position)
+                    if point == None:
+                        print("Collision error!")
+                        self.zVelocity = 0.0
+                        self.currentFloor = None
+                    else:
+                        z = point.height + self.cameraHeight
+                        def do(toUpdateList):
+                            self.position = self.position.setZ(z)
+                        self.actions.addAction(do)
+                else:
+                    self.zVelocity = 0.0
+                    self.currentFloor = None
+            
             toUpdateList.append(self)
         self.actions.addAction(do)
         
-        if self.currentFloor != None:
-            if self.currentFloor.isInBounds(self.position):
-                point = self.currentFloor.topPointAt(self.position)
-                if point == None:
-                    print("Collision error!")
-                    self.zVelocity = 0.0
-                    self.currentFloor = None
-                else:
-                    z = point.height + self.cameraHeight
-                    def do(toUpdateList):
-                        self.position = self.position.setZ(z)
-                    self.actions.addAction(do)
-            else:
-                self.zVelocity = 0.0
-                self.currentFloor = None
 
