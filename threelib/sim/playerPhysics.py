@@ -165,7 +165,7 @@ class CollisionMesh(threelib.sim.base.Entity):
                 # ax + by + cz + d = 0
                 # z = -(ax + by + d) / c
                 height = -(plane[0] * point.x + plane[1] * point.y + plane[3]) \
-                    / plane[2]
+                    / plane[2] + self.getPosition().z
                 return CollisionPoint(height, normal)
         return None
         
@@ -182,7 +182,7 @@ class CollisionMesh(threelib.sim.base.Entity):
                 # ax + by + cz + d = 0
                 # z = -(ax + by + d) / c
                 height = -(plane[0] * point.x + plane[1] * point.y + plane[3]) \
-                    / plane[2]
+                    / plane[2] + self.getPosition().z
                 return CollisionPoint(height, normal)
         return None
         
