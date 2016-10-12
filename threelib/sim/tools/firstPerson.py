@@ -21,6 +21,7 @@ class FirstPersonPlayer(Entity):
         
         self.cameraHeight = 16.0
         self.walkSpeed = 50.0
+        self.fallMoveSpeed = 30.0
         self.maxWalkAngle = 45.0 # in degrees
         self.maxWalkNormalZ = Vector(1.0, 0.0).rotate2(self.maxWalkAngle).y
         
@@ -51,7 +52,7 @@ class FirstPersonPlayer(Entity):
             
             # uphill slopes should slow down movement
             # downhill slopes should speed up movement
-            slopeFactor = 1.0
+            slopeFactor = float(self.fallMoveSpeed) / self.walkSpeed
             if self.currentFloor != None:
                 if self.currentFloor.isInBounds(self.position):
                     point = self.currentFloor.topPointAt(self.position)
