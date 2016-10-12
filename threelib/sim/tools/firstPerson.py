@@ -6,6 +6,7 @@ from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 
 class FirstPersonPlayer(Entity):
+    GRAVITY = -50.0
 
     def __init__(self, world, xLookAxis, yLookAxis, xWalkAxis, yWalkAxis):
         super().__init__()
@@ -15,7 +16,11 @@ class FirstPersonPlayer(Entity):
         self.xWalkAxis = xWalkAxis
         self.yWalkAxis = yWalkAxis
         
+        self.zVelocity = 0.0
+        
     def scan(self, timeElapsed, totalTime):
+        self.zVelocity += FirstPersonPlayer.GRAVITY * timeElapsed
+    
         rotation = Rotate(0, float(self.yLookAxis.getChange()), \
                             -float(self.xLookAxis.getChange()))
         translation = Vector(-self.yWalkAxis.getValue() * timeElapsed,
@@ -31,6 +36,7 @@ class FirstPersonPlayer(Entity):
                 self.rotation = self.rotation.setY(math.pi*3/2)
             
             self.position += translation.rotate2(self.rotation.z)
+            self.position += Vector(0, 0, self.zVelocity * timeElapsed)
             toUpdateList.append(self)
         self.actions.addAction(do)
         
