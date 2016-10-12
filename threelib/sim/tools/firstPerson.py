@@ -54,9 +54,20 @@ class FirstPersonPlayer(Entity):
                         # if player just hit this floor
                         if currentZ <= point.height \
                                 and previousZ > point.height:
-                            print("Hit floor")
-                            self.zVelocity = 0.0
-                            self.currentFloor = collision
+                            # if the player is already on a floor, check which
+                            # is higher
+                            if self.currentFloor != None:
+                                currentFloorPoint = \
+                                    self.currentFloor.topPointAt(self.position)
+                                if point == None:
+                                    print("Collision error!")
+                                else:
+                                    if currentFloorPoint.height < point.height:
+                                        self.zVelocity = 0.0
+                                        self.currentFloor = collision
+                            else:
+                                self.zVelocity = 0.0
+                                self.currentFloor = collision
             
             toUpdateList.append(self)
         self.actions.addAction(do)
