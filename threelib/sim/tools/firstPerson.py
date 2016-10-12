@@ -73,6 +73,7 @@ class FirstPersonPlayer(Entity):
                     point = collision.topPointAt(self.position)
                     if point != None:
                         if self.currentFloor == None:
+                            # TODO: cleanup!
                             currentZ = self.position.z - self.cameraHeight
                             previousZ = previousPosition.z - self.cameraHeight
                             # if player just hit this floor
@@ -80,6 +81,15 @@ class FirstPersonPlayer(Entity):
                                     and previousZ > point.height:
                                 self.zVelocity = 0.0
                                 self.currentFloor = collision
+                            # what if the floor height has changed as the player
+                            # moves?
+                            nextFloorPreviousPoint = \
+                                collision.topPointAt(previousPosition)
+                            if nextFloorPreviousPoint != None:
+                                if currentZ <= nextFloorPreviousPoint.height \
+                                  and previousZ > nextFloorPreviousPoint.height:
+                                    self.zVelocity = 0.0
+                                    self.currentFloor = collision
                                 
                         # already on a floor
                         elif collision.isInBounds(previousPosition):
