@@ -71,9 +71,7 @@ class FirstPersonPlayer(Entity):
                 if collision.isEnabled() \
                         and collision.isInBounds(self.position):
                     point = collision.topPointAt(self.position)
-                    if point == None:
-                        print("Collision error!")
-                    else:
+                    if point != None:
                         if self.currentFloor == None:
                             currentZ = self.position.z - self.cameraHeight
                             previousZ = previousPosition.z - self.cameraHeight
@@ -82,15 +80,25 @@ class FirstPersonPlayer(Entity):
                                     and previousZ > point.height:
                                 self.zVelocity = 0.0
                                 self.currentFloor = collision
-                        else: # already on a floor
-                            # this check is REQUIRED
-                            if collision.isInBounds(previousPosition):
-                                currentFloorPreviousZ = self.currentFloor \
-                                    .topPointAt(previousPosition).height
-                                currentFloorCurrentZ = self.currentFloor \
-                                    .topPointAt(self.position).height
-                                nextFloorPreviousZ = collision \
-                                    .topPointAt(previousPosition).height
+                                
+                        # already on a floor
+                        elif collision.isInBounds(previousPosition):
+                            # these checks are required
+                            currentFloorPreviousPoint = self.currentFloor \
+                                .topPointAt(previousPosition)
+                            currentFloorCurrentPoint = self.currentFloor \
+                                .topPointAt(self.position)
+                            nextFloorPreviousPoint = \
+                                collision.topPointAt(previousPosition)
+                            if currentFloorPreviousPoint != None \
+                                    and currentFloorCurrentPoint != None \
+                                    and nextFloorPreviousPoint != None:
+                                currentFloorPreviousZ = \
+                                    currentFloorPreviousPoint.height
+                                currentFloorCurrentZ = \
+                                    currentFloorCurrentPoint.height
+                                nextFloorPreviousZ = \
+                                    nextFloorPreviousPoint.height
                                 nextFloorCurrentZ = point.height
                                 # allow walking from one floor onto another
                                 if currentFloorPreviousZ >= nextFloorPreviousZ \
@@ -102,7 +110,6 @@ class FirstPersonPlayer(Entity):
                 if self.currentFloor.isInBounds(self.position):
                     point = self.currentFloor.topPointAt(self.position)
                     if point == None:
-                        print("Collision error!")
                         self.zVelocity = 0.0
                         self.currentFloor = None
                     else:
