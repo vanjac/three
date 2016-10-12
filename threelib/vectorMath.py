@@ -237,6 +237,12 @@ class Vector:
         Return the dot product of the two vectors.
         """
         return self.x * v.x + self.y * v.y + self.z * v.z
+        
+    def project(self, v):
+        """
+        Project this vector onto another.
+        """
+        return self.dot(v / v.magnitude())
     
     def orthogonal(self, v):
         """
