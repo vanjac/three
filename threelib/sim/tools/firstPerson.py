@@ -7,6 +7,7 @@ from threelib.vectorMath import Rotate
 
 class FirstPersonPlayer(Entity):
     GRAVITY = -50.0
+    WALK_SPEED = 50.0
 
     def __init__(self, world, xLookAxis, yLookAxis, xWalkAxis, yWalkAxis):
         super().__init__()
@@ -27,7 +28,8 @@ class FirstPersonPlayer(Entity):
         rotation = Rotate(0, float(self.yLookAxis.getChange()), \
                             -float(self.xLookAxis.getChange()))
         translation = Vector(-self.yWalkAxis.getValue() * timeElapsed,
-                              self.xWalkAxis.getValue() * timeElapsed)
+                              self.xWalkAxis.getValue() * timeElapsed) \
+                      * FirstPersonPlayer.WALK_SPEED
         
         def do(toUpdateList):
             self.rotation += rotation
@@ -85,5 +87,4 @@ class FirstPersonPlayer(Entity):
                     self.actions.addAction(do)
             else:
                 self.currentFloor = None
-
 

@@ -5,10 +5,8 @@ def makePlayer():
     leftButtonAxis = ButtonAxis(world.buttonInputs['a'], 0.0, 1.0)
     rightButtonAxis = ButtonAxis(world.buttonInputs['d'], 0.0, 1.0)
     
-    xWalkAxis = AxisScale(
-        AxisSum(rightButtonAxis, AxisOpposite(leftButtonAxis)), 50.0)
-    yWalkAxis = AxisScale(
-        AxisSum(forwardButtonAxis, AxisOpposite(backButtonAxis)), 50.0)
+    xWalkAxis = AxisSum(rightButtonAxis, AxisOpposite(leftButtonAxis))
+    yWalkAxis = AxisSum(forwardButtonAxis, AxisOpposite(backButtonAxis))
     
     player = FirstPersonPlayer( world,
                                 AxisScale(world.axisInputs['mouse-x'], .005),
