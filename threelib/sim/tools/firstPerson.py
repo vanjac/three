@@ -7,8 +7,6 @@ from threelib.vectorMath import Rotate
 
 class FirstPersonPlayer(Entity):
     GRAVITY = -50.0
-    WALK_SPEED = 50.0
-    MAX_WALK_ANGLE = 45.0 # in degrees
 
     def __init__(self, world, xLookAxis, yLookAxis, xWalkAxis, yWalkAxis):
         super().__init__()
@@ -22,13 +20,16 @@ class FirstPersonPlayer(Entity):
         self.currentFloor = None
         
         self.cameraHeight = 16.0
+        self.walkSpeed = 50.0
+        self.maxWalkAngle = 45.0 # in degrees
+        self.maxWalkNormalZ = Vector(1.0, 0.0).rotate2(self.maxWalkAngle).y
         
     def scan(self, timeElapsed, totalTime):
         rotation = Rotate(0, float(self.yLookAxis.getChange()), \
                             -float(self.xLookAxis.getChange()))
         translation = Vector(-self.yWalkAxis.getValue(),
                               self.xWalkAxis.getValue()).limitMagnitude(1.0) \
-                      *timeElapsed * FirstPersonPlayer.WALK_SPEED
+                      *timeElapsed * self.walkSpeed
         
         def do(toUpdateList):
             # LOOK
