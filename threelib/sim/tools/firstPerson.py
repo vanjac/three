@@ -80,6 +80,7 @@ class FirstPersonPlayer(Entity):
                 point = self.currentFloor.topPointAt(self.position)
                 if point == None:
                     print("Collision error!")
+                    self.zVelocity = 0.0
                     self.currentFloor = None
                 else:
                     z = point.height + self.cameraHeight
@@ -87,5 +88,6 @@ class FirstPersonPlayer(Entity):
                         self.position = self.position.setZ(z)
                     self.actions.addAction(do)
             else:
+                self.zVelocity = 0.0
                 self.currentFloor = None
 
