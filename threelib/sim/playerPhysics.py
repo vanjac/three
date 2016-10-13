@@ -139,16 +139,51 @@ class CollisionMesh(threelib.sim.base.Entity):
         print("Convex hull points:", self.convexHullPoints)
         
         
-    def isInBounds(self, point):
+    def isInBounds(self, point, collisionRadius=0):
         """
         Check if the 2d vector (z coordinate ignored) is in the convex bounds
         created by this object. The point should be in absolute world
-        coordinates.
+        coordinates. If ``collisionRadius`` is specified, a circle is used
+        instead of a point.
         """
         
-        point = self._translatePointForConvexHull(point)
-        return pointOnFace(point, self.convexHullPoints)
+        translatedPoint = self._translatePointForConvexHull(point)
+        if pointOnFace(translatedPoint, self.convexHullPoints):
+            return True
+        elif collisionRadius != 0:
+            return self.distanceToBounds(point) <= abs(collisionRadius)
+        else:
+            return False
         
+    def distanceToBounds(self, point):
+        """
+        Check the distance to the closest point on the convex bounds created by
+        this object. See ``isInBounds``.
+        """
+        point = self._translatePointForConvexHull(point).setZ(0)
+        
+        #based on code from:
+        #stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+        minDistance = -1
+        for i in range(0, len(self.convexHullPoints)):
+            p1 = self.convexHullPoints[i - 1]
+            p2 = self.convexHullPoints[i]
+        
+            l2 = (p1 - p2).magnitudeSquare()
+            if l2 == 0.0:
+                distance = (point - p1).magnitude()
+            else:
+                t = max(0, min(1, (point - p1).dot(p2 - p1) / l2))
+                projection = p1 + t * (p2 - p1)
+                distance = (point - projection).magnitude()
+            
+            if minDistance == -1:
+                minDistance = distance
+            elif distance < minDistance:
+                minDistance = distance
+        
+        return minDistance
+    
     
     def topPointAt(self, point):
         """
