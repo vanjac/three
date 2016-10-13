@@ -104,8 +104,6 @@ class FirstPersonPlayer(Entity):
                                 collision.topPointAt(previousPosition)
                             
                             if nextFloorPreviousPoint != None:
-                                print(nextFloorPreviousPoint.height, point.height,
-                                    previousZ, currentZ)
                                 if currentZ <= point.height \
                                   and previousZ > nextFloorPreviousPoint.height:
                                     self.zVelocity = 0.0
