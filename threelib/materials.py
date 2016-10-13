@@ -85,21 +85,20 @@ class MaterialReference(Resource):
             image = image.convert('RGB')
         xLen = image.width
         yLen = image.height
-
-        print("Size is", str(xLen) + ", " + str(yLen))
-            
+        
         # dimensions need to be a power of 2
         if not (isPowerOf2(xLen) and isPowerOf2(yLen)):
+            print("Scaling from", str(xLen) + ", " + str(yLen), end=' ')
             # search upwards for the next power of 2
             xLen = 2 ** math.ceil(math.log(xLen, 2))
             yLen = 2 ** math.ceil(math.log(yLen, 2))
-            print("Scaling up to", str(xLen) + ", " + str(yLen))
+            print("to", str(xLen) + ", " + str(yLen))
             
             image = image.resize((xLen, yLen), Image.BICUBIC)
+        else:
+            print("Size is", str(xLen) + ", " + str(yLen))
         
         texture = list(image.tobytes())
-
-        print("Done loading image")
         self.hasTexture = True
         self.aspectRatio = float(xLen) / float(yLen)
         return Texture(texture, image.mode, xLen, yLen)

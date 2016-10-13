@@ -331,7 +331,7 @@ class GLAppInstance(AppInstance):
     def sendTexture(self, texture):
         if texture != None:
             mode = texture.getDataType()
-            print("Texture mode is", mode)
+            print("Sending", mode, "texture to OpenGL...")
 
             if mode == "RGB":
                 glMode = GL_RGB
@@ -340,8 +340,7 @@ class GLAppInstance(AppInstance):
             else:
                 print("Unrecognized texture mode!")
                 return
-
-            print("Sending texture to OpenGL...")
+            
             glTexImage2D(GL_TEXTURE_2D, 0, glMode, texture.getXLen(), 
                          texture.getYLen(), 0, glMode, GL_UNSIGNED_BYTE, 
                          texture.getData())
