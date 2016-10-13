@@ -54,6 +54,8 @@ class FirstPersonPlayer(Entity):
                 # gravity
                 self.zVelocity += FirstPersonPlayer.GRAVITY * timeElapsed
             
+            movement = translation.rotate2(self.rotation.z)
+            
             # uphill slopes should slow down movement
             # downhill slopes should speed up movement
             slopeFactor = float(self.fallMoveSpeed) / self.walkSpeed
@@ -61,9 +63,12 @@ class FirstPersonPlayer(Entity):
                 if self.currentFloor.isInBounds(self.position):
                     point = self.currentFloor.topPointAt(self.position)
                     if point != None:
+                        # if slope is too steep, slide down it
+                        if point.normal.z < self.maxWalkNormalZ:
+                            movement = point.normal.setZ(0).setMagnitude(1.0)
+                        
                         # this uses vector projection and magic
-                        slopeFactor = 1.0 + translation \
-                            .rotate2(self.rotation.z).project(point.normal)
+                        slopeFactor = 1.0 + movement.project(point.normal)
                             
             jumpEvent = self.jumpButton.getEvent()
             if self.currentFloor != None:
@@ -73,7 +78,7 @@ class FirstPersonPlayer(Entity):
             
             previousPosition = self.position
             # walk
-            self.position += translation.rotate2(self.rotation.z) * slopeFactor
+            self.position += movement * slopeFactor
             if self.currentFloor == None:
                 # z velocity
                 self.position += Vector(0, 0, self.zVelocity * timeElapsed)
@@ -144,5 +149,4 @@ class FirstPersonPlayer(Entity):
             
             toUpdateList.append(self)
         self.actions.addAction(do)
-        
 
