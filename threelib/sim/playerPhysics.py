@@ -75,7 +75,6 @@ class CollisionMesh(threelib.sim.base.Entity):
         self._generateHull()
         
     def _generateHull(self):
-        print("Generate hull")
         # TODO: These algorithms ignore the X and Y rotation of the object!
         
         # split mesh faces into "top" and "bottom" based on normal
@@ -89,8 +88,6 @@ class CollisionMesh(threelib.sim.base.Entity):
                     self.topFaces.append(face)
                 else:
                     self.bottomFaces.append(face)
-        print(len(self.topFaces), "top faces")
-        print(len(self.bottomFaces), "bottom faces")
     
         # find the 2d convex hull with Jarvis's algorithm
         # geeksforgeeks.org/convex-hull-set-1-jarviss-algorithm-or-wrapping
@@ -135,8 +132,6 @@ class CollisionMesh(threelib.sim.base.Entity):
                     # reached beginning again
                     break
                 nextVertex = nextVertexCandidate
-        
-        print("Convex hull points:", self.convexHullPoints)
         
         
     def isInBounds(self, point, collisionRadius=0):
