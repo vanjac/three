@@ -46,6 +46,7 @@ class GameInterface(AppInterface):
         self.world.buttonInputs['a'] = self._getKeyInput('a')
         self.world.buttonInputs['s'] = self._getKeyInput('s')
         self.world.buttonInputs['d'] = self._getKeyInput('d')
+        self.world.buttonInputs['space'] = self._getKeyInput(' ')
         
         
         print("Building world...")

@@ -4,17 +4,20 @@ import math
 from threelib.sim.base import Entity
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
+from threelib.sim.input import ButtonInput
 
 class FirstPersonPlayer(Entity):
     GRAVITY = -50.0
 
-    def __init__(self, world, xLookAxis, yLookAxis, xWalkAxis, yWalkAxis):
+    def __init__(self, world, xLookAxis, yLookAxis, xWalkAxis, yWalkAxis,
+                 jumpButton):
         super().__init__()
         self.world = world
         self.xLookAxis = xLookAxis
         self.yLookAxis = yLookAxis
         self.xWalkAxis = xWalkAxis
         self.yWalkAxis = yWalkAxis
+        self.jumpButton = jumpButton
         
         self.zVelocity = 0.0
         self.currentFloor = None
@@ -24,6 +27,7 @@ class FirstPersonPlayer(Entity):
         self.fallMoveSpeed = 30.0
         self.maxWalkAngle = 45.0 # in degrees
         self.maxWalkNormalZ = Vector(1.0, 0.0).rotate2(self.maxWalkAngle).y
+        self.jumpVelocity = 50.0
         
     def scan(self, timeElapsed, totalTime):
         rotation = Rotate(0, float(self.yLookAxis.getChange()), \
@@ -60,6 +64,12 @@ class FirstPersonPlayer(Entity):
                         # this uses vector projection and magic
                         slopeFactor = 1.0 + translation \
                             .rotate2(self.rotation.z).project(point.normal)
+                            
+            jumpEvent = self.jumpButton.getEvent()
+            if self.currentFloor != None:
+                if jumpEvent == ButtonInput.PRESSED_EVENT:
+                    self.zVelocity = self.jumpVelocity
+                    self.currentFloor = None
             
             previousPosition = self.position
             # walk

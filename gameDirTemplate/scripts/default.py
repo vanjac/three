@@ -11,7 +11,8 @@ def makePlayer():
     player = FirstPersonPlayer( world,
                                 AxisScale(world.axisInputs['mouse-x'], .005),
                                 AxisScale(world.axisInputs['mouse-y'], .005),
-                                xWalkAxis, yWalkAxis )
+                                xWalkAxis, yWalkAxis,
+                                world.buttonInputs['space'])
     world.camera = player
     return player
 
