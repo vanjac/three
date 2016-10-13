@@ -134,50 +134,50 @@ class CollisionMesh(threelib.sim.base.Entity):
                 nextVertex = nextVertexCandidate
         
         
-    def isInBounds(self, point, collisionRadius=0):
+    def isInBounds(self, point):
         """
         Check if the 2d vector (z coordinate ignored) is in the convex bounds
         created by this object. The point should be in absolute world
-        coordinates. If ``collisionRadius`` is specified, a circle is used
-        instead of a point.
+        coordinates.
         """
         
         translatedPoint = self._translatePointForConvexHull(point)
-        if pointOnFace(translatedPoint, self.convexHullPoints):
-            return True
-        elif collisionRadius != 0:
-            return self.distanceToBounds(point) <= abs(collisionRadius)
-        else:
-            return False
+        return pointOnFace(translatedPoint, self.convexHullPoints)
         
-    def distanceToBounds(self, point):
+    def nearestBoundsPoint(self, point, maxDistance=None):
         """
-        Check the distance to the closest point on the convex bounds created by
-        this object. See ``isInBounds``.
+        Return the closest point on the convex 2d boundary of this mesh to the
+        given point. If ``maxDistance`` is specified, ``None`` will be returned
+        if no point is found closer than ``maxDistance``.
         """
         point = self._translatePointForConvexHull(point).setZ(0)
         
         #based on code from:
         #stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
         minDistance = -1
+        minDistancePoint = None
         for i in range(0, len(self.convexHullPoints)):
             p1 = self.convexHullPoints[i - 1]
             p2 = self.convexHullPoints[i]
         
             l2 = (p1 - p2).magnitudeSquare()
             if l2 == 0.0:
-                distance = (point - p1).magnitude()
+                nearestPoint = p1
             else:
                 t = max(0, min(1, (point - p1).dot(p2 - p1) / l2))
-                projection = p1 + t * (p2 - p1)
-                distance = (point - projection).magnitude()
+                nearestPoint = p1 + t * (p2 - p1)
             
-            if minDistance == -1:
+            distance = (point - nearestPoint).magnitude()
+            if minDistance == -1 or distance < minDistance:
                 minDistance = distance
-            elif distance < minDistance:
-                minDistance = distance
+                minDistancePoint = nearestPoint
         
-        return minDistance
+        if maxDistance == None:
+            return minDistancePoint
+        elif minDistance < maxDistance:
+            return minDistancePoint
+        else:
+            return None
     
     
     def topPointAt(self, point):
