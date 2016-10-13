@@ -7,7 +7,7 @@ from threelib.vectorMath import Rotate
 from threelib.sim.input import ButtonInput
 
 class FirstPersonPlayer(Entity):
-    GRAVITY = -50.0
+    GRAVITY = -80.0
 
     def __init__(self, world, xLookAxis, yLookAxis, xWalkAxis, yWalkAxis,
                  jumpButton):
