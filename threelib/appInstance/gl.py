@@ -231,6 +231,10 @@ class GLAppInstance(AppInstance):
         self.appInterface.mouseMoved(mouseX, mouseY, self.pmouseX, self.pmouseY)
         self.framesSinceMouseLockMove += 1
         if self.mouseLocked and self.framesSinceMouseLockMove > 4:
+            # elif's are used instead of if's to prevent threading errors
+            # but this means that the mouse can sometimes escape the window
+            # TODO: once threading issues are fixed, replace each of these with
+            # an individual if block
             if mouseX > self.width - self.mouseLockMargin:
                 def moveToLeft():
                     pyautogui.moveRel(-self.width
@@ -240,19 +244,19 @@ class GLAppInstance(AppInstance):
                 # mouse very fast
                 threading.Thread(target=moveToLeft).start()
                 self.framesSinceMouseLockMove = 0
-            if mouseX < self.mouseLockMargin:
+            elif mouseX < self.mouseLockMargin:
                 def moveToRight():
                     pyautogui.moveRel(self.width
                         - 3 * self.mouseLockMargin, 0)
                 threading.Thread(target=moveToRight).start()
                 self.framesSinceMouseLockMove = 0
-            if mouseY > self.height - self.mouseLockMargin:
+            elif mouseY > self.height - self.mouseLockMargin:
                 def moveToTop():
                     pyautogui.moveRel(0, -self.height
                         + 3 * self.mouseLockMargin)
                 threading.Thread(target=moveToTop).start()
                 self.framesSinceMouseLockMove = 0
-            if mouseY < self.mouseLockMargin:
+            elif mouseY < self.mouseLockMargin:
                 def moveToBottom():
                     pyautogui.moveRel(0, self.height
                         - 3 * self.mouseLockMargin)
