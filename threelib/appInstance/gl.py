@@ -47,7 +47,9 @@ class GLAppInstance(AppInstance):
         self.fps = 0
         
         self.appInterface = appInterface
-        appInterface.setAppInstance(self)
+        appInterface.setAppInstance(self)\
+        
+        # OpenGL Init:
         
         # pass arguments to init
         glutInit(sys.argv)
@@ -64,7 +66,9 @@ class GLAppInstance(AppInstance):
         
         # Retain window id to use when closing
         # global variable
-        window = glutCreateWindow(b'three editor') # must be byte string
+        window = glutCreateWindow(b'three') # must be byte string
+        
+        print("Using OpenGL version:", glGetString(GL_VERSION).decode())
         
         # Uncomment this line to get full screen.
         #glutFullScreen()
@@ -82,8 +86,6 @@ class GLAppInstance(AppInstance):
         
         # Initialize the window. 
         self.initGL(self.width, self.height)
-
-        print("Using OpenGL version:", glGetString(GL_VERSION).decode())
         
         # Start Event Processing Engine	
         glutMainLoop()
