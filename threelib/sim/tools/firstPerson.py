@@ -23,6 +23,7 @@ class FirstPersonPlayer(Entity):
         self.currentFloor = None
         
         self.cameraHeight = 16.0
+        self.playerHeight = 20.0
         self.walkSpeed = 50.0
         self.fallMoveSpeed = 30.0
         self.maxWalkAngle = 45.0 # in degrees
@@ -86,6 +87,8 @@ class FirstPersonPlayer(Entity):
             for collision in self.world.collisionMeshes:
                 if collision.isEnabled() \
                         and collision.isInBounds(self.position):
+                        
+                    # check floor collision
                     point = collision.topPointAt(self.position)
                     if point != None:
                         if self.currentFloor == None:
@@ -133,6 +136,33 @@ class FirstPersonPlayer(Entity):
                                   and currentFloorCurrentZ < nextFloorCurrentZ:
                                     self.zVelocity = 0.0
                                     self.currentFloor = collision
+                    # end check floor collision
+                    
+                    # check ceiling collision
+                    point = collision.bottomPointAt(self.position)
+                    if point != None:
+                        if self.currentFloor == None:
+                            # TODO: cleanup!
+                            currentZ = self.position.z - self.cameraHeight \
+                                + self.playerHeight
+                            previousZ = previousPosition.z - self.cameraHeight \
+                                + self.playerHeight
+                            
+                            # if player just hit this ceiling
+                            if currentZ >= point.height \
+                                    and previousZ < point.height:
+                                self.zVelocity = 0.0
+                            # what if the ceiling height has changed as the
+                            # player moves?
+                            ceilingPreviousPoint = \
+                                collision.bottomPointAt(previousPosition)
+                            
+                            if ceilingPreviousPoint != None:
+                                if currentZ >= point.height \
+                                  and previousZ < ceilingPreviousPoint.height:
+                                    self.zVelocity = 0.0
+                    # end check ceiling collision
+            # end for each collision mesh
             
             if self.currentFloor != None:
                 if self.currentFloor.isInBounds(self.position):

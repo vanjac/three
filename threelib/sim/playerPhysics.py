@@ -20,11 +20,19 @@ def pointOnFace(point, facePoints):
             return False
     return True
     
-def pointOnMeshFace(point, meshFace):
+def pointOnMeshFace(point, meshFace, reverse=False):
     vertices = meshFace.getVertices()
-    for i in range(0, len(vertices)):
-        triOrientation = orientation(vertices[i - 1].vertex.getPosition(),
-                                     vertices[i].vertex.getPosition(),
+    numVertices = len(vertices)
+    for i in range(0, numVertices):
+        if not reverse:
+            v1 = vertices[i - 1]
+            v2 = vertices[i]
+        else: #reverse
+            v1 = vertices[numVertices - i - 1]
+            v2 = vertices[numVertices - i - 2]
+        
+        triOrientation = orientation(v1.vertex.getPosition(),
+                                     v2.vertex.getPosition(),
                                      point)
         if triOrientation == 1:
             return False
@@ -206,7 +214,7 @@ class CollisionMesh(threelib.sim.base.Entity):
         """
         point = self._translatePointForConvexHull(point)
         for face in self.bottomFaces:
-            if pointOnMeshFace(point, face):
+            if pointOnMeshFace(point, face, reverse=True):
                 normal = face.getNormal().rotate2(self.getRotation().z)
                 plane = face.getPlane()
                 # ax + by + cz + d = 0
