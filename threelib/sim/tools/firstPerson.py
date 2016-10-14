@@ -24,7 +24,7 @@ class FirstPersonPlayer(Entity):
         
         self.cameraHeight = 16.0
         self.playerHeight = 20.0
-        self.playerWidth = 6.0
+        self.playerWidth = 12.0
         self.walkSpeed = 50.0
         self.fallMoveSpeed = 30.0
         self.maxWalkAngle = 45.0 # in degrees
@@ -63,15 +63,14 @@ class FirstPersonPlayer(Entity):
             # downhill slopes should speed up movement
             slopeFactor = float(self.fallMoveSpeed) / self.walkSpeed
             if self.currentFloor != None:
-                if self.currentFloor.isInBounds(self.position):
-                    point = self.currentFloor.topPointAt(self.position)
-                    if point != None:
-                        # if slope is too steep, slide down it
-                        if point.normal.z < self.minWalkNormalZ:
-                            movement = point.normal.setZ(0).setMagnitude(1.0)
-                        
-                        # this uses vector projection and magic
-                        slopeFactor = 1.0 + movement.project(point.normal)
+                point = self._topPoint(self.currentFloor, self.position)
+                if point != None:
+                    # if slope is too steep, slide down it
+                    if point.normal.z < self.minWalkNormalZ:
+                        movement = point.normal.setZ(0).setMagnitude(1.0)
+                    
+                    # this uses vector projection and magic
+                    slopeFactor = 1.0 + movement.project(point.normal)
                             
             jumpEvent = self.jumpButton.getEvent()
             if self.currentFloor != None:
@@ -88,11 +87,11 @@ class FirstPersonPlayer(Entity):
             
             for collision in self.world.collisionMeshes:
                 if collision.isEnabled() \
-                        and collision.isInBounds(self.position) \
+                        and self._inBounds(collision, self.position) \
                         and collision != self.currentFloor:
                         
                     # check floor collision
-                    point = collision.topPointAt(self.position)
+                    point = self._topPoint(collision, self.position)
                     if point != None:
                         if self.currentFloor == None:
                             # TODO: cleanup!
@@ -106,8 +105,8 @@ class FirstPersonPlayer(Entity):
                                 self.currentFloor = collision
                             # what if the floor height has changed as the player
                             # moves?
-                            nextFloorPreviousPoint = \
-                                collision.topPointAt(previousPosition)
+                            nextFloorPreviousPoint = self._topPoint(
+                                collision, previousPosition)
                             
                             if nextFloorPreviousPoint != None:
                                 if currentZ <= point.height \
@@ -116,14 +115,14 @@ class FirstPersonPlayer(Entity):
                                     self.currentFloor = collision
                                 
                         # already on a floor
-                        elif collision.isInBounds(previousPosition):
+                        elif self._inBounds(collision, previousPosition):
                             # these checks are required
-                            currentFloorPreviousPoint = self.currentFloor \
-                                .topPointAt(previousPosition)
-                            currentFloorCurrentPoint = self.currentFloor \
-                                .topPointAt(self.position)
-                            nextFloorPreviousPoint = \
-                                collision.topPointAt(previousPosition)
+                            currentFloorPreviousPoint = self._topPoint(
+                                self.currentFloor, previousPosition)
+                            currentFloorCurrentPoint = self._topPoint(
+                                self.currentFloor, self.position)
+                            nextFloorPreviousPoint = self._topPoint(
+                                collision, previousPosition)
                             if currentFloorPreviousPoint != None \
                                     and currentFloorCurrentPoint != None \
                                     and nextFloorPreviousPoint != None:
@@ -148,7 +147,7 @@ class FirstPersonPlayer(Entity):
                     # end check floor collision
                     
                     # check ceiling collision
-                    point = collision.bottomPointAt(self.position)
+                    point = self._bottomPoint(collision, self.position)
                     if point != None:
                         if self.currentFloor == None:
                             # TODO: cleanup!
@@ -163,8 +162,8 @@ class FirstPersonPlayer(Entity):
                                 self.zVelocity = 0.0
                             # what if the ceiling height has changed as the
                             # player moves?
-                            ceilingPreviousPoint = \
-                                collision.bottomPointAt(previousPosition)
+                            ceilingPreviousPoint = self._bottomPoint(
+                                collision, previousPosition)
                             
                             if ceilingPreviousPoint != None:
                                 if currentZ >= point.height \
@@ -174,19 +173,15 @@ class FirstPersonPlayer(Entity):
             # end for each collision mesh
             
             if self.currentFloor != None:
-                if self.currentFloor.isInBounds(self.position):
-                    point = self.currentFloor.topPointAt(self.position)
-                    if point == None:
-                        self.zVelocity = 0.0
-                        self.currentFloor = None
-                    else:
-                        z = point.height + self.cameraHeight
-                        def do(toUpdateList):
-                            self.position = self.position.setZ(z)
-                        self.actions.addAction(do)
-                else:
+                point = self._topPoint(self.currentFloor, self.position)
+                if point == None:
                     self.zVelocity = 0.0
                     self.currentFloor = None
+                else:
+                    z = point.height + self.cameraHeight
+                    def do(toUpdateList):
+                        self.position = self.position.setZ(z)
+                    self.actions.addAction(do)
             
             toUpdateList.append(self)
         self.actions.addAction(do)
