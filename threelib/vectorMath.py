@@ -94,11 +94,11 @@ def rangesIntersect(a1, a2, b1, b2):
     edges touch counts as NOT intersecting.
     """
     if a1 > a2:
-        a1 = temp
+        temp = a1
         a1 = a2
         a2 = temp
     if b1 > b2:
-        b1 = temp
+        temp = b1
         b1 = b2
         b2 = temp
     return not (a2 <= b1 or a1 >= b2)

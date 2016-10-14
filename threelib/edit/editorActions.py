@@ -959,10 +959,10 @@ class EditorActions:
                 for editorObject in self.state.objects:
                     if (not editorObject in self.state.selectedObjects) \
                        and editorObject.getMesh() != None:
-                        boundsA = editorObject.getBounds()
+                        boundsA = editorObject.getTranslatedBounds()
                         for selectedObject in self.state.selectedObjects:
                             if selectedObject.getMesh() != None:
-                                boundsB = selectedObject.getBounds()
+                                boundsB = selectedObject.getTranslatedBounds()
                                 if vectorMath.boxesIntersect(boundsA, boundsB):
                                     objectsToCarve.append(editorObject)
                                     break
