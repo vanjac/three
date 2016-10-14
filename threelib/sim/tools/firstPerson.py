@@ -27,7 +27,8 @@ class FirstPersonPlayer(Entity):
         self.walkSpeed = 50.0
         self.fallMoveSpeed = 30.0
         self.maxWalkAngle = 45.0 # in degrees
-        self.maxWalkNormalZ = Vector(1.0, 0.0).rotate2(self.maxWalkAngle).y
+        self.minWalkNormalZ = Vector(1.0, 0.0)\
+            .rotate2(math.radians(self.maxWalkAngle)).x
         self.jumpVelocity = 50.0
         
     def scan(self, timeElapsed, totalTime):
@@ -65,7 +66,7 @@ class FirstPersonPlayer(Entity):
                     point = self.currentFloor.topPointAt(self.position)
                     if point != None:
                         # if slope is too steep, slide down it
-                        if point.normal.z < self.maxWalkNormalZ:
+                        if point.normal.z < self.minWalkNormalZ:
                             movement = point.normal.setZ(0).setMagnitude(1.0)
                         
                         # this uses vector projection and magic
@@ -137,7 +138,7 @@ class FirstPersonPlayer(Entity):
                                   and currentFloorCurrentZ < nextFloorCurrentZ:
                                     # if the new floor's slope is too steep,
                                     # don't walk onto it
-                                    if point.normal.z < self.maxWalkNormalZ:
+                                    if point.normal.z < self.minWalkNormalZ:
                                         self.position = previousPosition \
                                             .setZ(self.position.z)
                                     else:
