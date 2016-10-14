@@ -24,6 +24,7 @@ class FirstPersonPlayer(Entity):
         
         self.cameraHeight = 16.0
         self.playerHeight = 20.0
+        self.playerWidth = 6.0
         self.walkSpeed = 50.0
         self.fallMoveSpeed = 30.0
         self.maxWalkAngle = 45.0 # in degrees
@@ -189,4 +190,27 @@ class FirstPersonPlayer(Entity):
             
             toUpdateList.append(self)
         self.actions.addAction(do)
+
+
+    # return a vector that is in bounds, or None
+    def _inBounds(self, collision, point):
+        if collision.isInBounds(point):
+            return point
+        else:
+            return collision.nearestBoundsPoint(point,
+                maxDistance=self.playerWidth/2.0)
+
+    def _topPoint(self, collision, point):
+        pointInBounds = self._inBounds(collision, point)
+        if pointInBounds == None:
+            return None
+        else:
+            return collision.topPointAt(pointInBounds)
+
+    def _bottomPoint(self, collision, point):
+        pointInBounds = self._inBounds(collision, point)
+        if pointInBounds == None:
+            return None
+        else:
+            return collision.bottomPointAt(pointInBounds)
 
