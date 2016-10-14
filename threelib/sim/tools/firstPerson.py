@@ -86,7 +86,8 @@ class FirstPersonPlayer(Entity):
             
             for collision in self.world.collisionMeshes:
                 if collision.isEnabled() \
-                        and collision.isInBounds(self.position):
+                        and collision.isInBounds(self.position) \
+                        and collision != self.currentFloor:
                         
                     # check floor collision
                     point = collision.topPointAt(self.position)
@@ -134,8 +135,14 @@ class FirstPersonPlayer(Entity):
                                 # allow walking from one floor onto another
                                 if currentFloorPreviousZ >= nextFloorPreviousZ \
                                   and currentFloorCurrentZ < nextFloorCurrentZ:
-                                    self.zVelocity = 0.0
-                                    self.currentFloor = collision
+                                    # if the new floor's slope is too steep,
+                                    # don't walk onto it
+                                    if point.normal.z < self.maxWalkNormalZ:
+                                        self.position = previousPosition \
+                                            .setZ(self.position.z)
+                                    else:
+                                        self.zVelocity = 0.0
+                                        self.currentFloor = collision
                     # end check floor collision
                     
                     # check ceiling collision
