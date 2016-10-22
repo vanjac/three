@@ -95,8 +95,8 @@ class FirstPersonPlayer(Entity):
                     if point != None:
                         if self.currentFloor == None:
                             # TODO: cleanup!
-                            currentZ = self.position.z - self.cameraHeight
-                            previousZ = previousPosition.z - self.cameraHeight
+                            currentZ = self._playerBottom(self.position).z
+                            previousZ = self._playerBottom(previousPosition).z
                             
                             # if player just hit this floor
                             if currentZ <= point.height \
@@ -151,10 +151,8 @@ class FirstPersonPlayer(Entity):
                     if point != None:
                         if self.currentFloor == None:
                             # TODO: cleanup!
-                            currentZ = self.position.z - self.cameraHeight \
-                                + self.playerHeight
-                            previousZ = previousPosition.z - self.cameraHeight \
-                                + self.playerHeight
+                            currentZ = self._playerTop(self.position).z
+                            previousZ = self._playerTop(previousPosition).z
                             
                             # if player just hit this ceiling
                             if currentZ >= point.height \
@@ -208,4 +206,11 @@ class FirstPersonPlayer(Entity):
             return None
         else:
             return collision.bottomPointAt(pointInBounds)
+
+    def _playerTop(self, playerPosition):
+        return self._playerBottom(playerPosition) \
+            + Vector(0, 0, self.playerHeight)
+            
+    def _playerBottom(self, playerPosition):
+        return playerPosition - Vector(0, 0, self.cameraHeight)
 
