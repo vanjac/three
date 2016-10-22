@@ -23,8 +23,8 @@ class FirstPersonPlayer(Entity):
         self.currentFloor = None
         
         self.cameraHeight = 16.0
-        self.playerHeight = 20.0
-        self.playerWidth = 12.0
+        self.playerHeight = 24.0
+        self.playerWidth = 14.0
         self.walkSpeed = 50.0
         self.fallMoveSpeed = 30.0
         self.maxWalkAngle = 45.0 # in degrees
