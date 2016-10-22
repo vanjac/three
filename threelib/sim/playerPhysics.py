@@ -181,9 +181,9 @@ class CollisionMesh(threelib.sim.base.Entity):
                 minDistancePoint = nearestPoint
         
         if maxDistance == None:
-            return minDistancePoint
+            return self._translateConvexHullPointToAbsolute(minDistancePoint)
         elif minDistance < maxDistance:
-            return minDistancePoint
+            return self._translateConvexHullPointToAbsolute(minDistancePoint)
         else:
             return None
     
@@ -229,6 +229,9 @@ class CollisionMesh(threelib.sim.base.Entity):
         # translate the point to factor in the translation and Z rotation of the
         # convex hull
         return (point - self.getPosition()).rotate2(-(self.getRotation().z))
+        
+    def _translateConvexHullPointToAbsolute(self, point):
+        return point.rotate2(self.getRotation().z) + self.getPosition()
      
         
     def getMesh(self):

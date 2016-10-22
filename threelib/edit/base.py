@@ -74,10 +74,20 @@ class EditorObject:
         are relative to the object position. Override this.
         """
         pass
+        
+    def getTranslatedBounds(self):
+        """
+        Similar to ``getBounds``, but bounds are in absolute coordinates and not
+        relative to object position.
+        """
+        bounds = self.getBounds()
+        pos = self.getPosition()
+        return (bounds[0] + pos, bounds[1] + pos)
 
     def getCenter(self):
         """
-        Calculate the center of the bounds of the object.
+        Calculate the center of the bounds of the object, in absolute
+        coordinates.
         """
         b1, b2 = self.getBounds()
         return (b1 + b2) / 2 + self.getPosition()
