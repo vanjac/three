@@ -90,17 +90,19 @@ class FirstPersonPlayer(Entity):
                         and self._inBounds(collision, self.position) \
                         and collision != self.currentFloor:
                         
+                    topPoint = self._topPoint(collision, self.position)
+                    bottomPoint = self._bottomPoint(collision, self.position)
+                        
                     # check floor collision
-                    point = self._topPoint(collision, self.position)
-                    if point != None:
+                    if topPoint != None:
                         if self.currentFloor == None:
                             # TODO: cleanup!
                             currentZ = self._playerBottom(self.position).z
                             previousZ = self._playerBottom(previousPosition).z
                             
                             # if player just hit this floor
-                            if currentZ <= point.height \
-                                    and previousZ > point.height:
+                            if currentZ <= topPoint.height \
+                                    and previousZ > topPoint.height:
                                 self.zVelocity = 0.0
                                 self.currentFloor = collision
                             # what if the floor height has changed as the player
@@ -109,7 +111,7 @@ class FirstPersonPlayer(Entity):
                                 collision, previousPosition)
                             
                             if nextFloorPreviousPoint != None:
-                                if currentZ <= point.height \
+                                if currentZ <= topPoint.height \
                                   and previousZ > nextFloorPreviousPoint.height:
                                     self.zVelocity = 0.0
                                     self.currentFloor = collision
@@ -132,13 +134,13 @@ class FirstPersonPlayer(Entity):
                                     currentFloorCurrentPoint.height
                                 nextFloorPreviousZ = \
                                     nextFloorPreviousPoint.height
-                                nextFloorCurrentZ = point.height
+                                nextFloorCurrentZ = topPoint.height
                                 # allow walking from one floor onto another
                                 if currentFloorPreviousZ >= nextFloorPreviousZ \
                                   and currentFloorCurrentZ < nextFloorCurrentZ:
                                     # if the new floor's slope is too steep,
                                     # don't walk onto it
-                                    if point.normal.z < self.minWalkNormalZ:
+                                    if topPoint.normal.z < self.minWalkNormalZ:
                                         self.position = previousPosition \
                                             .setZ(self.position.z)
                                     else:
@@ -147,16 +149,15 @@ class FirstPersonPlayer(Entity):
                     # end check floor collision
                     
                     # check ceiling collision
-                    point = self._bottomPoint(collision, self.position)
-                    if point != None:
+                    if bottomPoint != None:
                         if self.currentFloor == None:
                             # TODO: cleanup!
                             currentZ = self._playerTop(self.position).z
                             previousZ = self._playerTop(previousPosition).z
                             
                             # if player just hit this ceiling
-                            if currentZ >= point.height \
-                                    and previousZ < point.height:
+                            if currentZ >= bottomPoint.height \
+                                    and previousZ < bottomPoint.height:
                                 self.zVelocity = 0.0
                             # what if the ceiling height has changed as the
                             # player moves?
@@ -164,7 +165,7 @@ class FirstPersonPlayer(Entity):
                                 collision, previousPosition)
                             
                             if ceilingPreviousPoint != None:
-                                if currentZ >= point.height \
+                                if currentZ >= bottomPoint.height \
                                   and previousZ < ceilingPreviousPoint.height:
                                     self.zVelocity = 0.0
                     # end check ceiling collision
