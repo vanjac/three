@@ -4,6 +4,7 @@ import math
 from threelib.sim.base import Entity
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
+from threelib import vectorMath
 from threelib.sim.input import ButtonInput
 
 class FirstPersonPlayer(Entity):
@@ -92,6 +93,16 @@ class FirstPersonPlayer(Entity):
                         
                     topPoint = self._topPoint(collision, self.position)
                     bottomPoint = self._bottomPoint(collision, self.position)
+                    
+                    # check wall collision
+                    if (not self._inBounds(collision, previousPosition)) \
+                        and vectorMath.rangesIntersect(
+                            self._playerBottom(self.position).z,
+                            self._playerTop(self.position).z,
+                            bottomPoint.height, topPoint.height):
+                        self.position = previousPosition.setZ(self.position.z)
+                        continue
+                    
                         
                     # check floor collision
                     if topPoint != None:
