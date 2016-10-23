@@ -272,6 +272,10 @@ class CollisionMesh(threelib.sim.base.Entity):
             self.wallCollideAction = action
         self.actions.addAction(do)
         
+    def doWallCollideAction(self):
+        if self.wallCollideAction != None:
+            self.wallCollideAction()
+        
     def getFloorStartTouchAction(self):
         return self.floorStartTouchAction
     
@@ -279,6 +283,10 @@ class CollisionMesh(threelib.sim.base.Entity):
         def do(toUpdateList):
             self.floorStartTouchAction = action
         self.actions.addAction(do)
+        
+    def doFloorStartTouchAction(self):
+        if self.floorStartTouchAction != None:
+            self.floorStartTouchAction()
         
     def getFloorEndTouchAction(self):
         return self.floorEndTouchAction
@@ -288,6 +296,10 @@ class CollisionMesh(threelib.sim.base.Entity):
             self.floorEndTouchAction = action
         self.actions.addAction(do)
         
+    def doFloorEndTouchAction(self):
+        if self.floorEndTouchAction != None:
+            self.floorEndTouchAction()
+        
     def getCeilingCollideAction(self):
         return self.ceilingCollideAction
     
@@ -295,6 +307,10 @@ class CollisionMesh(threelib.sim.base.Entity):
         def do(toUpdateList):
             self.ceilingCollideAction = action
         self.actions.addAction(do)
+        
+    def doCeilingCollideAction(self):
+        if self.ceilingCollideAction != None:
+            self.ceilingCollideAction()
 
 
 class CollisionPoint:
