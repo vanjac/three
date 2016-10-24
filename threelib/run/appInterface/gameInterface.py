@@ -48,6 +48,7 @@ class GameInterface(AppInterface):
         self.world.buttonInputs['d'] = self._getKeyInput('d')
         self.world.buttonInputs['space'] = self._getKeyInput(' ')
         
+        self.mouseLocked = False
         
         print("Building world...")
         threelib.world.buildWorld(state)
@@ -60,6 +61,7 @@ class GameInterface(AppInterface):
         
     def init(self):
         self.instance.lockMouse()
+        self.mouseLocked = True
     
     def draw(self):
         self.runner.tick(time.time())
@@ -78,6 +80,7 @@ class GameInterface(AppInterface):
 
     def keyPressed(self, key):
         if key[0] == 27: # escape
+            self.mouseLocked = False
             self.instance.unlockMouse()
         
         char = unshift(key.decode("utf-8"))
@@ -91,6 +94,7 @@ class GameInterface(AppInterface):
         
     def mousePressed(self, button, mouseX, mouseY):
         self.instance.lockMouse()
+        self.mouseLocked = True
         
         buttonInput = self._inputForMouseButtonCode(button)
         if buttonInput != None:
@@ -110,6 +114,7 @@ class GameInterface(AppInterface):
             return self.mouseRightInput
     
     def mouseMoved(self, mouseX, mouseY, pmouseX, pmouseY):
-        self.mouseXInput.changeValue(mouseX - pmouseX)
-        self.mouseYInput.changeValue(mouseY - pmouseY)
+        if self.mouseLocked:
+            self.mouseXInput.changeValue(mouseX - pmouseX)
+            self.mouseYInput.changeValue(mouseY - pmouseY)
 
