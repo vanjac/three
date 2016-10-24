@@ -14,6 +14,10 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
+
+mouseMovementLock = threading.Lock()
+
+
 class GLAppInstance(AppInstance):
     
     # pass in an EditorState to initialize the Editor with that state
@@ -231,35 +235,41 @@ class GLAppInstance(AppInstance):
         self.appInterface.mouseMoved(mouseX, mouseY, self.pmouseX, self.pmouseY)
         self.framesSinceMouseLockMove += 1
         if self.mouseLocked and self.framesSinceMouseLockMove > 4:
-            # elif's are used instead of if's to prevent threading errors
-            # but this means that the mouse can sometimes escape the window
-            # TODO: once threading issues are fixed, replace each of these with
-            # an individual if block
             if mouseX > self.width - self.mouseLockMargin:
                 def moveToLeft():
+                    global mouseMovementLock
+                    mouseMovementLock.acquire()
                     pyautogui.moveRel(-self.width
                         + 3 * self.mouseLockMargin, 0)
+                    mouseMovementLock.release()
                 # run in a separate thread to prevent frames being dropped
-                # TODO: threading occasionally causes error when moving the
-                # mouse very fast
                 threading.Thread(target=moveToLeft).start()
                 self.framesSinceMouseLockMove = 0
-            elif mouseX < self.mouseLockMargin:
+            if mouseX < self.mouseLockMargin:
                 def moveToRight():
+                    global mouseMovementLock
+                    mouseMovementLock.acquire()
                     pyautogui.moveRel(self.width
                         - 3 * self.mouseLockMargin, 0)
+                    mouseMovementLock.release()
                 threading.Thread(target=moveToRight).start()
                 self.framesSinceMouseLockMove = 0
-            elif mouseY > self.height - self.mouseLockMargin:
+            if mouseY > self.height - self.mouseLockMargin:
                 def moveToTop():
+                    global mouseMovementLock
+                    mouseMovementLock.acquire()
                     pyautogui.moveRel(0, -self.height
                         + 3 * self.mouseLockMargin)
+                    mouseMovementLock.release()
                 threading.Thread(target=moveToTop).start()
                 self.framesSinceMouseLockMove = 0
-            elif mouseY < self.mouseLockMargin:
+            if mouseY < self.mouseLockMargin:
                 def moveToBottom():
+                    global mouseMovementLock
+                    mouseMovementLock.acquire()
                     pyautogui.moveRel(0, self.height
                         - 3 * self.mouseLockMargin)
+                    mouseMovementLock.release()
                 threading.Thread(target=moveToBottom).start()
                 self.framesSinceMouseLockMove = 0
         self.pmouseX = mouseX
