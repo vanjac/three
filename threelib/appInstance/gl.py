@@ -24,7 +24,6 @@ mouseMovementLock = threading.Lock()
 
 class GLAppInstance(AppInstance):
     
-    # pass in an EditorState to initialize the Editor with that state
     def __init__(self, appInterface, flags):
         # Global projection settings
         # Call resetProjection() if any of these are changed
@@ -47,7 +46,9 @@ class GLAppInstance(AppInstance):
         self.mouseLockMargin = 64
         self.framesSinceMouseLockMove = 0
 
-        # Keyboard info
+        # Sometimes GLUT ignores the glutIgnoreKeyRepeat setting.
+        # This keeps track of keys that are currently pressed, so multiple
+        # keypress calls won't do anything.
         self.keysPressed = [ ]
 
         self.lastFpsTime = time.time()
@@ -62,26 +63,23 @@ class GLAppInstance(AppInstance):
         # pass arguments to init
         glutInit(sys.argv)
         
-        # Select type of display mode:   
-        #  Double buffer 
-        #  RGBA color
-        #  Alpha components supported 
+        # Specify type of display mode:
+        #  RGBA color (alpha supported)
+        #  Double buffer
         #  Depth buffer
         glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
 
         glutInitWindowSize(self.width, self.height)
         glutInitWindowPosition(0, 0)
         
-        # Retain window id to use when closing
-        # global variable
-        window = glutCreateWindow(b'three') # must be byte string
+        glutCreateWindow(b'three') # must be byte string
         
         print("Using OpenGL version:", glGetString(GL_VERSION).decode())
         
-        # Uncomment this line to get full screen.
+        # uncomment this to make the window fullscreen
         #glutFullScreen()
         
-        # Register important functions
+        # Register event functions
         glutDisplayFunc(self.drawGL)
         glutIdleFunc(self.drawGL)
         glutReshapeFunc(self.resizeGL)
@@ -92,13 +90,13 @@ class GLAppInstance(AppInstance):
         glutPassiveMotionFunc(self.mouseMovement)
         # called while mouse buttons are pressed
         glutMotionFunc(self.mouseMovement)
-
+        
         glutIgnoreKeyRepeat(True)
         
-        # Initialize the window. 
+        # initialize the window
         self.initGL(self.width, self.height)
         
-        # Start Event Processing Engine	
+        # start main loop and event processing
         glutMainLoop()
     
 
@@ -149,8 +147,7 @@ class GLAppInstance(AppInstance):
         self.mouseLocked = False
         glutSetCursor(GLUT_CURSOR_INHERIT)
 
-
-    # General OpenGL initialization function.
+    
     def initGL(self, width, height):
         glClearColor(0.0, 0.0, 0.0, 0.0)
         glClearDepth(1.0) # enables clearing of depth buffer
@@ -196,7 +193,7 @@ class GLAppInstance(AppInstance):
         gluPerspective(self.fov, self.aspect, self.nearClip, self.farClip)
         glMatrixMode(GL_MODELVIEW)
         
-    # The main drawing function. 
+    # Draw loop
     def drawGL(self):
         self.fpsCount += 1
         
