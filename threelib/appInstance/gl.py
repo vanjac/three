@@ -7,6 +7,10 @@ import time # for fps
 import threading # for pyautogui mouse movement
 
 import pyautogui
+# normally the failsafe exists as a way to stop pyautogui if you lose control.
+# but we don't need that because this code is perfectly bug-free.
+# what could possibly go wrong?
+pyautogui.FAILSAFE = False
 
 import OpenGL
 OpenGL.ERROR_CHECKING = False
