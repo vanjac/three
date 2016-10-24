@@ -84,7 +84,10 @@ class GLAppInstance(AppInstance):
         glutKeyboardFunc(self.keyPressedEvent)
         glutKeyboardUpFunc(self.keyReleasedEvent)
         glutMouseFunc(self.mouseEvent)
+        # called while no mouse buttons are pressed
         glutPassiveMotionFunc(self.mouseMovement)
+        # called while mouse buttons are pressed
+        glutMotionFunc(self.mouseMovement)
 
         glutIgnoreKeyRepeat(True)
         
