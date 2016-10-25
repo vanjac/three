@@ -22,6 +22,7 @@ class FirstPersonPlayer(Entity):
         
         self.zVelocity = 0.0
         self.currentFloor = None
+        self.currentVolumes = [ ]
         
         self.cameraHeight = 16.0
         self.playerHeight = 24.0
@@ -90,111 +91,28 @@ class FirstPersonPlayer(Entity):
                 self.position += Vector(0, 0, self.zVelocity * timeElapsed)
             
             for collision in self.world.collisionMeshes:
-                if collision.isEnabled() \
-                        and self._inBounds(collision, self.position) \
-                        and collision != self.currentFloor:
-                        
-                    topPoint = self._topPoint(collision, self.position)
-                    bottomPoint = self._bottomPoint(collision, self.position)
+                if collision.isEnabled() and collision != self.currentFloor:
                     
-                    # check wall collision
-                    if (not self._inBounds(collision, previousPosition)) \
-                        and vectorMath.rangesIntersect(
-                            self._playerBottom(self.position).z,
-                            self._playerTop(self.position).z,
-                            bottomPoint.height, topPoint.height):
-                        self.position = previousPosition.setZ(self.position.z)
-                        collision.doWallCollideAction()
-                        continue
-                    
-                        
-                    # check floor collision
-                    if topPoint != None:
-                        if self.currentFloor == None:
-                            # TODO: cleanup!
-                            currentZ = self._playerBottom(self.position).z
-                            previousZ = self._playerBottom(previousPosition).z
-                            
-                            # if player just hit this floor
-                            if currentZ <= topPoint.height \
-                                    and previousZ > topPoint.height:
-                                self.zVelocity = 0.0
-                                self.currentFloor = collision
+                    if collision.isSolid():
+                        if self._inBounds(collision, self.position):
+                            self._checkSolidMeshCollision(collision,
+                                previousPosition)
+                    else: # collision is volume
+                        topPoint = self._topPoint(collision, self.position)
+                        bottomPoint = \
+                            self._bottomPoint(collision, self.position)
+                        if self._inBounds(collision, self.position) \
+                                and vectorMath.rangesIntersect(
+                                self._playerBottom(self.position).z,
+                                self._playerTop(self.position).z,
+                                bottomPoint.height, topPoint.height):
+                            if not collision in self.currentVolumes:
+                                self.currentVolumes.append(collision)
                                 collision.doFloorStartTouchAction()
-                            else:
-                                # what if the floor height has changed as the
-                                # player moves?
-                                nextFloorPreviousPoint = self._topPoint(
-                                    collision, previousPosition)
-                                
-                                if nextFloorPreviousPoint != None:
-                                    if currentZ <= topPoint.height \
-                                      and previousZ > \
-                                            nextFloorPreviousPoint.height:
-                                        self.zVelocity = 0.0
-                                        self.currentFloor = collision
-                                        collision.doFloorStartTouchAction()
-                                
-                        # already on a floor
-                        elif self._inBounds(collision, previousPosition):
-                            # these checks are required
-                            currentFloorPreviousPoint = self._topPoint(
-                                self.currentFloor, previousPosition)
-                            currentFloorCurrentPoint = self._topPoint(
-                                self.currentFloor, self.position)
-                            nextFloorPreviousPoint = self._topPoint(
-                                collision, previousPosition)
-                            if currentFloorPreviousPoint != None \
-                                    and currentFloorCurrentPoint != None \
-                                    and nextFloorPreviousPoint != None:
-                                currentFloorPreviousZ = \
-                                    currentFloorPreviousPoint.height
-                                currentFloorCurrentZ = \
-                                    currentFloorCurrentPoint.height
-                                nextFloorPreviousZ = \
-                                    nextFloorPreviousPoint.height
-                                nextFloorCurrentZ = topPoint.height
-                                # allow walking from one floor onto another
-                                if currentFloorPreviousZ >= nextFloorPreviousZ \
-                                  and currentFloorCurrentZ < nextFloorCurrentZ:
-                                    # if the new floor's slope is too steep,
-                                    # don't walk onto it
-                                    if topPoint.normal.z < self.minWalkNormalZ:
-                                        self.position = previousPosition \
-                                            .setZ(self.position.z)
-                                    else:
-                                        self.zVelocity = 0.0
-                                        self.currentFloor \
-                                            .doFloorEndTouchAction()
-                                        self.currentFloor = collision
-                                        collision.doFloorStartTouchAction()
-                    # end check floor collision
-                    
-                    # check ceiling collision
-                    if bottomPoint != None:
-                        if self.currentFloor == None:
-                            # TODO: cleanup!
-                            currentZ = self._playerTop(self.position).z
-                            previousZ = self._playerTop(previousPosition).z
-                            
-                            # if player just hit this ceiling
-                            if currentZ >= bottomPoint.height \
-                                    and previousZ < bottomPoint.height:
-                                self.zVelocity = 0.0
-                                collision.doCeilingCollideAction()
-                            else:
-                                # what if the ceiling height has changed as the
-                                # player moves?
-                                ceilingPreviousPoint = self._bottomPoint(
-                                    collision, previousPosition)
-                                
-                                if ceilingPreviousPoint != None:
-                                    if currentZ >= bottomPoint.height \
-                                      and previousZ < \
-                                            ceilingPreviousPoint.height:
-                                        self.zVelocity = 0.0
-                                        collision.doCeilingCollideAction()
-                    # end check ceiling collision
+                        else:
+                            if collision in self.currentVolumes:
+                                self.currentVolumes.remove(collision)
+                                collision.doFloorEndTouchAction()
             # end for each collision mesh
             
             if self.currentFloor != None:
@@ -211,6 +129,109 @@ class FirstPersonPlayer(Entity):
             
             toUpdateList.append(self)
         self.actions.addAction(do)
+        
+    
+    def _checkSolidMeshCollision(self, collision, previousPosition):
+        topPoint = self._topPoint(collision, self.position)
+        bottomPoint = self._bottomPoint(collision, self.position)
+        
+        # check wall collision
+        if (not self._inBounds(collision, previousPosition)) \
+            and vectorMath.rangesIntersect(
+                self._playerBottom(self.position).z,
+                self._playerTop(self.position).z,
+                bottomPoint.height, topPoint.height):
+            self.position = previousPosition.setZ(self.position.z)
+            collision.doWallCollideAction()
+            return
+            
+        # check floor collision
+        if topPoint != None:
+            if self.currentFloor == None:
+                # TODO: cleanup!
+                currentZ = self._playerBottom(self.position).z
+                previousZ = self._playerBottom(previousPosition).z
+                
+                # if player just hit this floor
+                if currentZ <= topPoint.height \
+                        and previousZ > topPoint.height:
+                    self.zVelocity = 0.0
+                    self.currentFloor = collision
+                    collision.doFloorStartTouchAction()
+                else:
+                    # what if the floor height has changed as the
+                    # player moves?
+                    nextFloorPreviousPoint = self._topPoint(
+                        collision, previousPosition)
+                    
+                    if nextFloorPreviousPoint != None:
+                        if currentZ <= topPoint.height \
+                          and previousZ > \
+                                nextFloorPreviousPoint.height:
+                            self.zVelocity = 0.0
+                            self.currentFloor = collision
+                            collision.doFloorStartTouchAction()
+                    
+            # already on a floor
+            elif self._inBounds(collision, previousPosition):
+                # these checks are required
+                currentFloorPreviousPoint = self._topPoint(
+                    self.currentFloor, previousPosition)
+                currentFloorCurrentPoint = self._topPoint(
+                    self.currentFloor, self.position)
+                nextFloorPreviousPoint = self._topPoint(
+                    collision, previousPosition)
+                if currentFloorPreviousPoint != None \
+                        and currentFloorCurrentPoint != None \
+                        and nextFloorPreviousPoint != None:
+                    currentFloorPreviousZ = \
+                        currentFloorPreviousPoint.height
+                    currentFloorCurrentZ = \
+                        currentFloorCurrentPoint.height
+                    nextFloorPreviousZ = \
+                        nextFloorPreviousPoint.height
+                    nextFloorCurrentZ = topPoint.height
+                    # allow walking from one floor onto another
+                    if currentFloorPreviousZ >= nextFloorPreviousZ \
+                      and currentFloorCurrentZ < nextFloorCurrentZ:
+                        # if the new floor's slope is too steep,
+                        # don't walk onto it
+                        if topPoint.normal.z < self.minWalkNormalZ:
+                            self.position = previousPosition \
+                                .setZ(self.position.z)
+                        else:
+                            self.zVelocity = 0.0
+                            self.currentFloor \
+                                .doFloorEndTouchAction()
+                            self.currentFloor = collision
+                            collision.doFloorStartTouchAction()
+        # end check floor collision
+        
+        # check ceiling collision
+        if bottomPoint != None:
+            if self.currentFloor == None:
+                # TODO: cleanup!
+                currentZ = self._playerTop(self.position).z
+                previousZ = self._playerTop(previousPosition).z
+                
+                # if player just hit this ceiling
+                if currentZ >= bottomPoint.height \
+                        and previousZ < bottomPoint.height:
+                    self.zVelocity = 0.0
+                    collision.doCeilingCollideAction()
+                else:
+                    # what if the ceiling height has changed as the
+                    # player moves?
+                    ceilingPreviousPoint = self._bottomPoint(
+                        collision, previousPosition)
+                    
+                    if ceilingPreviousPoint != None:
+                        if currentZ >= bottomPoint.height \
+                          and previousZ < \
+                                ceilingPreviousPoint.height:
+                            self.zVelocity = 0.0
+                            collision.doCeilingCollideAction()
+        # end check ceiling collision
 
 
     # return a vector that is in bounds, or None
