@@ -24,7 +24,9 @@ class SolidMeshObject(MeshObject):
         
         self.generateVisibleMesh = True
         self.visible = True
-        self.blockUseables = True
+        
+        self.generateRayCollision = True
+        self.rayCollisionEnabled = True
         self.useAction = ""
         
         self.generateCollision = True
@@ -48,10 +50,6 @@ class SolidMeshObject(MeshObject):
         if self.generateVisibleMesh:
             renderMesh = RenderMesh(self.getMesh())
             renderMesh.setVisible(self.visible)
-            renderMesh.setBlockUseables(self.blockUseables)
-            def useAction():
-                threelib.script.runScript(self.script)
-            renderMesh.setUseAction(useAction)
             
             world.simulator.addObject(renderMesh)
             world.renderMeshes.append(renderMesh)
@@ -90,7 +88,9 @@ class SolidMeshObject(MeshObject):
                        "script" : self.script,
                        "generateVisibleMesh" : str(self.generateVisibleMesh),
                        "visible" : str(self.visible),
-                       "blockUseables" : str(self.blockUseables),
+                       
+                       "generateRayCollision" : str(self.generateRayCollision),
+                       "rayCollisionEnabled" : str(self.rayCollisionEnabled),
                        "useAction" : self.useAction,
                        
                        "generateCollision" : str(self.generateCollision),
@@ -115,8 +115,11 @@ class SolidMeshObject(MeshObject):
                 self.generateVisibleMesh = stringToBoolean(value)
             if key == "visible":
                 self.visible = stringToBoolean(value)
-            if key == "blockUseables":
-                self.blockUseables = stringToBoolean(value)
+            
+            if key == "generateRayCollision":
+                self.generateRayCollision = stringToBoolean(value)
+            if key == "rayCollisionEnabled":
+                self.rayCollisionEnabled = stringToBoolean(value)
             if key == "useAction":
                 self.useAction = value
             
@@ -148,7 +151,9 @@ class SolidMeshObject(MeshObject):
         
         clone.generateVisibleMesh = self.generateVisibleMesh
         clone.visible = self.visible
-        clone.blockUseables = self.blockUseables
+        
+        clone.generateRayCollision = self.generateRayCollision
+        clone.rayCollisionEnabled = self.rayCollisionEnabled
         clone.useAction = self.useAction
         
         clone.generateCollision = self.generateCollision
