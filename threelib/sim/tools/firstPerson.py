@@ -129,6 +129,7 @@ class FirstPersonPlayer(Entity):
             
             toUpdateList.append(self)
         self.actions.addAction(do)
+    # end def scan
         
     
     def _checkSolidMeshCollision(self, collision, previousPosition):
@@ -153,21 +154,18 @@ class FirstPersonPlayer(Entity):
                 previousZ = self._playerBottom(previousPosition).z
                 
                 # if player just hit this floor
-                if currentZ <= topPoint.height \
-                        and previousZ > topPoint.height:
+                if currentZ <= topPoint.height and previousZ > topPoint.height:
                     self.zVelocity = 0.0
                     self.currentFloor = collision
                     collision.doFloorStartTouchAction()
                 else:
-                    # what if the floor height has changed as the
-                    # player moves?
+                    # what if the floor height has changed as the player moves?
                     nextFloorPreviousPoint = self._topPoint(
                         collision, previousPosition)
                     
                     if nextFloorPreviousPoint != None:
                         if currentZ <= topPoint.height \
-                          and previousZ > \
-                                nextFloorPreviousPoint.height:
+                          and previousZ > nextFloorPreviousPoint.height:
                             self.zVelocity = 0.0
                             self.currentFloor = collision
                             collision.doFloorStartTouchAction()
@@ -184,16 +182,13 @@ class FirstPersonPlayer(Entity):
                 if currentFloorPreviousPoint != None \
                         and currentFloorCurrentPoint != None \
                         and nextFloorPreviousPoint != None:
-                    currentFloorPreviousZ = \
-                        currentFloorPreviousPoint.height
-                    currentFloorCurrentZ = \
-                        currentFloorCurrentPoint.height
-                    nextFloorPreviousZ = \
-                        nextFloorPreviousPoint.height
+                    currentFloorPreviousZ = currentFloorPreviousPoint.height
+                    currentFloorCurrentZ = currentFloorCurrentPoint.height
+                    nextFloorPreviousZ = nextFloorPreviousPoint.height
                     nextFloorCurrentZ = topPoint.height
                     # allow walking from one floor onto another
                     if currentFloorPreviousZ >= nextFloorPreviousZ \
-                      and currentFloorCurrentZ < nextFloorCurrentZ:
+                            and currentFloorCurrentZ < nextFloorCurrentZ:
                         # if the new floor's slope is too steep,
                         # don't walk onto it
                         if topPoint.normal.z < self.minWalkNormalZ:
@@ -201,8 +196,7 @@ class FirstPersonPlayer(Entity):
                                 .setZ(self.position.z)
                         else:
                             self.zVelocity = 0.0
-                            self.currentFloor \
-                                .doFloorEndTouchAction()
+                            self.currentFloor.doFloorEndTouchAction()
                             self.currentFloor = collision
                             collision.doFloorStartTouchAction()
         # end check floor collision
@@ -227,11 +221,11 @@ class FirstPersonPlayer(Entity):
                     
                     if ceilingPreviousPoint != None:
                         if currentZ >= bottomPoint.height \
-                          and previousZ < \
-                                ceilingPreviousPoint.height:
+                                and previousZ < ceilingPreviousPoint.height:
                             self.zVelocity = 0.0
                             collision.doCeilingCollideAction()
         # end check ceiling collision
+    # end def _checkSolidMeshCollision
 
 
     # return a vector that is in bounds, or None
