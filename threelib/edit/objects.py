@@ -8,6 +8,7 @@ from threelib.edit.base import stringToBoolean
 
 from threelib.sim.base import Entity
 from threelib.sim.graphics import RenderMesh
+from threelib.sim.rayCollision import RayCollisionMesh
 from threelib.sim.playerPhysics import CollisionMesh
 
 import threelib.script
@@ -54,6 +55,15 @@ class SolidMeshObject(MeshObject):
             world.simulator.addObject(renderMesh)
             world.renderMeshes.append(renderMesh)
             entity.addChild(renderMesh)
+        
+        if self.generateRayCollision:
+            rayCollisionMesh = RayCollisionMesh(self.getMesh())
+            rayCollisionMesh.setEnabled(self.rayCollisionEnabled)
+            rayCollisionMesh.setUseAction(self.useAction)
+            
+            world.simulator.addObject(rayCollisionMesh)
+            world.rayCollisionMeshes.append(rayCollisionMesh)
+            entity.addChild(rayCollisionMesh)
         
         if self.generateCollision:
             collisionMesh = CollisionMesh(self.getMesh())

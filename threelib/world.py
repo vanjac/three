@@ -17,6 +17,7 @@ class World:
         self.updatedMaterials = [ ]
         
         self.renderMeshes = [ ]
+        self.rayCollisionMeshes = [ ]
         self.collisionMeshes = [ ]
         
         self.buttonInputs = { }
