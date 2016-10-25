@@ -31,8 +31,8 @@ class GLRunner(GameInterface):
         rotate = -self.world.camera.getRotation()
         translate = -self.world.camera.getPosition()
         glRotate(math.degrees(rotate.x), 0, 0, 1)
-        glRotate(math.degrees(rotate.y), -1, 0, 0)
-        glRotate(math.degrees(rotate.z), 0, 1, 0)
+        glRotate(math.degrees(rotate.y), 1, 0, 0)
+        glRotate(math.degrees(rotate.z) + 180.0, 0, 1, 0)
         glTranslate(translate.y, translate.z, translate.x)
     
         for renderMesh in self.world.renderMeshes:

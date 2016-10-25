@@ -21,10 +21,10 @@ class FirstPersonFlyingPlayer(Entity):
         self.walkSpeed = 50.0
         
     def scan(self, timeElapsed, totalTime):
-        rotation = Rotate(0, float(self.yLookAxis.getChange()), \
-                            -float(self.xLookAxis.getChange()))
-        translation = Vector(-self.yWalkAxis.getValue(),
-                              self.xWalkAxis.getValue()).limitMagnitude(1.0) \
+        rotation = Rotate(0, -float(self.yLookAxis.getChange()), \
+                             -float(self.xLookAxis.getChange()))
+        translation = Vector( self.yWalkAxis.getValue(),
+                             -self.xWalkAxis.getValue()).limitMagnitude(1.0) \
                       *timeElapsed * self.walkSpeed
         
         def do(toUpdateList):
