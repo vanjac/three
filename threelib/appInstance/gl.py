@@ -1,5 +1,7 @@
 __author__ = "jacobvanthoog"
 
+MANUAL_FRAMERATE_TIMING = False
+
 from threelib.app import AppInterface
 from threelib.app import AppInstance
 
@@ -17,7 +19,6 @@ OpenGL.ERROR_CHECKING = False
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
-
 
 mouseMovementLock = threading.Lock()
 
@@ -81,7 +82,8 @@ class GLAppInstance(AppInstance):
         
         # Register event functions
         glutDisplayFunc(self.drawGL)
-        glutIdleFunc(self.drawGL)
+        if not MANUAL_FRAMERATE_TIMING:
+            glutIdleFunc(self.drawGL)
         glutReshapeFunc(self.resizeGL)
         glutKeyboardFunc(self.keyPressedEvent)
         glutKeyboardUpFunc(self.keyReleasedEvent)
@@ -214,6 +216,13 @@ class GLAppInstance(AppInstance):
         
         #  double buffered - swap the buffers to display what just got drawn. 
         glutSwapBuffers()
+
+        if MANUAL_FRAMERATE_TIMING:
+            # call display again in 15 milliseconds
+            glutTimerFunc(16, self.timer, 0)
+
+    def timer(self, idNum):
+        glutPostRedisplay()
 
     # info passed as tuple: (button, eventType, mouseX, mouseY)
     # button: left=0, middle=1, right=2, 
