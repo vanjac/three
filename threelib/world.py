@@ -22,6 +22,8 @@ class World:
         
         self.buttonInputs = { }
         self.axisInputs = { }
+        
+        self.rayCollisionRequests = [ ]
 
     def onLoad(self):
         for mat in self.materials:
@@ -78,6 +80,33 @@ class World:
                 return matRef
 
         return None
+        
+    # ray collision
+    
+    def getMeshAtRay(self, callback, start, direction,
+                     nearClip=None, farClip=None):
+        self.rayCollisionRequests.append(
+            RayCollisionRequest(RayCollisionRequest.GET_MESH, callback,
+                                start, direction, nearClip, farClip) )
+    
+    def getFaceAtRay(self, callback, start, direction,
+                     nearClip=None, farClip=None):
+        self.rayCollisionRequests.append(
+            RayCollisionRequest(RayCollisionRequest.GET_FACE, callback,
+                                start, direction, nearClip, farClip) )
+    def getDepthAtRay(self, callback, start, direction,
+                     nearClip=None, farClip=None):
+        self.rayCollisionRequests.append(
+            RayCollisionRequest(RayCollisionRequest.GET_DEPTH, callback,
+                                start, direction, nearClip, farClip) )
+    
+    # ray collision requests to be accessed by the game runner AppInterface
+    
+    def nextRayCollisionRequest(self):
+        return self.rayCollisionRequests.pop(0)
+        
+    def hasRayCollisionRequest(self):
+        return len(self.rayCollisionRequests) > 0
 
 
 class Resource:
@@ -97,7 +126,21 @@ class Resource:
     def hasNoReferences(self):
         return self.references == 0
         
-        
+
+class RayCollisionRequest:
+    
+    GET_MESH = "mesh"
+    GET_FACE = "face"
+    GET_DEPTH = "depth"
+    
+    def __init__(self, mode, callback, start, direction, nearClip, farClip):
+        self.mode = mode
+        self.callback = callback
+        self.start = start
+        self.direction = direction
+        self.nearClip = nearClip
+        self.farClip = farClip
+
 
 def buildWorld(editorState):
     threelib.script.runScript("from threelib.vectorMath import *")
