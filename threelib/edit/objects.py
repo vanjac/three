@@ -59,7 +59,9 @@ class SolidMeshObject(MeshObject):
         if self.generateRayCollision:
             rayCollisionMesh = RayCollisionMesh(self.getMesh())
             rayCollisionMesh.setEnabled(self.rayCollisionEnabled)
-            rayCollisionMesh.setUseAction(self.useAction)
+            def useAction():
+                threelib.script.runScript(self.useAction)
+            rayCollisionMesh.setUseAction(useAction)
             
             world.simulator.addObject(rayCollisionMesh)
             world.rayCollisionMeshes.append(rayCollisionMesh)

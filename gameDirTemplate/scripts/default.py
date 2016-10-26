@@ -31,3 +31,27 @@ def makeFlyingPlayer():
                                 xWalkAxis, yWalkAxis)
     world.camera = player
     return player
+    
+
+def use():
+    cam = world.camera
+    
+    def getMeshCallback(mesh):
+        if mesh != None:
+            mesh.doUseAction()
+            
+    world.getMeshAtRay( getMeshCallback, cam.getPosition(),
+                        Vector(1.0, 0.0, 0.0).rotate(cam.getRotation()) )
+
+class UseScanner(SimObject):
+
+    def __init__(self, button):
+        self.button = button
+
+    def scan(self, timeElapsed, totalTime):
+        event = self.button.getEvent()
+        if event == ButtonInput.PRESSED_EVENT:
+            use()
+
+world.simulator.addObject(UseScanner(world.buttonInputs['mouse-left']))
+

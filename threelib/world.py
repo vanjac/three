@@ -85,17 +85,32 @@ class World:
     
     def getMeshAtRay(self, callback, start, direction,
                      nearClip=None, farClip=None):
+        """
+        Find the first enabled RayCollisionMesh that the ray at the given
+        starting point in the given direction, hits. nearClip and farClip
+        are the minimum and maximum distances the object can be at. The callback
+        function will be called when a RayCollisionMesh is found. It should
+        take a single argument - the RayCollisionMesh, or None.
+        """
         self.rayCollisionRequests.append(
             RayCollisionRequest(RayCollisionRequest.GET_MESH, callback,
                                 start, direction, nearClip, farClip) )
     
     def getFaceAtRay(self, callback, start, direction,
                      nearClip=None, farClip=None):
+        """
+        See ``getMeshAtRay``. Callback function should take 2 arguments - the
+        RayCollisionMesh and the face, or None for both.
+        """
         self.rayCollisionRequests.append(
             RayCollisionRequest(RayCollisionRequest.GET_FACE, callback,
                                 start, direction, nearClip, farClip) )
     def getDepthAtRay(self, callback, start, direction,
                      nearClip=None, farClip=None):
+        """
+        See ``getMeshAtRay``. Callback function should take 1 argument - the
+        distance from the start point to the collision point, or None.
+        """
         self.rayCollisionRequests.append(
             RayCollisionRequest(RayCollisionRequest.GET_DEPTH, callback,
                                 start, direction, nearClip, farClip) )
