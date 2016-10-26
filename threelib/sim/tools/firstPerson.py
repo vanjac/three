@@ -23,6 +23,8 @@ class FirstPersonPlayer(Entity):
         self.zVelocity = 0.0
         self.currentFloor = None
         self.currentVolumes = [ ]
+        self.wallCollisions = [ ] # walls the player is currently colliding with
+        self.previousWallCollisions = [ ]
         
         self.cameraHeight = 16.0
         self.playerHeight = 24.0
@@ -90,6 +92,9 @@ class FirstPersonPlayer(Entity):
                 # z velocity
                 self.position += Vector(0, 0, self.zVelocity * timeElapsed)
             
+            self.previousWallCollisions = self.wallCollisions
+            self.wallCollisions = list()
+            
             for collision in self.world.collisionMeshes:
                 if collision.isEnabled() and collision != self.currentFloor:
                     
@@ -143,8 +148,11 @@ class FirstPersonPlayer(Entity):
                 self._playerTop(self.position).z,
                 bottomPoint.height, topPoint.height):
             self.position = previousPosition.setZ(self.position.z)
-            collision.doWallCollideAction()
+            if not collision in self.previousWallCollisions:
+                collision.doWallCollideAction()
+            self.wallCollisions.append(collision)
             return
+                
             
         # check floor collision
         if topPoint != None:
