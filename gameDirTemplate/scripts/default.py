@@ -36,11 +36,11 @@ def makeFlyingPlayer():
 def use():
     cam = world.camera
     
-    def getMeshCallback(mesh):
+    def getMeshCallback(mesh, face):
         if mesh != None:
             mesh.doUseAction()
             
-    world.getMeshAtRay( getMeshCallback, cam.getPosition(),
+    world.getFaceAtRay( getMeshCallback, cam.getPosition(),
                         Vector(1.0, 0.0, 0.0).rotate(cam.getRotation()) )
 
 class UseScanner(SimObject):

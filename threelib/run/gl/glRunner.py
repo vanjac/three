@@ -49,37 +49,39 @@ class GLRunner(GameInterface):
             glRotate(math.degrees(rotate.z) + 180.0, 0, 1, 0)
             glTranslate(translate.y, translate.z, translate.x)
             
-            mode = request.mode
-            if mode == RayCollisionRequest.GET_MESH:
-                self.drawMeshRayCollision()
-            elif mode == RayCollisionRequest.GET_FACE:
-                self.drawFaceRayCollision()
-            elif mode == RayCollisionRequest.GET_DEPTH:
-                self.drawDepthRayCollision()
+            self.drawRayCollision()
             
             glFlush()
             glFinish()
             windowWidth = self.instance.windowWidth()
             windowHeight = self.instance.windowHeight()
-            pixels = glReadPixels(windowWidth/2, windowHeight/2, 1, 1,
-                                  GL_RGB, GL_UNSIGNED_BYTE)
-            color = (pixels[0], pixels[1], pixels[2])
             
-            if mode == RayCollisionRequest.GET_MESH:
-                index = self.colorToRayCollisionMeshIndex(color)
-                mesh = None if index == -1 \
-                    else self.world.rayCollisionMeshes[index]
-                request.callback(mesh)
-            elif mode == RayCollisionRequest.GET_FACE:
+            mode = request.mode
+            
+            if mode == RayCollisionRequest.GET_FACE \
+                    or mode == RayCollisionRequest.GET_FACE_DEPTH:
+                pixels = glReadPixels(windowWidth/2, windowHeight/2, 1, 1,
+                                      GL_RGB, GL_UNSIGNED_BYTE)
+                color = (pixels[0], pixels[1], pixels[2])
                 meshIndex, faceIndex = self.colorToFaceIndex(color)
                 mesh = None
                 face = None
                 if meshIndex != -1:
-                    mesh = self.world.rayCollisionMeshes[index]
+                    mesh = self.world.rayCollisionMeshes[meshIndex]
                     face = mesh.getMesh().getFaces()[faceIndex]
+                
+            if mode == RayCollisionRequest.GET_DEPTH \
+                    or mode == RayCollisionRequest.GET_FACE_DEPTH:
+                # TODO: calculate depth
+                depth = 0
+                
+            # callbacks
+            if mode == RayCollisionRequest.GET_FACE:
                 request.callback(mesh, face)
             elif mode == RayCollisionRequest.GET_DEPTH:
-                pass
+                request.callback(depth)
+            elif mode == RayCollisionRequest.GET_FACE_DEPTH:
+                request.callback(mesh, face, depth)
             
             glPopMatrix()
             glMatrixMode(GL_PROJECTION)
@@ -134,7 +136,7 @@ class GLRunner(GameInterface):
         glPopMatrix()
     
     
-    def drawMeshRayCollision(self):
+    def drawRayCollision(self):
         i = 0
         for rayCollisionMesh in self.world.rayCollisionMeshes:
             if not rayCollisionMesh.isEnabled():
@@ -143,24 +145,21 @@ class GLRunner(GameInterface):
             glPushMatrix()
             self.transformEntity(rayCollisionMesh)
             
-            color = self.rayCollisionMeshIndexToColor(i)
-            glColor(color[0], color[1], color[2])
+            j = 0
             for f in rayCollisionMesh.getMesh().getFaces():
+                
+                color = self.faceIndexToColor(i, j)
+                glColor(color[0], color[1], color[2])
                 
                 glBegin(GL_POLYGON)
                 for v in f.getVertices():
                     pos = v.vertex.getPosition()
                     glVertex(pos.y, pos.z, pos.x)
                 glEnd()
+                j += 1
             
             glPopMatrix()
             i += 1
-        
-    def drawFaceRayCollision(self):
-        pass
-        
-    def drawDepthRayCollision(self):
-        pass
         
     def transformEntity(self, entity):
         translate = entity.getPosition()
@@ -170,26 +169,12 @@ class GLRunner(GameInterface):
         glRotate(math.degrees(rotate.y), -1, 0, 0)
         glRotate(math.degrees(rotate.x), 0, 0, 1)
 
-    def rayCollisionMeshIndexToColor(self, index):
-        index = int(index) + 1
-        r = index % 256
-        g = int(index / 256) % 256
-        b = int(index / (256**2)) % 256
-        return (float(r)/256.0, float(g)/256.0, float(b)/256.0)
-
     def faceIndexToColor(self, objectIndex, subIndex):
         objectIndex = int(objectIndex) + 1
         r = int(subIndex) % 256
         g = objectIndex % 256
         b = int(objectIndex / 256) % 256
         return (float(r)/256.0, float(g)/256.0, float(b)/256.0)
-
-    # return -1 for no object
-    def colorToRayCollisionMeshIndex(self, color):
-        r = int(color[0])
-        g = int(color[1])
-        b = int(color[2])
-        return b*(256**2) + g*256 + r - 1
 
     # returns a tuple of (rayCollisionMeshIndex, faceIndex)
     # renderMeshIndex is -1 for nothing selected

@@ -83,36 +83,41 @@ class World:
         
     # ray collision
     
-    def getMeshAtRay(self, callback, start, direction,
+    def getFaceAtRay(self, callback, start, direction,
                      nearClip=None, farClip=None):
         """
         Find the first enabled RayCollisionMesh that the ray at the given
         starting point in the given direction, hits. nearClip and farClip
-        are the minimum and maximum distances the object can be at. The callback
-        function will be called when a RayCollisionMesh is found. It should
-        take a single argument - the RayCollisionMesh, or None.
-        """
-        self.rayCollisionRequests.append(
-            RayCollisionRequest(RayCollisionRequest.GET_MESH, callback,
-                                start, direction, nearClip, farClip) )
-    
-    def getFaceAtRay(self, callback, start, direction,
-                     nearClip=None, farClip=None):
-        """
-        See ``getMeshAtRay``. Callback function should take 2 arguments - the
-        RayCollisionMesh and the face, or None for both.
+        are the minimum and maximum distances the object can be at. By default,
+        the camera near-clip and far-clip is used; BOTH nearClip and farClip
+        need to be specified to override the default. The callback function will
+        be called when a RayCollisionMesh is found, or if no collision occurs.
+        It should take 2 arguments - the RayCollisionMesh and the MeshFace, or
+        None for both.
         """
         self.rayCollisionRequests.append(
             RayCollisionRequest(RayCollisionRequest.GET_FACE, callback,
                                 start, direction, nearClip, farClip) )
+    
     def getDepthAtRay(self, callback, start, direction,
                      nearClip=None, farClip=None):
         """
-        See ``getMeshAtRay``. Callback function should take 1 argument - the
+        See ``getFaceAtRay``. Callback function should take 1 argument - the
         distance from the start point to the collision point, or None.
         """
         self.rayCollisionRequests.append(
             RayCollisionRequest(RayCollisionRequest.GET_DEPTH, callback,
+                                start, direction, nearClip, farClip) )
+    
+    def getFaceDepthAtRay(self, callback, start, direction,
+                     nearClip=None, farClip=None):
+        """
+        See ``getFaceAtRay``. Callback function should take 3 argument - the
+        RayCollisionMesh, the MeshFace, and the distance from the start point to
+        the collision point, or None for all.
+        """
+        self.rayCollisionRequests.append(
+            RayCollisionRequest(RayCollisionRequest.GET_FACE_DEPTH, callback,
                                 start, direction, nearClip, farClip) )
     
     # ray collision requests to be accessed by the game runner AppInterface
@@ -144,9 +149,9 @@ class Resource:
 
 class RayCollisionRequest:
     
-    GET_MESH = "mesh"
     GET_FACE = "face"
     GET_DEPTH = "depth"
+    GET_FACE_DEPTH = "face-depth"
     
     def __init__(self, mode, callback, start, direction, nearClip, farClip):
         self.mode = mode
