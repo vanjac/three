@@ -89,8 +89,7 @@ class World:
         Find the first enabled RayCollisionMesh that the ray at the given
         starting point in the given direction, hits. nearClip and farClip
         are the minimum and maximum distances the object can be at. By default,
-        the camera near-clip and far-clip is used; BOTH nearClip and farClip
-        need to be specified to override the default. The callback function will
+        the camera near-clip and far-clip is used. The callback function will
         be called when a RayCollisionMesh is found, or if no collision occurs.
         It should take 2 arguments - the RayCollisionMesh and the MeshFace, or
         None for both.

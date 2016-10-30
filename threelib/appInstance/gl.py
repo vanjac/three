@@ -116,6 +116,12 @@ class GLAppInstance(AppInstance):
 
     def getFOV(self):
         return self.fov
+        
+    def getNearClip(self):
+        return self.nearClip
+        
+    def getFarClip(self):
+        return self.farClip
 
     def buttonPressed(self, button=0):
         return self.mouseButtonPressed[button]

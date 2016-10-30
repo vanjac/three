@@ -37,6 +37,18 @@ class AppInstance:
         Get the field of view of the perspective projection.
         """
         return None
+        
+    def getNearClip(self):
+        """
+        Get the near clipping plane of the perspective projection.
+        """
+        return None
+        
+    def getFarClip(self):
+        """
+        Get the far clipping plane of the perspective projection.
+        """
+        return None
 
     def buttonPressed(self, button=0):
         """

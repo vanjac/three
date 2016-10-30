@@ -32,13 +32,18 @@ class GLRunner(GameInterface):
         while self.world.hasRayCollisionRequest():
             request = self.world.nextRayCollisionRequest()
             
+            nearClip = request.nearClip
+            if nearClip == None:
+                nearClip = self.instance.getNearClip()
+            farClip = request.farClip
+            if farClip == None:
+                farClip = self.instance.getFarClip()
+            
             glMatrixMode(GL_PROJECTION)
             glPushMatrix()
-            if request.nearClip != None and request.farClip != None:
-                # otherwise use existing perspective matrix...
-                glLoadIdentity()
-                # fov (degrees), aspect, near clip, far clip
-                gluPerspective(1.0, 1.0, request.nearClip, request.farClip)
+            glLoadIdentity()
+            # fov (degrees), aspect, near clip, far clip
+            gluPerspective(1.0, 1.0, nearClip, farClip)
             
             glMatrixMode(GL_MODELVIEW)
             glPushMatrix()
@@ -72,8 +77,16 @@ class GLRunner(GameInterface):
                 
             if mode == RayCollisionRequest.GET_DEPTH \
                     or mode == RayCollisionRequest.GET_FACE_DEPTH:
-                # TODO: calculate depth
-                depth = 0
+                pixels = glReadPixels(windowWidth/2, windowHeight/2, 1, 1,
+                                      GL_DEPTH_COMPONENT, GL_FLOAT)
+                depthComponent = pixels[0][0]
+                if depthComponent == 1:
+                    depth = None
+                else:
+                    # https://www.opengl.org/discussion_boards/showthread.php/171104-Convert-value-from-Z-buffer-to-Z-coordinate
+                    projectionMatrix = glGetDoublev(GL_PROJECTION_MATRIX)
+                    depth = projectionMatrix[3][2] / ( depthComponent * -2.0
+                        + 1.0 - projectionMatrix[2][2] ) * -1
                 
             # callbacks
             if mode == RayCollisionRequest.GET_FACE:
