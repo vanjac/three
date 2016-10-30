@@ -7,12 +7,3 @@ threelib.sim.tools
    firstPerson
    firstPersonDebug
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
