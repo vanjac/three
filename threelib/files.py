@@ -4,6 +4,8 @@ from pathlib import Path
 import os.path
 import pickle
 import webbrowser
+from threelib.edit.state import EditorState
+
 
 gameDirPath = None
 
@@ -151,11 +153,70 @@ def loadMapState(path):
     """
     try:
         with path.open('rb') as f:
-            editorState = pickle.load(f)
-            editorState.onLoad()
-            return editorState
+            state = pickle.load(f)
     except EOFError: # map is empty
         return None
+    
+    try:
+        state.MAJOR_VERSION
+    except AttributeError:
+        state.MAJOR_VERSION = -1
+        state.MINOR_VERSION = 0    
+    
+    print("File version:",
+          str(state.MAJOR_VERSION) + "." + str(state.MINOR_VERSION))
+    print("Current editor file version:", str(EditorState.CURRENT_MAJOR_VERSION)
+          + "." + str(EditorState.CURRENT_MINOR_VERSION))
+    if state.MAJOR_VERSION > EditorState.CURRENT_MAJOR_VERSION:
+        print("This file was created with a newer version of three, and cannot"
+              " be opened.")
+        return None
+    elif state.MAJOR_VERSION < EditorState.CURRENT_MAJOR_VERSION:
+        print("This file was created with an older version of three. If you"
+              " save it now, you won't be able to open it with an older version"
+              " again.")
+        state = _convertStateToCurrentVersion(state)
+    elif state.MINOR_VERSION > EditorState.CURRENT_MINOR_VERSION:
+        print("This file was created with a newer version of three. Some"
+              " features may be missing, and may be lost if you save.")
+    elif state.MINOR_VERSION < EditorState.CURRENT_MINOR_VERSION:
+        print("This file was created with an older version of three. If you"
+              " save it now, some features may be missing if you try to open"
+              " it with an older version again.")
+        state = _convertStateToCurrentVersion(state)
+    
+    if state == None:
+        return None
+    state.onLoad()
+    return state
+    
+# maps tuples of (majorVersion, minorVersion) to functions
+editorStateConverters = { }
+    
+def _convertStateToCurrentVersion(editorState):
+    targetMajor = EditorState.CURRENT_MAJOR_VERSION
+    targetMinor = EditorState.CURRENT_MINOR_VERSION
+    
+    while editorState.MAJOR_VERSION != targetMajor \
+       or editorState.MINOR_VERSION != targetMinor:
+        versionTuple = (editorState.MAJOR_VERSION, editorState.MINOR_VERSION)
+        if versionTuple in editorStateConverters:
+            editorState = editorStateConverters[versionTuple](editorState)
+        else:
+            print("Cannot convert this file!")
+            return None
+    return editorState
+
+def editorStateConverter(majorVersion, minorVersion):
+    """
+    A decorator for functions that can convert an old EditorState version to a
+    newer one.
+    """
+    def decorator(function):
+        editorStateConverters[ (majorVersion, minorVersion) ] = function
+        return function
+    return decorator
+
 
 def openProperties(text):
     """

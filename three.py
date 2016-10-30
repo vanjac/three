@@ -4,6 +4,7 @@ __name__ = "__main__"
 import sys
 from pathlib import Path
 from threelib import files
+import threelib.edit.fileVersions.converters
 
 THREE_VERSION = 0
 

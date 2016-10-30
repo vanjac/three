@@ -8,11 +8,17 @@ from threelib.world import World
 
 class EditorState:
 
+    CURRENT_MAJOR_VERSION = 0
+    CURRENT_MINOR_VERSION = 0
+
     SELECT_OBJECTS = 0
     SELECT_FACES = 1
     SELECT_VERTICES = 2
 
     def __init__(self):
+        self.MAJOR_VERSION = EditorState.CURRENT_MAJOR_VERSION
+        self.MINOR_VERSION = EditorState.CURRENT_MINOR_VERSION
+        
         self.world = World()
 
         self.cameraPosition = Vector(-32, 0, 0)
