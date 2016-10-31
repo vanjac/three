@@ -5,7 +5,9 @@ from threelib.sim.base import Entity
 import threelib.script
 
 class World:
-    
+    """
+    The game world.
+    """
     def __init__(self):
         self.simulator = None
         
@@ -26,15 +28,25 @@ class World:
         self.rayCollisionRequests = [ ]
 
     def onLoad(self):
+        """
+        Internal method. Called when the world is first loaded.
+        """
         for mat in self.materials:
             self.addedMaterials.append(mat)
             mat.setLoaded(False)
 
     def addMaterial(self, materialReference):
+        """
+        Add a material to the world.
+        """
         self.materials.append(materialReference)
         self.addedMaterials.append(materialReference)
 
     def removeMaterialReference(self, material):
+        """
+        Remove a reference from the given material. If the material now has no
+        references, it is removed from the world.
+        """
         material.removeReference()
         
         if material.hasNoReferences():
@@ -42,13 +54,23 @@ class World:
             print("Removing unused material", material.getName())
             
     def removeMaterial(self, material):
+        """
+        Remove a material from the world.
+        """
         self.materials.remove(material)
         self.removedMaterials.append(material)
 
     def updateMaterial(self, materialReference):
+        """
+        Update an existing material (add it to the list of materials to update).
+        """
         self.updatedMaterials.append(materialReference)
 
     def removeUnusedMaterials(self):
+        """
+        Scan through the list of materials and remove any that have no
+        references.
+        """
         materialsToRemove = [ ]
         for material in self.materials:
             if material.hasNoReferences():
@@ -57,24 +79,37 @@ class World:
             self.removeMaterial(material)
             print("Removing unused material", material.getName())
 
-    # materials that have been added or removed since last check
     
     def getAddedMaterials(self):
+        """
+        Get the materials that have been added since the last check.
+        """
         added = self.addedMaterials
         self.addedMaterials = [ ]
         return added
 
     def getUpdatedMaterials(self):
+        """
+        Get the materials that have been added to the update list since the last
+        check.
+        """
         updated = self.updatedMaterials
         self.updatedMaterials = [ ]
         return updated
 
     def getRemovedMaterials(self):
+        """
+        Get the materials that have been removed since the last check.
+        """
         removed = self.removedMaterials
         self.removedMaterials = [ ]
         return removed
 
     def findMaterial(self, name):
+        """
+        Find a material in the world with the given name. Return None if not
+        found.
+        """
         for matRef in self.materials:
             if matRef.getName() == name:
                 return matRef
@@ -122,9 +157,15 @@ class World:
     # ray collision requests to be accessed by the game runner AppInterface
     
     def nextRayCollisionRequest(self):
+        """
+        Get the next pending ray collision request and remove it from the list.
+        """
         return self.rayCollisionRequests.pop(0)
         
     def hasRayCollisionRequest(self):
+        """
+        Internal method: check if there are any pending ray collision requests.
+        """
         return len(self.rayCollisionRequests) > 0
 
 
