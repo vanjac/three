@@ -1,6 +1,6 @@
 # three
 
-When three is finished, it will be a 3d game engine with a map editor, written in Python and with Python scripting. But right now it is nowhere near finished.
+Three is a 3d game engine with a map editor, written in Python and with Python scripting. It still has a lot of bugs and missing features - see the [issues](https://github.com/vanjac/three/issues) page.
 
 See the [wiki](https://github.com/vanjac/three/wiki) for installation instructions and documentation.
 
