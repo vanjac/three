@@ -26,15 +26,15 @@ class FirstPersonPlayer(Entity):
         self.wallCollisions = [ ] # walls the player is currently colliding with
         self.previousWallCollisions = [ ]
         
-        self.cameraHeight = 16.0
-        self.playerHeight = 24.0
-        self.playerWidth = 14.0
+        self.cameraHeight = 17.0
+        self.playerHeight = 18.0
+        self.playerWidth = 12.0
         self.walkSpeed = 50.0
         self.fallMoveSpeed = 30.0
         self.maxWalkAngle = 45.0 # in degrees
         self.minWalkNormalZ = Vector(1.0, 0.0)\
             .rotate2(math.radians(self.maxWalkAngle)).x
-        self.jumpVelocity = 50.0
+        self.jumpVelocity = 40.0
         
     def scan(self, timeElapsed, totalTime):
         rotation = Rotate(0, -float(self.yLookAxis.getChange()), \
