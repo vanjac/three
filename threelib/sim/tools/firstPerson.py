@@ -11,7 +11,10 @@ class FirstPersonPlayer(Entity):
     GRAVITY = -80.0
 
     def __init__(self, world, xLookAxis, yLookAxis, xWalkAxis, yWalkAxis,
-                 jumpButton):
+                 jumpButton,
+                 cameraHeight=17.0, playerHeight=18.0, playerWidth=12.0,
+                 walkSpeed = 50.0, fallMoveSpeed=30.0, maxWalkAngle=45.0,
+                 jumpVelocity=40.0):
         super().__init__()
         self.world = world
         self.xLookAxis = xLookAxis
@@ -26,15 +29,15 @@ class FirstPersonPlayer(Entity):
         self.wallCollisions = [ ] # walls the player is currently colliding with
         self.previousWallCollisions = [ ]
         
-        self.cameraHeight = 17.0
-        self.playerHeight = 18.0
-        self.playerWidth = 12.0
-        self.walkSpeed = 50.0
-        self.fallMoveSpeed = 30.0
-        self.maxWalkAngle = 45.0 # in degrees
+        self.cameraHeight = cameraHeight
+        self.playerHeight = playerHeight
+        self.playerWidth = playerWidth
+        self.walkSpeed = walkSpeed
+        self.fallMoveSpeed = fallMoveSpeed
+        self.maxWalkAngle = maxWalkAngle # in degrees
         self.minWalkNormalZ = Vector(1.0, 0.0)\
             .rotate2(math.radians(self.maxWalkAngle)).x
-        self.jumpVelocity = 40.0
+        self.jumpVelocity = jumpVelocity
         
     def scan(self, timeElapsed, totalTime):
         rotation = Rotate(0, -float(self.yLookAxis.getChange()), \
