@@ -7,6 +7,7 @@ threelib.sim
    base
    graphics
    input
+   lighting
    playerPhysics
    rayCollision
    tools/index
