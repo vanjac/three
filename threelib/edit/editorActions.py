@@ -187,6 +187,21 @@ class EditorActions:
         print("Create point")
         point = ScriptPointObject()
         self.createObject(point)
+        
+    def createDirectionalLight(self):
+        print("Create directional light")
+        light = DirectionalLightObject()
+        self.createObject(light)
+        
+    def createPositionalLight(self):
+        print("Create positional light")
+        light = PositionalLightObject()
+        self.createObject(light)
+        
+    def createSpotLight(self):
+        print("Create spot light")
+        light = SpotLightObject()
+        self.createObject(light)
 
     def createObject(self, newObject):
         self.selectMode(EditorState.SELECT_OBJECTS)

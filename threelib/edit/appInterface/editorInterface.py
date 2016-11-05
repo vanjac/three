@@ -116,6 +116,18 @@ class EditorInterface(EditorActions, AppInterface):
             if c[1] == 'p':
                 self.createPoint()
                 return True
+            if c[1] == 'l':
+                if len(c) == 2:
+                    return False
+                if c[2] == 'd':
+                    self.createDirectionalLight()
+                    return True
+                if c[2] == 'p':
+                    self.createPositionalLight()
+                    return True
+                if c[2] == 's':
+                    self.createSpotLight()
+                    return True
 
         if c[0] == 'a':
             self.selectAll()

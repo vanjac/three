@@ -2,11 +2,11 @@ __author__ = "jacobvanthoog"
 
 import math
 
+import threelib.edit.base
 from threelib.edit.base import MeshObject
 from threelib.edit.base import PointObject
 from threelib.edit.base import stringToBoolean
 
-import threelib.sim.base
 from threelib.sim.base import Entity
 from threelib.sim.graphics import RenderMesh
 from threelib.sim.rayCollision import RayCollisionMesh
@@ -243,6 +243,9 @@ class DirectionalLightObject(ScriptPointObject):
         self.diffuse = (1.0, 1.0, 1.0)
         self.specular = (1.0, 1.0, 1.0)
     
+    def getType(self):
+        return "Directional Light"
+    
     def addToWorld(self, world):
         light = super().addToWorld(world)
         light.setAmbient(self.ambient)
@@ -263,11 +266,11 @@ class DirectionalLightObject(ScriptPointObject):
         super().setProperties(properties)
         for key, value in properties.items():
             if key == "ambient":
-                self.ambient = threelib.sim.base.stringToTripleTuple(value)
+                self.ambient = threelib.edit.base.stringToTripleTuple(value)
             if key == "diffuse":
-                self.diffuse = threelib.sim.base.stringToTripleTuple(value)
+                self.diffuse = threelib.edit.base.stringToTripleTuple(value)
             if key == "specular":
-                self.specular = threelib.sim.base.stringToTripleTuple(value)
+                self.specular = threelib.edit.base.stringToTripleTuple(value)
     
     def clone(self):
         clone = DirectionalLightObject()
@@ -292,6 +295,9 @@ class PositionalLightObject(DirectionalLightObject):
         self.attenuationConstant = 0.0
         self.attenuationLinear = 0.0
         self.attenuationQuadratic = 1.0
+    
+    def getType(self):
+        return "Positional Light"
     
     def addToWorld(self, world):
         light = ScriptPointObject.addToWorld(self, world)
@@ -344,6 +350,9 @@ class SpotLightObject(PositionalLightObject):
         self.constructor = "SpotLight()"
         self.exponent = 0.0
         self.cutoff = 45.0
+        
+    def getType(self):
+        return "Spot Light"
     
     def addToWorld(self, world):
         light = ScriptPointObject.addToWorld(self, world)
