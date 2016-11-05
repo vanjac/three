@@ -201,6 +201,8 @@ class ScriptPointObject(PointObject):
         
         if self.getName() == "cam":
             world.camera = entity
+        
+        return entity
 
     def getProperties(self):
         props = super().getProperties()
