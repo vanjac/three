@@ -8,7 +8,7 @@ from threelib.world import World
 
 class EditorState:
 
-    CURRENT_MAJOR_VERSION = 0
+    CURRENT_MAJOR_VERSION = 1
     CURRENT_MINOR_VERSION = 0
 
     SELECT_OBJECTS = 0

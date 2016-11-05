@@ -22,6 +22,10 @@ class World:
         self.rayCollisionMeshes = [ ]
         self.collisionMeshes = [ ]
         
+        self.directionalLights = [ ] # list of Lights
+        self.positionalLights = [ ]
+        self.spotLights = [ ]
+        
         self.buttonInputs = { }
         self.axisInputs = { }
         
