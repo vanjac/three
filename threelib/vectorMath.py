@@ -255,9 +255,9 @@ class Vector:
         """
         Return the cross product of the two vectors.
         """
-        newX = self.y * v.z - self.z * v.y;
-        newY = self.z * v.x - self.x * v.z;
-        newZ = self.x * v.y - self.y * v.x;
+        newX = self.y * v.z - self.z * v.y
+        newY = self.z * v.x - self.x * v.z
+        newZ = self.x * v.y - self.y * v.x
         return Vector(newX, newY, newZ)
     
     def lerp(self, v, amount):
@@ -394,7 +394,7 @@ class Vector:
         xyz = Vector(xy.magnitude(), self.z)
         yRot = xyz.direction2()
         zRot = xy.direction2()
-        return Rotate(0, yRot, zRot);
+        return Rotate(0, yRot, zRot)
     
     def directionTowards(self, v):
         """

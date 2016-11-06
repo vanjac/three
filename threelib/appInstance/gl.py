@@ -340,14 +340,14 @@ class GLAppInstance(AppInstance):
             
             # even if the texture was not loaded correctly, it might be
             # reloaded correctly in the future, so everything has to be set up
-            glBindTexture(GL_TEXTURE_2D, texName);
+            glBindTexture(GL_TEXTURE_2D, texName)
             
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 
-                            GL_NEAREST);
+                            GL_NEAREST)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
-                            GL_NEAREST);
+                            GL_NEAREST)
             
             self.sendTexture(texture)
 
@@ -356,7 +356,7 @@ class GLAppInstance(AppInstance):
             texture = m.loadAlbedoTexture()
             texName = m.getNumber()
             
-            glBindTexture(GL_TEXTURE_2D, texName);
+            glBindTexture(GL_TEXTURE_2D, texName)
             self.sendTexture(texture)
         
         for m in world.getRemovedMaterials():
