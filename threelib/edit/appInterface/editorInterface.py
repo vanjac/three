@@ -41,7 +41,7 @@ class EditorInterface(EditorActions, AppInterface):
         else:
             character = chr(key[0])
             if character == '\x7f': # backspace on some platforms, delete on others
-            	character = '\b'
+                character = '\b'
             if character == '\b' and len(self.currentCommand) != 0:
                 # delete from command
                 self.currentCommand = self.currentCommand[:-1]
@@ -328,7 +328,7 @@ class EditorInterface(EditorActions, AppInterface):
             elif not self.movingCamera: # select
                 multiple = self.editorMain.shiftPressed()
                 self.selectAtCursor(multiple)
-        if button == 0 or button==2:
+        if button == 0 or button == 2:
             if self.movingCamera:
                 self.movingCamera = False
                 self.fly = Vector(0, 0, 0)
