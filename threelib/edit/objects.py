@@ -293,8 +293,8 @@ class PositionalLightObject(DirectionalLightObject):
         # properties
         self.constructor = "PositionalLight()"
         self.attenuationConstant = 0.0
-        self.attenuationLinear = 0.0
-        self.attenuationQuadratic = 1.0
+        self.attenuationLinear = 0.03
+        self.attenuationQuadratic = 0.0
     
     def getType(self):
         return "Positional Light"

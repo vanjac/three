@@ -2,6 +2,9 @@ __author__ = "jacobvanthoog"
 
 from threelib.run.appInterface.gameInterface import GameInterface
 from threelib.world import RayCollisionRequest
+from threelib.sim.lighting import *
+from threelib.vectorMath import Vector
+from threelib.vectorMath import Rotate
 
 import math
 
@@ -13,6 +16,8 @@ from OpenGL.GLUT import *
 
 class GLRunner(GameInterface):
 
+    MAX_LIGHTS = 8
+
     def __init__(self, state=None):
         super().__init__(state)
         print("OpenGL 1 Game Runner")
@@ -21,8 +26,26 @@ class GLRunner(GameInterface):
         super().init()
         
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1) # for getting select pixels
-                                              # and storing textures
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+                                             # and storing textures
+        # must be GL_MODULATE for lighting to work with textures:
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
+        glMaterialfv(GL_FRONT, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
+        glMaterialfv(GL_FRONT, GL_SHININESS, [50.0])
+        glEnable(GL_LIGHTING)
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.0, 0.0, 0.0, 0.0])
+        
+        lightIndex = 0
+        for light in self.world.directionalLights \
+                   + self.world.positionalLights \
+                   + self.world.spotLights:
+            if lightIndex >= GLRunner.MAX_LIGHTS:
+                print("Too many lights! (" + str(GLRunner.MAX_LIGHTS) +
+                      " maximum). Additional lights will be skipped.")
+                break
+            light.setNumber(lightIndex)
+            lightIndex += 1
+        print(str(lightIndex) + " lights")
+        
         self.instance.updateMaterials(self.world)
         
     def draw(self):
@@ -105,7 +128,7 @@ class GLRunner(GameInterface):
         # end for each ray collision request
         
         
-        # Draw visible things
+        # Translate camera
         
         glPushMatrix()
         rotate = -self.world.camera.getRotation()
@@ -114,7 +137,11 @@ class GLRunner(GameInterface):
         glRotate(math.degrees(rotate.y), 1, 0, 0)
         glRotate(math.degrees(rotate.z) + 180.0, 0, 1, 0)
         glTranslate(translate.y, translate.z, translate.x)
-    
+        
+        self.updateLights()
+        
+        # Draw RenderMeshes
+        
         for renderMesh in self.world.renderMeshes:
             if not renderMesh.isVisible():
                 continue
@@ -133,6 +160,8 @@ class GLRunner(GameInterface):
                         glEnable(GL_TEXTURE_2D)
                         glBindTexture(GL_TEXTURE_2D, mat.getNumber())
                 
+                normal = f.getNormal()
+                glNormal(normal.y, normal.z, normal.x)
                 glBegin(GL_POLYGON)
                 for v in f.getVertices():
                     pos = v.vertex.getPosition()
@@ -147,7 +176,72 @@ class GLRunner(GameInterface):
             glPopMatrix()
 
         glPopMatrix()
+        
+    def updateLights(self):
+        for light in self.world.directionalLights:
+            glLight = self.getGLLightConstant(light.getNumber())
+            if not light.isEnabled():
+                if light.hasChanged():
+                    glDisable(glLight)
+                continue
+            if light.hasChanged():
+                self.updateGenericLightParameters(light, glLight)
+            
+            direction = -(Vector(1, 0, 0).rotate(light.getRotation()))
+            glLightfv(glLight, GL_POSITION,
+                      [direction.y, direction.z, direction.x, 0.0])
+        
+        for light in self.world.positionalLights:
+            glLight = self.getGLLightConstant(light.getNumber())
+            if not light.isEnabled():
+                if light.hasChanged():
+                    glDisable(glLight)
+                continue
+            if light.hasChanged():
+                self.updateGenericLightParameters(light, glLight)
+                self.updatePositionalLightParameters(light, glLight)
+            
+            self.updatePositionalLightPosition(light, glLight)
+        
+        for light in self.world.spotLights:
+            glLight = self.getGLLightConstant(light.getNumber())
+            if not light.isEnabled():
+                if light.hasChanged():
+                    glDisable(glLight)
+                continue
+            if light.hasChanged():
+                self.updateGenericLightParameters(light, glLight)
+                self.updatePositionalLightParameters(light, glLight)
+            
+            self.updatePositionalLightPosition(light, glLight)
+            direction = Vector(1, 0, 0).rotate(light.getRotation())
+            glLightfv(glLight, GL_SPOT_DIRECTION,
+                      [direction.y, direction.z, direction.x])
+            glLightf(glLight, GL_SPOT_EXPONENT, light.getExponent())
+            glLightf(glLight, GL_SPOT_CUTOFF, math.degrees(light.getCutoff()))
+            
+    def updateGenericLightParameters(self, light, glLight):
+        glEnable(glLight)
+        glLightfv(glLight, GL_AMBIENT, light.getAmbient())
+        glLightfv(glLight, GL_DIFFUSE, light.getDiffuse())
+        glLightfv(glLight, GL_SPECULAR, light.getSpecular())
+        
+    def updatePositionalLightParameters(self, light, glLight):
+        attenuation = light.getAttenuation()
+        glLightf(glLight, GL_CONSTANT_ATTENUATION, attenuation[0])
+        glLightf(glLight, GL_LINEAR_ATTENUATION, attenuation[1])
+        glLightf(glLight, GL_QUADRATIC_ATTENUATION, attenuation[2])
     
+    def updatePositionalLightPosition(self, light, glLight):
+        pos = light.getPosition()
+        glLightfv(glLight, GL_POSITION, [pos.y, pos.z, pos.x, 1.0])
+    
+    def getGLLightConstant(self, number):
+        if number > GLRunner.MAX_LIGHTS:
+            return None
+        else:
+            return [GL_LIGHT0, GL_LIGHT1, GL_LIGHT2, GL_LIGHT3, \
+                    GL_LIGHT4, GL_LIGHT5, GL_LIGHT6, GL_LIGHT7] [number]
     
     def drawRayCollision(self):
         i = 0
