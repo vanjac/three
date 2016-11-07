@@ -2,6 +2,7 @@ __author__ = "jacobvanthoog"
 
 import math
 
+import threelib.edit.base
 from threelib.edit.base import MeshObject
 from threelib.edit.base import PointObject
 from threelib.edit.base import stringToBoolean
@@ -229,4 +230,166 @@ class ScriptPointObject(PointObject):
         
         clone.constructor = self.constructor
         clone.script = self.script
+
+
+class DirectionalLightObject(ScriptPointObject):
+
+    def __init__(self):
+        super().__init__()
+        
+        # properties
+        self.constructor = "Light()"
+        self.ambient = (0.0, 0.0, 0.0)
+        self.diffuse = (1.0, 1.0, 1.0)
+        self.specular = (1.0, 1.0, 1.0)
+    
+    def getType(self):
+        return "Directional Light"
+    
+    def addToWorld(self, world):
+        light = super().addToWorld(world)
+        light.setAmbient(self.ambient)
+        light.setDiffuse(self.diffuse)
+        light.setSpecular(self.specular)
+        world.directionalLights.append(light)
+        return light
+
+    def getProperties(self):
+        props = super().getProperties()
+        props.update({ "ambient" : str(self.ambient),
+                       "diffuse" : str(self.diffuse),
+                       "specular" : str(self.specular)
+                      })
+        return props
+        
+    def setProperties(self, properties):
+        super().setProperties(properties)
+        for key, value in properties.items():
+            if key == "ambient":
+                self.ambient = threelib.edit.base.stringToTripleTuple(value)
+            if key == "diffuse":
+                self.diffuse = threelib.edit.base.stringToTripleTuple(value)
+            if key == "specular":
+                self.specular = threelib.edit.base.stringToTripleTuple(value)
+    
+    def clone(self):
+        clone = DirectionalLightObject()
+        self.addToClone(clone)
+        return clone
+
+    def addToClone(self, clone):
+        super().addToClone(clone)
+        
+        clone.ambient = self.ambient
+        clone.diffuse = self.diffuse
+        clone.specular = self.specular
+
+
+class PositionalLightObject(DirectionalLightObject):
+
+    def __init__(self):
+        super().__init__()
+        
+        # properties
+        self.constructor = "PositionalLight()"
+        self.attenuationConstant = 0.0
+        self.attenuationLinear = 0.03
+        self.attenuationQuadratic = 0.0
+    
+    def getType(self):
+        return "Positional Light"
+    
+    def addToWorld(self, world):
+        light = ScriptPointObject.addToWorld(self, world)
+        light.setAmbient(self.ambient)
+        light.setDiffuse(self.diffuse)
+        light.setSpecular(self.specular)
+        light.setAttenuation(self.attenuationConstant,
+                             self.attenuationLinear,
+                             self.attenuationQuadratic)
+        world.positionalLights.append(light)
+        return light
+
+    def getProperties(self):
+        props = super().getProperties()
+        props.update({ "attenuationConstant" : str(self.attenuationConstant),
+                       "attenuationLinear" : str(self.attenuationLinear),
+                       "attenuationQuadratic" : str(self.attenuationQuadratic)
+                      })
+        return props
+        
+    def setProperties(self, properties):
+        super().setProperties(properties)
+        for key, value in properties.items():
+            if key == "attenuationConstant":
+                self.attenuationConstant = float(value)
+            if key == "attenuationLinear":
+                self.attenuationLinear = float(value)
+            if key == "attenuationQuadratic":
+                self.attenuationQuadratic = float(value)
+    
+    def clone(self):
+        clone = PositionalLightObject()
+        self.addToClone(clone)
+        return clone
+
+    def addToClone(self, clone):
+        super().addToClone(clone)
+        
+        clone.attenuationConstant = self.attenuationConstant
+        clone.attenuationLinear = self.attenuationLinear
+        clone.attenuationQuadratic = self.attenuationQuadratic
+
+
+class SpotLightObject(PositionalLightObject):
+
+    def __init__(self):
+        super().__init__()
+        
+        # properties
+        self.constructor = "SpotLight()"
+        self.exponent = 0.0
+        self.cutoff = 45.0
+        
+    def getType(self):
+        return "Spot Light"
+    
+    def addToWorld(self, world):
+        light = ScriptPointObject.addToWorld(self, world)
+        light.setAmbient(self.ambient)
+        light.setDiffuse(self.diffuse)
+        light.setSpecular(self.specular)
+        light.setAttenuation(self.attenuationConstant,
+                             self.attenuationLinear,
+                             self.attenuationQuadratic)
+        light.setExponent(self.exponent)
+        light.setCutoff(math.radians(self.cutoff))
+        world.spotLights.append(light)
+        return light
+
+    def getProperties(self):
+        props = super().getProperties()
+        props.update({ "exponent" : str(self.exponent),
+                       "cutoff" : str(self.cutoff),
+                      })
+        return props
+        
+    def setProperties(self, properties):
+        super().setProperties(properties)
+        for key, value in properties.items():
+            if key == "exponent":
+                self.exponent = float(value)
+            if key == "cutoff":
+                self.cutoff = float(value)
+    
+    def clone(self):
+        clone = SpotLightObject()
+        self.addToClone(clone)
+        return clone
+
+    def addToClone(self, clone):
+        super().addToClone(clone)
+        
+        clone.exponent = self.exponent
+        clone.cutoff = self.cutoff
 

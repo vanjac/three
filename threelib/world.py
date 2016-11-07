@@ -22,6 +22,10 @@ class World:
         self.rayCollisionMeshes = [ ]
         self.collisionMeshes = [ ]
         
+        self.directionalLights = [ ] # list of Lights
+        self.positionalLights = [ ]
+        self.spotLights = [ ]
+        
         self.buttonInputs = { }
         self.axisInputs = { }
         
@@ -208,6 +212,7 @@ def buildWorld(editorState):
     threelib.script.runScript("from threelib.sim.base import *")
     threelib.script.runScript("from threelib.sim.graphics import *")
     threelib.script.runScript("from threelib.sim.input import *")
+    threelib.script.runScript("from threelib.sim.lighting import *")
     threelib.script.runScript("from threelib.sim.playerPhysics import *")
     threelib.script.runScript("from threelib.sim.tools.firstPerson import *")
     threelib.script.runScript(
