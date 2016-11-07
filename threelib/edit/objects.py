@@ -43,7 +43,7 @@ class SolidMeshObject(MeshObject):
         threelib.script.runScript(self.script)
         entity = threelib.script.setVariable(self.constructor,
                                              self.getName())
-        if entity == None:
+        if entity is None:
             entity = Entity()
             threelib.script.setVariableValue(self.getName(), entity)
 
@@ -191,7 +191,7 @@ class ScriptPointObject(PointObject):
         threelib.script.runScript(self.script)
         entity = threelib.script.setVariable(self.constructor,
                                                 self.getName())
-        if entity == None:
+        if entity is None:
             entity = Entity()
             threelib.script.setVariableValue(self.getName(), entity)
 

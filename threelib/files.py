@@ -14,7 +14,7 @@ def setGameDir(path):
     Set the Path to the game directory - required for most files operations.
     """
     global gameDirPath
-    if path == None:
+    if path is None:
         gameDirPath = None
     else:
         gameDirPath = path.resolve()
@@ -185,7 +185,7 @@ def loadMapState(path):
               " it with an older version again.")
         state = _convertStateToCurrentVersion(state)
 
-    if state == None:
+    if state is None:
         return None
     state.onLoad()
     return state

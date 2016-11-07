@@ -21,7 +21,7 @@ class EditorActions:
     ROTATE_GRID_SIZES = [5.0, 10.0, 15.0, 20.0, 30.0, 40.0, 45.0]
 
     def __init__(self, mapPath, state=None):
-        if state == None:
+        if state is None:
             self.state = EditorState()
         else:
             self.state = state
@@ -96,14 +96,14 @@ class EditorActions:
         elif len(self.state.selectedObjects) == 0:
             print("Update world")
             props = self.readPropsFile()
-            if props != None:
+            if props is not None:
                 self.state.worldObject.setProperties(props)
         elif len(self.state.selectedObjects) > 1:
             print("Cannot update multiple objects")
         else:
             print("Update object")
             props = self.readPropsFile()
-            if props != None:
+            if props is not None:
                 self.state.selectedObjects[0].setProperties(props)
 
     def readPropsFile(self):
@@ -154,7 +154,7 @@ class EditorActions:
             for o in self.state.selectedObjects:
                 o.removeFromParent()
                 self.state.objects.remove(o)
-                if o.getMesh() != None:
+                if o.getMesh() is not None:
                     o.getMesh().removeMaterials()
             self.state.deselectAll()
             self.state.world.removeUnusedMaterials()
@@ -242,7 +242,7 @@ class EditorActions:
                 len(self.state.selectedObjects) > 0:
             objectsToSelect = [ ]
             for o in self.state.selectedObjects:
-                if o.getParent() != None:
+                if o.getParent() is not None:
                     if not o.getParent() in objectsToSelect:
                         objectsToSelect.append(o.getParent())
             if len(objectsToSelect) == 0:
@@ -283,7 +283,7 @@ class EditorActions:
         elif self.state.selectMode == EditorState.SELECT_FACES:
             if len(self.state.selectedFaces) == 0:
                 for o in self.state.objects:
-                    if o.getMesh() != None:
+                    if o.getMesh() is not None:
                         for f in o.getMesh().getFaces():
                             self.state.selectedFaces.append(
                                 FaceSelection(o, f))
@@ -292,7 +292,7 @@ class EditorActions:
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
             if len(self.state.selectedVertices) == 0:
                 for o in self.state.objects:
-                    if o.getMesh() != None:
+                    if o.getMesh() is not None:
                         for v in o.getMesh().getVertices():
                             self.state.selectedVertices.append(
                                 VertexSelection(o, v))
@@ -406,7 +406,7 @@ class EditorActions:
                  and edges[0] == 0 and edges[1] == 0 and edges[2] == 0:
                 # single ScaleAdjustor can't handle scaling from edges
                 # but it doesn't move the origin while scaling
-                if self.state.selectedObjects[0].getMesh() == None:
+                if self.state.selectedObjects[0].getMesh() is None:
                     print("Cannot scale a point")
                     return
                 self.setupAdjustMode(ScaleAdjustor(
@@ -444,7 +444,7 @@ class EditorActions:
             else:
                 adjustors = [ ]
                 for o in self.state.selectedObjects:
-                    if o.getMesh() != None:
+                    if o.getMesh() is not None:
                         for face in o.getMesh().getFaces():
                             adjustors.append(ExtrudeAdjustor(
                                 face, o, self.state))
@@ -455,7 +455,7 @@ class EditorActions:
                     for o in self.state.selectedObjects:
                         o.removeFromParent()
                         self.state.objects.remove(o)
-                        if o.getMesh() != None:
+                        if o.getMesh() is not None:
                             o.getMesh().removeMaterials()
                     self.state.deselectAll()
                     self.state.world.removeUnusedMaterials()
@@ -737,7 +737,7 @@ class EditorActions:
 
         objectsToRemove = [ ]
         for o in self.state.selectedObjects:
-            if o.getMesh() != None:
+            if o.getMesh() is not None:
                 # translate everything relative to mesh
                 relativePoint = planePoint - o.getPosition()
                 self.clipMesh(o.getMesh(), relativePoint, planeNormal)
@@ -939,7 +939,7 @@ class EditorActions:
                         prevVertex = MeshVertex(edge[0])
                         foundEdge = edge
                         break
-                if foundEdge == None:
+                if foundEdge is None:
                     print("WARNING: Cannot complete face!",
                           len(newFace.getVertices()), "vertices so far.")
                     break
@@ -973,17 +973,17 @@ class EditorActions:
                 objectsToCarve = [ ]
                 for editorObject in self.state.objects:
                     if (not editorObject in self.state.selectedObjects) \
-                       and editorObject.getMesh() != None:
+                       and editorObject.getMesh() is not None:
                         boundsA = editorObject.getTranslatedBounds()
                         for selectedObject in self.state.selectedObjects:
-                            if selectedObject.getMesh() != None:
+                            if selectedObject.getMesh() is not None:
                                 boundsB = selectedObject.getTranslatedBounds()
                                 if vectorMath.boxesIntersect(boundsA, boundsB):
                                     objectsToCarve.append(editorObject)
                                     break
                 for objectToCarve in objectsToCarve:
                     for selectedObject in self.state.selectedObjects:
-                        if selectedObject.getMesh() != None:
+                        if selectedObject.getMesh() is not None:
                             for face in selectedObject.getMesh().getFaces():
                                 planePoint = face.getVertices()[0].vertex \
                                              .getPosition()
@@ -1099,7 +1099,7 @@ class EditorActions:
         self.inAdjustMode = False
         self.editorMain.unlockMouse()
         adjustor = self.adjustor
-        if self.adjustCompleteAction != None:
+        if self.adjustCompleteAction is not None:
             action = self.adjustCompleteAction
             self.adjustCompleteAction = None
             action()
@@ -1112,10 +1112,10 @@ class EditorActions:
     # MATERIALS:
 
     def setCurrentMaterial(self, name):
-        if name != None and name != "":
+        if name is not None and name != "":
             foundMaterial = self.state.world.findMaterial(name)
 
-            if foundMaterial != None:
+            if foundMaterial is not None:
                 self.state.setCurrentMaterial(foundMaterial)
                 self.state.world.updateMaterial(self.state.currentMaterial)
             else:
@@ -1131,7 +1131,7 @@ class EditorActions:
                 print("Nothing selected")
             else:
                 for o in self.state.selectedObjects:
-                    if o.getMesh() != None:
+                    if o.getMesh() is not None:
                         for f in o.getMesh().getFaces():
                             self.setFaceMaterial(f, self.state.currentMaterial)
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
@@ -1156,7 +1156,7 @@ class EditorActions:
                 len(self.state.selectedObjects) != 0:
             faces = [ ]
             for o in self.state.selectedObjects:
-                if o.getMesh() != None:
+                if o.getMesh() is not None:
                     faces += o.getMesh().getFaces()
             self.setupAdjustMode(MaterialTranslateAdjustor(faces))
         else:
@@ -1171,7 +1171,7 @@ class EditorActions:
                 len(self.state.selectedObjects) != 0:
             faces = [ ]
             for o in self.state.selectedObjects:
-                if o.getMesh() != None:
+                if o.getMesh() is not None:
                     faces += o.getMesh().getFaces()
             self.setupAdjustMode(MaterialRotateAdjustor(faces))
         else:
@@ -1186,7 +1186,7 @@ class EditorActions:
                 len(self.state.selectedObjects) != 0:
             faces = [ ]
             for o in self.state.selectedObjects:
-                if o.getMesh() != None:
+                if o.getMesh() is not None:
                     faces += o.getMesh().getFaces()
             self.setupAdjustMode(MaterialScaleAdjustor(faces))
         else:

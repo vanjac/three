@@ -88,7 +88,7 @@ class CollisionMesh(threelib.sim.base.Entity):
         # split mesh faces into "top" and "bottom" based on normal
         for face in self.mesh.getFaces():
             normal = face.getNormal()
-            if normal != None:
+            if normal is not None:
                 normalZ = normal.z
                 if vectorMath.isclose(normalZ, 0):
                     pass # not top or bottom
@@ -124,7 +124,7 @@ class CollisionMesh(threelib.sim.base.Entity):
                     if vertex.getPosition().setZ(0) \
                             .isClose(nextVertex.getPosition().setZ(0)):
                         verticesToRemove.append(vertex)
-                    elif nextVertexCandidate == None:
+                    elif nextVertexCandidate is None:
                         nextVertexCandidate = vertex
                     else:
                         # find the 2d orientation of the vectors
@@ -180,7 +180,7 @@ class CollisionMesh(threelib.sim.base.Entity):
                 minDistance = distance
                 minDistancePoint = nearestPoint
 
-        if maxDistance == None:
+        if maxDistance is None:
             return self._translateConvexHullPointToAbsolute(minDistancePoint)
         elif minDistance < maxDistance:
             return self._translateConvexHullPointToAbsolute(minDistancePoint)
@@ -273,7 +273,7 @@ class CollisionMesh(threelib.sim.base.Entity):
         self.actions.addAction(do)
 
     def doWallCollideAction(self):
-        if self.wallCollideAction != None:
+        if self.wallCollideAction is not None:
             self.wallCollideAction()
 
     def getFloorStartTouchAction(self):
@@ -285,7 +285,7 @@ class CollisionMesh(threelib.sim.base.Entity):
         self.actions.addAction(do)
 
     def doFloorStartTouchAction(self):
-        if self.floorStartTouchAction != None:
+        if self.floorStartTouchAction is not None:
             self.floorStartTouchAction()
 
     def getFloorEndTouchAction(self):
@@ -297,7 +297,7 @@ class CollisionMesh(threelib.sim.base.Entity):
         self.actions.addAction(do)
 
     def doFloorEndTouchAction(self):
-        if self.floorEndTouchAction != None:
+        if self.floorEndTouchAction is not None:
             self.floorEndTouchAction()
 
     def getCeilingCollideAction(self):
@@ -309,7 +309,7 @@ class CollisionMesh(threelib.sim.base.Entity):
         self.actions.addAction(do)
 
     def doCeilingCollideAction(self):
-        if self.ceilingCollideAction != None:
+        if self.ceilingCollideAction is not None:
             self.ceilingCollideAction()
 
 

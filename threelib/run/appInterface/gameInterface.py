@@ -100,12 +100,12 @@ class GameInterface(AppInterface):
         self.mouseLocked = True
 
         buttonInput = self._inputForMouseButtonCode(button)
-        if buttonInput != None:
+        if buttonInput is not None:
             buttonInput.setPressed(True)
 
     def mouseReleased(self, button, mouseX, mouseY):
         buttonInput = self._inputForMouseButtonCode(button)
-        if buttonInput != None:
+        if buttonInput is not None:
             buttonInput.setPressed(False)
 
     def _inputForMouseButtonCode(self, code):

@@ -60,7 +60,7 @@ class FirstPersonPlayer(Entity):
 
             # PHYSICS
 
-            if self.currentFloor == None:
+            if self.currentFloor is None:
                 # gravity
                 self.zVelocity += FirstPersonPlayer.GRAVITY * timeElapsed
 
@@ -70,9 +70,9 @@ class FirstPersonPlayer(Entity):
             # uphill slopes should slow down movement
             # downhill slopes should speed up movement
             slopeFactor = float(self.fallMoveSpeed) / self.walkSpeed
-            if self.currentFloor != None:
+            if self.currentFloor is not None:
                 point = self._topPoint(self.currentFloor, self.position)
-                if point != None:
+                if point is not None:
                     # if slope is too steep, slide down it
                     if point.normal.z < self.minWalkNormalZ:
                         movement = point.normal.setZ(0).setMagnitude(1.0)
@@ -82,7 +82,7 @@ class FirstPersonPlayer(Entity):
                     slopeFactor = 1.0 + movement.project(point.normal)
 
             jumpEvent = self.jumpButton.getEvent()
-            if self.currentFloor != None:
+            if self.currentFloor is not None:
                 if jumpEvent == ButtonInput.PRESSED_EVENT and sliding == False:
                     self.zVelocity = self.jumpVelocity
                     self.currentFloor.doFloorEndTouchAction()
@@ -91,7 +91,7 @@ class FirstPersonPlayer(Entity):
             previousPosition = self.position
             # walk
             self.position += movement * slopeFactor
-            if self.currentFloor == None:
+            if self.currentFloor is None:
                 # z velocity
                 self.position += Vector(0, 0, self.zVelocity * timeElapsed)
 
@@ -123,9 +123,9 @@ class FirstPersonPlayer(Entity):
                                 collision.doFloorEndTouchAction()
             # end for each collision mesh
 
-            if self.currentFloor != None:
+            if self.currentFloor is not None:
                 point = self._topPoint(self.currentFloor, self.position)
-                if point == None:
+                if point is None:
                     self.zVelocity = 0.0
                     self.currentFloor.doFloorEndTouchAction()
                     self.currentFloor = None
@@ -158,8 +158,8 @@ class FirstPersonPlayer(Entity):
 
 
         # check floor collision
-        if topPoint != None:
-            if self.currentFloor == None:
+        if topPoint is not None:
+            if self.currentFloor is None:
                 # TODO: cleanup!
                 currentZ = self._playerBottom(self.position).z
                 previousZ = self._playerBottom(previousPosition).z
@@ -174,7 +174,7 @@ class FirstPersonPlayer(Entity):
                     nextFloorPreviousPoint = self._topPoint(
                         collision, previousPosition)
 
-                    if nextFloorPreviousPoint != None:
+                    if nextFloorPreviousPoint is not None:
                         if currentZ <= topPoint.height \
                           and previousZ > nextFloorPreviousPoint.height:
                             self.zVelocity = 0.0
@@ -190,9 +190,9 @@ class FirstPersonPlayer(Entity):
                     self.currentFloor, self.position)
                 nextFloorPreviousPoint = self._topPoint(
                     collision, previousPosition)
-                if currentFloorPreviousPoint != None \
-                        and currentFloorCurrentPoint != None \
-                        and nextFloorPreviousPoint != None:
+                if currentFloorPreviousPoint is not None \
+                        and currentFloorCurrentPoint is not None \
+                        and nextFloorPreviousPoint is not None:
                     currentFloorPreviousZ = currentFloorPreviousPoint.height
                     currentFloorCurrentZ = currentFloorCurrentPoint.height
                     nextFloorPreviousZ = nextFloorPreviousPoint.height
@@ -213,8 +213,8 @@ class FirstPersonPlayer(Entity):
         # end check floor collision
 
         # check ceiling collision
-        if bottomPoint != None:
-            if self.currentFloor == None:
+        if bottomPoint is not None:
+            if self.currentFloor is None:
                 # TODO: cleanup!
                 currentZ = self._playerTop(self.position).z
                 previousZ = self._playerTop(previousPosition).z
@@ -230,7 +230,7 @@ class FirstPersonPlayer(Entity):
                     ceilingPreviousPoint = self._bottomPoint(
                         collision, previousPosition)
 
-                    if ceilingPreviousPoint != None:
+                    if ceilingPreviousPoint is not None:
                         if currentZ >= bottomPoint.height \
                                 and previousZ < ceilingPreviousPoint.height:
                             self.zVelocity = 0.0
@@ -249,14 +249,14 @@ class FirstPersonPlayer(Entity):
 
     def _topPoint(self, collision, point):
         pointInBounds = self._inBounds(collision, point)
-        if pointInBounds == None:
+        if pointInBounds is None:
             return None
         else:
             return collision.topPointAt(pointInBounds)
 
     def _bottomPoint(self, collision, point):
         pointInBounds = self._inBounds(collision, point)
-        if pointInBounds == None:
+        if pointInBounds is None:
             return None
         else:
             return collision.bottomPointAt(pointInBounds)

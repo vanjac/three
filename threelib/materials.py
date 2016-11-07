@@ -116,7 +116,7 @@ class MaterialReference(Resource):
         The albedo is the base color of the material.
         """
         materialPath = files.getMaterial(self.name)
-        if materialPath == None:
+        if materialPath is None:
             print("Material not found:", self.name)
             return None
 

@@ -57,6 +57,6 @@ class RayCollisionMesh(threelib.sim.base.Entity):
         self.actions.addAction(do)
 
     def doUseAction(self):
-        if self.useAction != None:
+        if self.useAction is not None:
             self.useAction()
 

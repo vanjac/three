@@ -89,12 +89,12 @@ class EditorState:
             self.scaleGridSize = value
 
     def setCurrentMaterial(self, materialReference):
-        if self.currentMaterial != None:
+        if self.currentMaterial is not None:
             self.world.removeMaterialReference(self.currentMaterial)
 
         self.currentMaterial = materialReference
 
-        if self.currentMaterial != None:
+        if self.currentMaterial is not None:
             self.currentMaterial.addReference()
 
 

@@ -125,7 +125,7 @@ class OriginAdjustor(Adjustor):
         diff = v - self.editorObject.getPosition()
         self.editorObject.setPosition(v)
 
-        if self.editorObject.getMesh() != None:
+        if self.editorObject.getMesh() is not None:
             for vertex in self.editorObject.getMesh().getVertices():
                 vertex.setPosition(vertex.getPosition() - diff)
 
@@ -380,7 +380,7 @@ class MultiScaleAdjustor(Adjustor):
         if v.z <= 0:
             v = v.setZ(self.scale.z)
         for o in self.editorObjects:
-            if o.getMesh() != None:
+            if o.getMesh() is not None:
                 o.scale(v / self.scale)
             pos = o.getPosition()
             pos = (pos - self.originPoint) * (v / self.scale) + self.originPoint

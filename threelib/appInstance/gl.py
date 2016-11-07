@@ -364,7 +364,7 @@ class GLAppInstance(AppInstance):
             glDeleteTextures([texName])
 
     def sendTexture(self, texture):
-        if texture != None:
+        if texture is not None:
             mode = texture.getDataType()
             print("Sending", mode, "texture to OpenGL...")
 

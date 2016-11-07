@@ -556,7 +556,7 @@ class EditorInterface(EditorActions, AppInterface):
         return text
 
     def getMaterialName(self, material):
-        if material == None:
+        if material is None:
             return "none"
         else:
             return material.getName().split("/")[-1]

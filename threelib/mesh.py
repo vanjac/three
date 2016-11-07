@@ -115,12 +115,12 @@ class MeshFace:
         This MeshFace is returned, for easy chaining of ``addVertex`` commands.
         """
         calculate = False
-        if textureVertex == None:
+        if textureVertex is None:
             textureVertex = Vector(0,0)
             calculate = True
 
         v = MeshFaceVertex(vertex=meshVertex, textureVertex=textureVertex)
-        if index == None:
+        if index is None:
             self.vertices.append(v)
         else:
             self.vertices.insert(index, v)
@@ -212,7 +212,7 @@ class MeshFace:
         transformation of the face.
         """
         normal = self.getNormal()
-        if normal == None:
+        if normal is None:
             return
         normalRot = normal.rotation()
 
@@ -226,7 +226,7 @@ class MeshFace:
             textureVertex += self.textureShift
             textureVertex /= self.textureScale.setZ(1) # prevent divide z by 0
             # scale for correct aspect ratio of texture
-            if self.material != None:
+            if self.material is not None:
                 if self.material.isLoaded():
                     aspect = self.material.getAspectRatio()
                     if aspect > 1:
@@ -251,10 +251,10 @@ class MeshFace:
         Set the MaterialReference for this face. The materials' reference counts
         will be updated.
         """
-        if self.material != None:
+        if self.material is not None:
             self.material.removeReference()
         self.material = material
-        if self.material != None:
+        if self.material is not None:
             self.material.addReference()
         self.calculateTextureVertices()
 
@@ -332,7 +332,7 @@ class Mesh:
         Add a MeshVertex to the mesh. Clears all of the vertex's references - do
         this before adding the vertex to a face
         """
-        if vertex == None:
+        if vertex is None:
             # can't be used as default value
             # the same vertex object would be used each time
             vertex = MeshVertex(Vector(0,0,0))
@@ -366,7 +366,7 @@ class Mesh:
         Add a new face to the mesh and return it. If ``face`` is not specified,
         an empty one will be created.
         """
-        if face == None:
+        if face is None:
             # can't be used as default value
             # the same face object would be used each tiem
             face = MeshFace()

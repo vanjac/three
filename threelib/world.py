@@ -232,19 +232,19 @@ def buildWorld(editorState):
 
     # add children
     for editorObject, entity in objectEntities.items():
-        if entity != None:
+        if entity is not None:
             for child in editorObject.getChildren():
                 try:
                     childEntity = objectEntities[child]
                 except KeyError:
                     childEntity = None
-                if childEntity == None:
+                if childEntity is None:
                     print("WARNING: Cannot add", child, "as a child of",
                           editorObject, "- No corresponding entity")
                 else:
                     entity.addChild(childEntity)
 
-    if world.camera == None:
+    if world.camera is None:
         world.camera = Entity()
         world.simulator.addObject(world.camera)
 

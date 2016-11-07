@@ -134,7 +134,7 @@ class GLEditor(EditorInterface):
                 glVertex(0, 0, 32)
                 glEnd()
 
-                if o.getMesh() != None:
+                if o.getMesh() is not None:
                     # a green point is used for the origin
                     glPointSize(12)
                     glBegin(GL_POINTS)
@@ -142,7 +142,7 @@ class GLEditor(EditorInterface):
                     glEnd()
 
                 # a magenta line is drawn to the parent object
-                if o.getParent() != None:
+                if o.getParent() is not None:
                     glColor(1.0, 0.0, 1.0)
                     glBegin(GL_LINES)
                     glVertex(0, 0, 0)
@@ -160,7 +160,7 @@ class GLEditor(EditorInterface):
                         glVertex(childPos.y, childPos.z, childPos.x)
                     glEnd()
 
-            if drawVertices and o.getMesh() != None:
+            if drawVertices and o.getMesh() is not None:
                 # red points are used for vertices
                 glColor(1.0, 0.0, 0.0)
                 glPointSize(8)
@@ -302,7 +302,7 @@ class GLEditor(EditorInterface):
                 # block selecting vertices through objects
                 o.drawSelectHull((0, 0, 0), self.graphicsTools)
 
-                if o.getMesh() != None:
+                if o.getMesh() is not None:
                     glBegin(GL_POINTS)
                     j = 0
                     for v in o.getMesh().getVertices():
@@ -321,7 +321,7 @@ class GLEditor(EditorInterface):
                 glPushMatrix()
                 self.transformObject(o)
 
-                if o.getMesh() != None:
+                if o.getMesh() is not None:
                     j = 0
                     for f in o.getMesh().getFaces():
                         glBegin(GL_POLYGON)

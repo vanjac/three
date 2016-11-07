@@ -22,7 +22,7 @@ class GLGraphicsTools(GraphicsTools):
             texture = False
 
             mat = f.getMaterial()
-            if mat != None:
+            if mat is not None:
                 if mat.isLoaded():
                     texture = True
                     glEnable(GL_TEXTURE_2D)

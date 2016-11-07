@@ -180,7 +180,7 @@ class Simulator(SimObject):
         while len(objectsToUpdate) != 0:
             o = objectsToUpdate.pop()
             addedObjects = o.update()
-            if addedObjects != None:
+            if addedObjects is not None:
                 for addedObject in addedObjects:
                     if not addedObject in objectsToUpdate:
                         objectsToUpdate.append(addedObject)
@@ -273,7 +273,7 @@ class Entity(SimObject):
         Remove this Entity as a child from its parent.
         """
         def do(toUpdateList):
-            if self.parent != None:
+            if self.parent is not None:
                 self.parent.removeChild(self)
                 toUpdateList.append(parent)
         self.actions.addAction(do)

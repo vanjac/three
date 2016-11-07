@@ -210,7 +210,7 @@ class EditorObject:
         """
         Remove this object as a child from its parent.
         """
-        if self.parent != None:
+        if self.parent is not None:
             self.parent.removeChild(self)
 
     def isSelected(self):
@@ -280,7 +280,7 @@ class WorldObject(EditorObject):
     def addToWorld(self, world):
         for scriptName in self.externalScripts:
             path = threelib.files.getScript(scriptName)
-            if path == None:
+            if path is None:
                 print("Script file", scriptName, "not found!")
                 continue
             script = threelib.files.loadScript(path)

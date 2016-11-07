@@ -29,14 +29,14 @@ if len(sys.argv) > 1:
             else:
                 print("Invalid argument", arg)
                 exit()
-        elif gameDirPathString == None:
+        elif gameDirPathString is None:
             gameDirPathString = arg
-        elif mapName == None:
+        elif mapName is None:
             mapName = arg
         else:
             print("Invalid argument", arg)
 
-if mapName == None:
+if mapName is None:
     print("three takes two arguments:")
     print("  - A game directory path with a maps folder")
     print("  - A map name or number")
@@ -57,13 +57,13 @@ mapPath = None
 try:
     mapNumber = int(mapName) - 1
     mapPath = files.getMapNumber(mapNumber)
-    if mapPath == None:
+    if mapPath is None:
         print("Map number", mapNumber + 1, "not found")
         exit()
 except ValueError: # mapName is not a number
     try:
         mapPath = files.getMap(mapName, createIfNotFound=editorMode)
-        if mapPath == None:
+        if mapPath is None:
             print("Map", mapName, "not found")
             exit()
     except FileNotFoundError:
@@ -77,7 +77,7 @@ if editorMode:
     interface = GLEditor(mapPath, state)
     GLAppInstance(interface, flags)
 else:
-    if state == None:
+    if state is None:
         print("Map", mapName, "not found")
         exit()
     from threelib.appInstance.gl import GLAppInstance

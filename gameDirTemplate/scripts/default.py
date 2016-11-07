@@ -37,7 +37,7 @@ def use():
     cam = world.camera
     
     def getMeshCallback(mesh, face):
-        if mesh != None:
+        if mesh is not None:
             mesh.doUseAction()
             
     world.getFaceAtRay( getMeshCallback, cam.getPosition(),

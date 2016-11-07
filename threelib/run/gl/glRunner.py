@@ -56,10 +56,10 @@ class GLRunner(GameInterface):
             request = self.world.nextRayCollisionRequest()
 
             nearClip = request.nearClip
-            if nearClip == None:
+            if nearClip is None:
                 nearClip = self.instance.getNearClip()
             farClip = request.farClip
-            if farClip == None:
+            if farClip is None:
                 farClip = self.instance.getFarClip()
 
             glMatrixMode(GL_PROJECTION)
@@ -154,7 +154,7 @@ class GLRunner(GameInterface):
                 texture = False
 
                 mat = f.getMaterial()
-                if mat != None:
+                if mat is not None:
                     if mat.isLoaded():
                         texture = True
                         glEnable(GL_TEXTURE_2D)
