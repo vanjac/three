@@ -26,7 +26,7 @@ class EditorActions:
         else:
             self.state = state
         self.mapPath = mapPath
-        
+
         self.movingCamera = False
         self.lookSpeed = .005
         self.flySpeed = 128.0
@@ -49,7 +49,7 @@ class EditorActions:
         # flags
         self.selectAtCursorOnDraw = False
         self.selectMultiple = False
-    
+
 
     def escape(self):
         self.movingCamera = False
@@ -60,7 +60,7 @@ class EditorActions:
             self.adjustor.cancel()
             self.inAdjustMode = False
             self.adjustor = None
-    
+
     def saveFile(self):
         print("Saving map... ", end="")
         files.saveMapState(self.mapPath, self.state)
@@ -171,7 +171,7 @@ class EditorActions:
 
             self.translateSelected()
 
-        
+
     def selectMode(self, mode):
         self.state.selectMode = mode
         self.state.deselectAll()
@@ -182,22 +182,22 @@ class EditorActions:
         print("Create box")
         box = SolidMeshObject(self.state.translateGridSize)
         self.createObject(box)
-        
+
     def createPoint(self):
         print("Create point")
         point = ScriptPointObject()
         self.createObject(point)
-        
+
     def createDirectionalLight(self):
         print("Create directional light")
         light = DirectionalLightObject()
         self.createObject(light)
-        
+
     def createPositionalLight(self):
         print("Create positional light")
         light = PositionalLightObject()
         self.createObject(light)
-        
+
     def createSpotLight(self):
         print("Create spot light")
         light = SpotLightObject()
@@ -215,7 +215,7 @@ class EditorActions:
             self.state.createPosition = \
                 Vector.fromTuple(self.adjustor.getAxes())
         self.adjustCompleteAction = setCreatePosition
-        
+
     def setParent(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS and \
                 len(self.state.selectedObjects) > 1:
@@ -226,7 +226,7 @@ class EditorActions:
                 parent.addChild(child)
         else:
             print("At least 2 objects must be selected")
-            
+
     def clearParent(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS and \
                 len(self.state.selectedObjects) > 0:
@@ -236,7 +236,7 @@ class EditorActions:
                 child.removeFromParent()
         else:
             print("Objects must be selected")
-            
+
     def selectParent(self, addToSelection=False):
         if self.state.selectMode == EditorState.SELECT_OBJECTS and \
                 len(self.state.selectedObjects) > 0:
@@ -254,7 +254,7 @@ class EditorActions:
                 self.state.select(o)
         else:
             print("Objects must be selected")
-    
+
     def selectChildren(self, addToSelection=False):
         if self.state.selectMode == EditorState.SELECT_OBJECTS and \
                 len(self.state.selectedObjects) > 0:
@@ -338,7 +338,7 @@ class EditorActions:
                             f.editorObject))
                 self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
 
-    
+
     def adjustOriginOfSelected(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
             if len(self.state.selectedObjects) == 0:
@@ -353,8 +353,8 @@ class EditorActions:
                 self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
         else:
             print("Only objects have origins")
-                
-                 
+
+
     def rotateSelected(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
             if len(self.state.selectedObjects) == 0:
@@ -448,9 +448,9 @@ class EditorActions:
                         for face in o.getMesh().getFaces():
                             adjustors.append(ExtrudeAdjustor(
                                 face, o, self.state))
-                
+
                 self.setupAdjustMode(MultiExtrudeAdjustor(adjustors))
-                
+
                 def deleteHollowedObjects():
                     for o in self.state.selectedObjects:
                         o.removeFromParent()
@@ -460,7 +460,7 @@ class EditorActions:
                     self.state.deselectAll()
                     self.state.world.removeUnusedMaterials()
                 self.adjustCompleteAction = deleteHollowedObjects
-        
+
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
             print("Faces or objects must be selected to extrude")
         elif self.state.selectMode == EditorState.SELECT_FACES:
@@ -479,7 +479,7 @@ class EditorActions:
                         face.editorObject,
                         self.state))
                 self.setupAdjustMode(MultiExtrudeAdjustor(adjustors))
-    
+
 
     def setupAdjustMode(self, adjustor):
         self.inAdjustMode = True
@@ -498,7 +498,7 @@ class EditorActions:
         def arrowStartSet():
             self.arrowEnd = self.arrowStart
             self.setupAdjustMode(ArrowEndAdjustor(self))
-            
+
             def arrowEndSet():
                 self.arrowShown = False
                 self.state.createPosition = self.arrowStart
@@ -510,9 +510,9 @@ class EditorActions:
         self.selectAtCursorOnDraw = True
         self.selectMultiple = multiple
 
-    
+
     # Mesh editing:
-    
+
     def divideEdge(self):
         if self.state.selectMode != EditorState.SELECT_VERTICES \
            or len(self.state.selectedVertices) != 2:
@@ -522,7 +522,7 @@ class EditorActions:
             v1 = self.state.selectedVertices[0].vertex
             v2 = self.state.selectedVertices[1].vertex
             mesh = self.state.selectedVertices[0].editorObject.getMesh()
-            
+
             # faces that have both vertices
             faces = self.findSharedFaces(v1, v2)
 
@@ -541,13 +541,13 @@ class EditorActions:
                 index1 = face.indexOf(v1)
                 index2 = face.indexOf(v2)
                 numVertices = len(face.getVertices())
-                
+
                 # index1 should be the lowest
                 if index1 > index2:
                     temp = index1
                     index1 = index2
                     index2 = temp
-                
+
                 # make sure indices are consecutive
                 insertIndex = 0
                 if index2 - index1 == 1:
@@ -556,10 +556,10 @@ class EditorActions:
                     insertIndex = index1
                 else:
                     continue
-                
+
                 face.addVertex(newVertex, index=insertIndex)
 
-    
+
     def makeEdge(self):
         if self.state.selectMode != EditorState.SELECT_VERTICES \
            or len(self.state.selectedVertices) != 2:
@@ -569,7 +569,7 @@ class EditorActions:
             v1 = self.state.selectedVertices[0].vertex
             v2 = self.state.selectedVertices[1].vertex
             mesh = self.state.selectedVertices[0].editorObject.getMesh()
-            
+
             # faces that have both vertices
             faces = self.findSharedFaces(v1, v2)
 
@@ -602,7 +602,7 @@ class EditorActions:
                         face1Vertices.append(face.getVertices()[i])
                     else:
                         face2Vertices.append(face.getVertices()[i])
-            
+
             newFace1 = MeshFace()
             for v in face1Vertices:
                 newFace1.addVertex(v.vertex, v.textureVertex)
@@ -613,11 +613,11 @@ class EditorActions:
             newFace1.copyMaterialInfo(face)
             newFace2.copyMaterialInfo(face)
             mesh.removeFace(face)
-            
+
             mesh.addFace(newFace1)
             mesh.addFace(newFace2)
 
-    
+
     def combineVertices(self):
         if self.state.selectMode != EditorState.SELECT_VERTICES \
            or len(self.state.selectedVertices) != 2:
@@ -630,10 +630,10 @@ class EditorActions:
             if mesh != self.state.selectedVertices[1].editorObject.getMesh():
                 print("Please select 2 vertices on the same mesh")
                 return
-            
+
             # faces that have both vertices
             sharedFaces = self.findSharedFaces(v1, v2)
-            
+
             # replace all v2 references with v1
 
             v2References = list(v2.getReferences())
@@ -654,7 +654,7 @@ class EditorActions:
             mesh.removeVertex(v2)
             del self.state.selectedVertices[1]
 
-    
+
     def combineFaces(self):
         if self.state.selectMode != EditorState.SELECT_VERTICES \
            or len(self.state.selectedVertices) != 2:
@@ -664,17 +664,17 @@ class EditorActions:
             v1 = self.state.selectedVertices[0].vertex
             v2 = self.state.selectedVertices[1].vertex
             mesh = self.state.selectedVertices[0].editorObject.getMesh()
-            
+
             # faces that have both vertices
             faces = self.findSharedFaces(v1, v2)
-    
+
             if len(faces) != 2:
                 print("The vertices of an edge dividing 2 faces must be "
                       "selected")
                 return
 
             newFace = MeshFace()
-            
+
             faceNum = 0
             for face in faces:
                 numVertices = len(face.getVertices())
@@ -696,14 +696,14 @@ class EditorActions:
                     i %= numVertices
 
                 faceNum += 1
-            
+
             newFace.copyMaterialInfo(faces[0])
             mesh.removeFace(faces[0])
             mesh.removeFace(faces[1])
             mesh.addFace(newFace)
-            
+
             self.state.world.removeUnusedMaterials()
-                
+
 
     # find faces that have both vertices
     def findSharedFaces(self, v1, v2):
@@ -734,7 +734,7 @@ class EditorActions:
         planePoint = self.arrowStart
         # arrow points in direction of half to remove
         planeNormal = (planePoint - self.arrowEnd).normalize()
-        
+
         objectsToRemove = [ ]
         for o in self.state.selectedObjects:
             if o.getMesh() != None:
@@ -763,7 +763,7 @@ class EditorActions:
         INSIDE = 0
         ON_PLANE = 1 # counts as inside
         OUTSIDE = 2
-        
+
         newFaceEdges = [ ] # pairs of vectors
         facesToRemove = [ ]
 
@@ -812,7 +812,7 @@ class EditorActions:
             if not hasInside:
                 facesToRemove.append(face) # face is entirely outside plane
                 continue # to next face
-            
+
             if hasInside and hasOutside:
                 # partly inside plane and partly outside; clip the face
 
@@ -821,7 +821,7 @@ class EditorActions:
                 # vertex 0 will be the origin
                 origin = face.getVertices()[0].vertex.getPosition()
                 faceNormalRotate = face.getNormal().rotation()
-                
+
                 translatedPlanePoint = planePoint - origin
                 rotatedPlane = vectorMath.rotatePlane(translatedPlanePoint,
                                                 planeNormal, -faceNormalRotate)
@@ -861,7 +861,7 @@ class EditorActions:
 
                 if len(edgesToClip) != 2:
                     print("WARNING: Not 2 edges to clip for this face!")
-                
+
                 # there is a line where the face and the clip plane intersect
                 # the face has already been oriented to x=0, so the intersection
                 # is easy to calculate: for plane ax+by+cz+d=0, the intersection
@@ -892,7 +892,7 @@ class EditorActions:
                     newVertices[i].setPosition(intersectionPoint)
                     i += 1
 
-                edge = ( newVertices[0].getPosition(), 
+                edge = ( newVertices[0].getPosition(),
                          newVertices[1].getPosition() )
                 self.addUniqueEdge(edge, newFaceEdges)
 
@@ -924,7 +924,7 @@ class EditorActions:
             newFace.addVertex(firstVertex)
             prevVertex = MeshVertex(newFaceEdges[0][1])
             del newFaceEdges[0]
-            
+
             while not firstVertex.getPosition().isClose(
                     prevVertex.getPosition()):
                 mesh.addVertex(prevVertex)
@@ -1008,7 +1008,7 @@ class EditorActions:
         else:
             print("Objects must be selected")
 
-    
+
     # add the edge to the list only if it hasn't already been added
     # check for reverse order of vertices
     def addUniqueEdge(self, edge, edgeList):
@@ -1020,7 +1020,7 @@ class EditorActions:
                existingEdge[1].isClose(edge[0]):
                 return
         edgeList.append(edge)
-    
+
 
     # ADJUST MODE ACTIONS:
 
@@ -1082,7 +1082,7 @@ class EditorActions:
     def toggleRelativeCoordinates(self):
         self.state.relativeCoordinatesEnabled = \
             not self.state.relativeCoordinatesEnabled
-            
+
     def toggleAxisLock(self):
         self.state.axisLockEnabled = not self.state.axisLockEnabled
 
@@ -1114,7 +1114,7 @@ class EditorActions:
     def setCurrentMaterial(self, name):
         if name != None and name != "":
             foundMaterial = self.state.world.findMaterial(name)
-        
+
             if foundMaterial != None:
                 self.state.setCurrentMaterial(foundMaterial)
                 self.state.world.updateMaterial(self.state.currentMaterial)
@@ -1146,7 +1146,7 @@ class EditorActions:
 
     def setFaceMaterial(self, face, materialReference):
         face.setMaterial(materialReference)
-        
+
     def translateMaterials(self):
         if self.state.selectMode == EditorState.SELECT_FACES and \
                 len(self.state.selectedFaces) != 0:
@@ -1161,7 +1161,7 @@ class EditorActions:
             self.setupAdjustMode(MaterialTranslateAdjustor(faces))
         else:
             print("Faces must be selected")
-    
+
     def rotateMaterials(self):
         if self.state.selectMode == EditorState.SELECT_FACES and \
                 len(self.state.selectedFaces) != 0:
@@ -1176,7 +1176,7 @@ class EditorActions:
             self.setupAdjustMode(MaterialRotateAdjustor(faces))
         else:
             print("Faces must be selected")
-    
+
     def scaleMaterials(self):
         if self.state.selectMode == EditorState.SELECT_FACES and \
                 len(self.state.selectedFaces) != 0:

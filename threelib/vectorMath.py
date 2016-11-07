@@ -4,7 +4,7 @@ import numbers
 import math
 
 # Based on JMath3d
-    
+
 CIRCLE = math.pi*2
 
 def fixRotation(n):
@@ -41,9 +41,9 @@ def numToStr(num):
 def isclose(a, b, rel_tol=1e-9, abs_tol=1e-9):
     """
     Based on https://www.python.org/dev/peps/pep-0485/
-    
+
     Taken from https://github.com/PythonCHB/close_pep/blob/master/isclose.py
-    
+
     Python 3.5 has this, but 3.4 doesn't.
     I changed the default value of abs_tol, and also removed some checking for
     special cases that will never appear here.
@@ -52,7 +52,7 @@ def isclose(a, b, rel_tol=1e-9, abs_tol=1e-9):
         return True
     if math.isinf(abs(a)) or math.isinf(abs(b)):
         return False
-    
+
     diff = abs(b - a)
     return (((diff <= abs(rel_tol * b)) or
              (diff <= abs(rel_tol * a))) or
@@ -107,7 +107,7 @@ class Vector:
     """
     An immutable 2-dimensional or 3-dimensional vector.
     """
-    
+
     @staticmethod
     def normal(v1, v2, v3):
         """
@@ -126,7 +126,7 @@ class Vector:
         Create a Vector from a tuple of 3 numbers.
         """
         return Vector(t[0], t[1], t[2])
-    
+
 
     def __init__(self, x, y, z = 0):
         """
@@ -136,7 +136,7 @@ class Vector:
         self.x = float(x)
         self.y = float(y)
         self.z = float(z)
-        
+
     def __repr__(self):
         return tripleTupleToString(self.getTuple())
 
@@ -163,7 +163,7 @@ class Vector:
         Return a tuple of 3 numbers for the Vector.
         """
         return (self.x, self.y, self.z)
-    
+
     def isZero(self):
         """
         Check if the vector is at (0, 0, 0). Same as:
@@ -177,73 +177,73 @@ class Vector:
         ``vector.isClose( Vector(0, 0, 0) )``.
         """
         return self.isClose(ZERO_V)
-    
+
     def setX(self, newX):
         """
         Return a copy of this vector with a new x value.
         """
         return Vector(newX, self.y, self.z)
-        
+
     def setY(self, newY):
         """
         Return a copy of this vector with a new y value.
         """
         return Vector(self.x, newY, self.z)
-        
+
     def setZ(self, newZ):
         """
         Return a copy of this vector with a new z value.
         """
         return Vector(self.x, self.y, newZ)
-        
+
     def __neg__(self):
         return Vector(-self.x, -self.y, -self.z)
-    
+
     def __add__(self, v):
         return Vector(self.x + v.x, self.y + v.y, self.z + v.z)
-    
+
     def __radd__(self, other):
         if other == 0:
             return self
         else:
             return self.__add__(other)
-    
+
     def __sub__(self, v):
         return Vector(self.x - v.x, self.y - v.y, self.z - v.z)
-    
+
     def __mul__(self, v):
         if isinstance(v, numbers.Number):
             return Vector(self.x * v, self.y * v, self.z * v)
         else:
             return Vector(self.x * v.x, self.y * v.y, self.z * v.z)
-            
+
     def __rmul__(self, v):
         return self.__mul__(v)
-        
+
     def __truediv__(self, v):
         if isinstance(v, numbers.Number):
             return Vector(self.x / v, self.y / v, self.z / v)
         else:
             return Vector(self.x / v.x, self.y / v.y, self.z / v.z)
-    
+
     def __rtruediv__(self, v):
         if isinstance(v, numbers.Number):
             return Vector(v / self.x, v / self.y, v / self.z)
         else:
             return Vector(v.x / self.x, v.y / self.y, v.z / self.z / v.z)
-        
+
     def dot(self, v):
         """
         Return the dot product of the two vectors.
         """
         return self.x * v.x + self.y * v.y + self.z * v.z
-        
+
     def project(self, v):
         """
         Project this vector onto another.
         """
         return self.dot(v / v.magnitude())
-    
+
     def orthogonal(self, v):
         """
         Return true if this vector is orthogonal (at a right angle) to another
@@ -259,7 +259,7 @@ class Vector:
         newY = self.z * v.x - self.x * v.z
         newZ = self.x * v.y - self.y * v.x
         return Vector(newX, newY, newZ)
-    
+
     def lerp(self, v, amount):
         """
         With amount = 0, returns this vector.
@@ -283,7 +283,7 @@ class Vector:
         calculate than ``magnitude()`` and is preferred for comparisons.
         """
         return self.x ** 2.0 + self.y ** 2.0 + self.z ** 2.0
-    
+
     def setMagnitude(self, newMag):
         """
         Return a new vector with the same direction as this one but a different
@@ -293,7 +293,7 @@ class Vector:
         if currentMag == 0:
             return self
         return self * (newMag / currentMag)
-    
+
     def limitMagnitude(self, maxMag):
         """
         If the magnitude of this vector is greater than ``maxMax``, return a new
@@ -311,7 +311,7 @@ class Vector:
         of 1. Same as ``vector.setMagnitude(1.0)``.
         """
         return self.setMagnitude(1.0)
-    
+
     def distanceTo(self, v):
         """
         Return the distance from the end of one vector to another.
@@ -344,14 +344,14 @@ class Vector:
         """
         n = math.atan2(self.y, self.x)
         return fixRotation(n)
-        
+
     def direction2Towards(self, v):
         """
         Return the 2-dimensional direction from the end of this vector towards
         another.
         """
         return (v - self).direction2()
-    
+
     def rotate2(self, amount):
         """
         Return a copy of this vector rotated in 2 dimensions by a specified
@@ -362,14 +362,14 @@ class Vector:
         return Vector( self.x * cosX - self.y * sinX,
                        self.y * cosX + self.x * sinX,
                        self.z )
-    
+
     def rotate2Around(self, amount, center):
         """
         Return a copy of this vector rotated in 2 dimensions around a specified
         point.
         """
         return (self - center).rotate2(amount) + center
-    
+
     def move2(self, direction, amount):
         """
         ``amount`` is a 2d vector describing movement, which is rotated by
@@ -377,14 +377,14 @@ class Vector:
         """
         amount = amount.rotate2(direction)
         return self + amount
-    
+
     def homogeneousTo2d(self):
         """
         Convert the homogeneous coordinates of a 2d vector (in the form of a 3d
         vector) to a regular 2d vector.
         """
         return Vector(self.x / self.z, self.y / self.z)
-    
+
     def rotation(self):
         """
         Get the direction of this 3d vector as a Rotation.
@@ -395,7 +395,7 @@ class Vector:
         yRot = xyz.direction2()
         zRot = xy.direction2()
         return Rotate(0, yRot, zRot)
-    
+
     def directionTowards(self, v):
         """
         Return the direction from the end of this vector towards another, as a
@@ -450,15 +450,15 @@ class Vector:
         xRot = Vector(v.y, v.z)
         xRot = xRot.rotate2(amount.x)
         v = Vector(v.x, xRot.x, xRot.y)
-        
+
         return v
-        
+
     def rotateAround(self, amount, center):
         """
         Rotate the vector around a specified center point.
         """
         return (self - center).rotate(amount) + center
-    
+
     def move(self, direction, amount):
         """
         ``amount`` is a 2d vector describing movement, which is rotated by
@@ -471,11 +471,11 @@ class Rotate:
     """
     An immutable rotation in 3d space.
     """
-    
+
     @staticmethod
     def fromTuple(t):
         return Rotate(t[0], t[1], t[2])
-        
+
     @staticmethod
     def fromDegreesTuple(t):
         return Rotate(math.radians(t[0]),
@@ -490,10 +490,10 @@ class Rotate:
         self.x = fixRotation(x)
         self.y = fixRotation(y)
         self.z = fixRotation(z)
-    
+
     def __repr__(self):
         return tripleTupleToString(self.getDegreesTuple())
-    
+
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.x == other.x and self.y == other.y and self.z == other.z
@@ -509,7 +509,7 @@ class Rotate:
         x, y, and z axes.
         """
         return (self.x, self.y, self.z)
-        
+
     def getDegreesTuple(self):
         """
         Similar to ``getTuple()``, uses degrees instead of radians
@@ -517,46 +517,46 @@ class Rotate:
         return (math.degrees(self.x),
                 math.degrees(self.y),
                 math.degrees(self.z))
-    
+
     def isZero(self):
         """
         Check if this is a zero rotation.
         """
         return self.x == 0 and self.y == 0 and self.z == 0
-    
+
     def setX(self, newX):
         """
         Return a copy of this Rotate with a new x value.
         """
         return Rotate(newX, self.y, self.z)
-        
+
     def setY(self, newY):
         """
         Return a copy of this Rotate with a new y value.
         """
         return Rotate(self.x, newY, self.z)
-        
+
     def setZ(self, newZ):
         """
         Return a copy of this Rotate with a new z value.
         """
         return Rotate(self.x, self.y, newZ)
-    
+
     def __neg__(self):
         return Rotate(-self.x, -self.y, -self.z)
-    
+
     def __add__(self, v):
         return Rotate(self.x + v.x, self.y + v.y, self.z + v.z)
-    
+
     def __radd__(self, other):
         if other == 0:
             return self
         else:
             return self.__add__(other)
-    
+
     def __sub__(self, v):
         return Vector(self.x - v.x, self.y - v.y, self.z - v.z)
-            
+
     def __mul__(self, v):
         if isinstance(v, numbers.Number):
             return Rotate(self.x * v, self.y * v, self.z * v)
@@ -565,13 +565,13 @@ class Rotate:
 
     def __rmul__(self, v):
         return self.__mul__(v)
-        
+
     def __truediv__(self, v):
         if isinstance(v, numbers.Number):
             return Rotate(self.x / v, self.y / v, self.z / v)
         else:
             return Rotate(self.x / v.x, self.y / v.y, self.z / v.z)
-    
+
     def __rtruediv__(self, v):
         if isinstance(v, numbers.Number):
             return Rotate(v / self.x, v / self.y, v / self.z)
@@ -586,7 +586,7 @@ class Rotate:
         roll = self.x + amount.x
         return vector.rotation().setX(roll)
 
-    
+
 ZERO_V = Vector(0, 0, 0)
 
 FORWARD_V = Vector(-1, 0, 0)

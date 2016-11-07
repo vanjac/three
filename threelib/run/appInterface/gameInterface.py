@@ -26,19 +26,19 @@ class GameInterface(AppInterface):
 
     def __init__(self, state):
         self.instance = None
-        
+
         self.world = state.world
-        
+
         self.mouseXInput = SimpleAxisInput()
         self.mouseYInput = SimpleAxisInput()
-        
+
         self.mouseLeftInput = SimpleButtonInput()
         self.mouseMiddleInput = SimpleButtonInput()
         self.mouseRightInput = SimpleButtonInput()
-        
+
         self.keyInputs = { }
-        
-        
+
+
         # TODO: remove these once input customization has been added!
         self.world.axisInputs['mouse-x'] = self.mouseXInput
         self.world.axisInputs['mouse-y'] = self.mouseYInput
@@ -50,29 +50,29 @@ class GameInterface(AppInterface):
         self.world.buttonInputs['s'] = self._getKeyInput('s')
         self.world.buttonInputs['d'] = self._getKeyInput('d')
         self.world.buttonInputs['space'] = self._getKeyInput(' ')
-        
+
         self.mouseLocked = False
-        
+
         print("Building world...")
         threelib.world.buildWorld(state)
         print("Done building world")
-            
+
         self.world.simulator.init()
         self.world.simulator.start()
-        
+
         self.runner = GameRunner(self.world.simulator, time.time())
-        
+
     def init(self):
         self.instance.lockMouse()
         self.mouseLocked = True
-    
+
     def draw(self):
         self.runner.tick(time.time())
 
     def setAppInstance(self, instance):
         self.instance = instance
-        
-    
+
+
     def _getKeyInput(self, char):
         if char in self.keyInputs:
             return self.keyInputs[char]
@@ -85,29 +85,29 @@ class GameInterface(AppInterface):
         if key[0] == 27: # escape
             self.mouseLocked = False
             self.instance.unlockMouse()
-        
+
         char = unshift(key.decode("utf-8"))
         if char in self.keyInputs:
             self.keyInputs[char].setPressed(True)
-    
+
     def keyReleased(self, key):
         char = unshift(key.decode("utf-8"))
         if char in self.keyInputs:
             self.keyInputs[char].setPressed(False)
-        
+
     def mousePressed(self, button, mouseX, mouseY):
         self.instance.lockMouse()
         self.mouseLocked = True
-        
+
         buttonInput = self._inputForMouseButtonCode(button)
         if buttonInput != None:
             buttonInput.setPressed(True)
-        
+
     def mouseReleased(self, button, mouseX, mouseY):
         buttonInput = self._inputForMouseButtonCode(button)
         if buttonInput != None:
             buttonInput.setPressed(False)
-        
+
     def _inputForMouseButtonCode(self, code):
         if code == 0:
             return self.mouseLeftInput
@@ -115,7 +115,7 @@ class GameInterface(AppInterface):
             return self.mouseMiddleInput
         if code == 2:
             return self.mouseRightInput
-    
+
     def mouseMoved(self, mouseX, mouseY, pmouseX, pmouseY):
         if self.mouseLocked:
             self.mouseXInput.changeValue(mouseX - pmouseX)

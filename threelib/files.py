@@ -39,7 +39,7 @@ def getMapList():
 
 def getMap(name, createIfNotFound=True):
     """
-    Get the Path to the map with the specified name. If it doesn't exist, 
+    Get the Path to the map with the specified name. If it doesn't exist,
     optionally create an empty file with that name and return it, otherwise
     return None.
     """
@@ -56,7 +56,7 @@ def getMap(name, createIfNotFound=True):
 def getMapNumber(number):
     """
     Get the Path to the map with the name at the specified index in the maps
-    list file (starts at 1). If it doesn't exist, create an empty file with that 
+    list file (starts at 1). If it doesn't exist, create an empty file with that
     name and return it.
     """
     if number < 0:
@@ -88,7 +88,7 @@ def getResourcePath(directoryPath, name):
         for d in dirs[:-1]:
             parentDir = parentDir / d
         parentDir = parentDir.resolve()
-        
+
         name = dirs[-1]
         for child in parentDir.iterdir():
             cName = ""
@@ -130,7 +130,7 @@ def getScript(name):
     Get the Path to the script with the specified name.
     """
     return getResourcePath(getScriptDir(), name)
-    
+
 def loadScript(path):
     """
     Load the text contents of a script file path.
@@ -156,13 +156,13 @@ def loadMapState(path):
             state = pickle.load(f)
     except EOFError: # map is empty
         return None
-    
+
     try:
         state.MAJOR_VERSION
     except AttributeError:
         state.MAJOR_VERSION = -1
-        state.MINOR_VERSION = 0    
-    
+        state.MINOR_VERSION = 0
+
     print("File version:",
           str(state.MAJOR_VERSION) + "." + str(state.MINOR_VERSION))
     print("Current editor file version:", str(EditorState.CURRENT_MAJOR_VERSION)
@@ -184,19 +184,19 @@ def loadMapState(path):
               " save it now, some features may be missing if you try to open"
               " it with an older version again.")
         state = _convertStateToCurrentVersion(state)
-    
+
     if state == None:
         return None
     state.onLoad()
     return state
-    
+
 # maps tuples of (majorVersion, minorVersion) to functions
 editorStateConverters = { }
-    
+
 def _convertStateToCurrentVersion(editorState):
     targetMajor = EditorState.CURRENT_MAJOR_VERSION
     targetMinor = EditorState.CURRENT_MINOR_VERSION
-    
+
     while editorState.MAJOR_VERSION != targetMajor \
        or editorState.MINOR_VERSION != targetMinor:
         versionTuple = (editorState.MAJOR_VERSION, editorState.MINOR_VERSION)

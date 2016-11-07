@@ -18,31 +18,31 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
 stipplePattern = [
-    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
-    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
     0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
-    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
-    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
     0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
-    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
-    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
     0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
-    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
-    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
     0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
-    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
-    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55, 
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
+    0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
     0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
     0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55 ]
 
 
 class GLEditor(EditorInterface):
-    
+
     def __init__(self, mapPath, state=None):
         super().__init__(mapPath, state)
         self.graphicsTools = GLGraphicsTools()
         print("OpenGL 1 Editor")
-    
+
     def init(self):
         glPolygonStipple(stipplePattern)
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1) # for getting select pixels
@@ -81,15 +81,15 @@ class GLEditor(EditorInterface):
         glRotate(math.degrees(rotate.y), -1, 0, 0)
         glRotate(math.degrees(rotate.z), 0, 1, 0)
         glTranslate(translate.y, translate.z, translate.x)
-        
+
         fps = float(self.editorMain.getFps())
         if fps == 0:
             fps = 60
         self.state.cameraPosition += (-self.fly * self.flySpeed / fps) \
             .rotate(-self.state.cameraRotation)
-        
+
         drawVertices = self.state.selectMode == EditorState.SELECT_VERTICES
-        
+
         if self.selectAtCursorOnDraw:
             self.cursorSelect()
 
@@ -108,39 +108,39 @@ class GLEditor(EditorInterface):
             glBegin(GL_POINTS)
             glVertex(startPos.y, startPos.z, startPos.x)
             glEnd()
-            
+
             glBegin(GL_LINES)
             glVertex(startPos.y, startPos.z, startPos.x)
             glVertex(endPos.y, endPos.z, endPos.x)
             glEnd()
-        
+
         for o in self.state.objects:
             glPushMatrix()
             self.transformObject(o)
-            
+
             select = o.isSelected()
             if select:
                 glEnable(GL_POLYGON_STIPPLE)
-            
+
             o.drawObject(self.graphicsTools)
-            
+
             if select:
                 glDisable(GL_POLYGON_STIPPLE)
-                
+
                 # a green line is used for the direction
                 glColor(0.0, 1.0, 0.0)
                 glBegin(GL_LINES)
                 glVertex(0, 0, 0)
                 glVertex(0, 0, 32)
                 glEnd()
-                
+
                 if o.getMesh() != None:
                     # a green point is used for the origin
                     glPointSize(12)
                     glBegin(GL_POINTS)
                     glVertex(0, 0, 0)
                     glEnd()
-                
+
                 # a magenta line is drawn to the parent object
                 if o.getParent() != None:
                     glColor(1.0, 0.0, 1.0)
@@ -149,7 +149,7 @@ class GLEditor(EditorInterface):
                     parentPos = o.getParent().getPosition() - o.getPosition()
                     glVertex(parentPos.y, parentPos.z, parentPos.x)
                     glEnd()
-                    
+
                 # cyan lines are drawn to child objects
                 if len(o.getChildren()) > 0:
                     glColor(0.0, 1.0, 1.0)
@@ -169,7 +169,7 @@ class GLEditor(EditorInterface):
                     pos = v.getPosition()
                     glVertex(pos.y, pos.z, pos.x)
                 glEnd()
-                
+
                 # red lines are used for edges
                 for f in o.getMesh().getFaces():
                     glBegin(GL_LINE_LOOP)
@@ -177,7 +177,7 @@ class GLEditor(EditorInterface):
                         pos = v.vertex.getPosition()
                         glVertex(pos.y, pos.z, pos.x)
                     glEnd()
-                
+
             glPopMatrix()
         # end for each object
 
@@ -209,7 +209,7 @@ class GLEditor(EditorInterface):
                 glPopMatrix()
             glDisable(GL_POLYGON_STIPPLE)
             glDisable(GL_POLYGON_OFFSET_FILL)
-        
+
         # status bar
         glColor(1,1,1)
         glPopMatrix()
@@ -218,7 +218,7 @@ class GLEditor(EditorInterface):
         self.editorMain.drawText(str(self.editorMain.getFps()) + " FPS",
                                  GLUT_BITMAP_9_BY_15,
                                  4, self.editorMain.windowHeight() - 19) # 4+15
-        
+
         glCallList(self.drawMiniAxesList1)
         glRotate(math.degrees(rotate.x), 0, 0, 1)
         glRotate(math.degrees(rotate.y), -1, 0, 0)
@@ -298,7 +298,7 @@ class GLEditor(EditorInterface):
             for o in self.state.objects:
                 glPushMatrix()
                 self.transformObject(o)
-                
+
                 # block selecting vertices through objects
                 o.drawSelectHull((0, 0, 0), self.graphicsTools)
 
@@ -320,7 +320,7 @@ class GLEditor(EditorInterface):
             for o in self.state.objects:
                 glPushMatrix()
                 self.transformObject(o)
-                
+
                 if o.getMesh() != None:
                     j = 0
                     for f in o.getMesh().getFaces():
@@ -332,7 +332,7 @@ class GLEditor(EditorInterface):
                             glVertex(pos.y, pos.z, pos.x)
                         glEnd()
                         j += 1
-                
+
                 glPopMatrix()
                 i += 1
 
@@ -365,13 +365,13 @@ class GLEditor(EditorInterface):
         glScale(1/self.editorMain.getAspect(), 1, 1)
         gluPerspective(self.editorMain.getFOV(), 1, 4, 16)
         glMatrixMode(GL_MODELVIEW)
-        
+
         glTranslate(0, 0, -5)
 
     # display list
     def drawMiniAxes2(self):
         glScale(0.5, 0.5, 0.5)
-        
+
         glCallList(self.drawAxesList)
 
         glMatrixMode(GL_PROJECTION)
@@ -379,8 +379,8 @@ class GLEditor(EditorInterface):
         glMatrixMode(GL_MODELVIEW)
         glPopMatrix()
         glEnable(GL_DEPTH_TEST)
-    
-            
+
+
     def transformObject(self, editorObject):
         oTranslate = editorObject.getPosition()
         oRotate = editorObject.getRotation()

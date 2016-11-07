@@ -14,7 +14,7 @@ class EditorInterface(EditorActions, AppInterface):
     def __init__(self, mapPath, state=None):
         super().__init__(mapPath, state)
         self.currentCommand = ""
-        
+
     def setAppInstance(self, instance):
         self.editorMain = instance
 
@@ -48,10 +48,10 @@ class EditorInterface(EditorActions, AppInterface):
             else:
                 # add to command
                 self.currentCommand += character
-            
+
             if len(self.currentCommand) == 0:
                 return
-            
+
             clearCommand = False
             if self.inAdjustMode:
                 clearCommand = self.evaluateAdjustCommand(self.currentCommand)
@@ -85,11 +85,11 @@ class EditorInterface(EditorActions, AppInterface):
         if c[0] == '\r':
             self.editPropertiesOfSelected()
             return True
-        
+
         if c[0] == 'u':
             self.updateSelected()
             return True
-        
+
         if c[0] == '\b': # backspace or delete
             self.deleteSelected()
             return True
@@ -136,27 +136,27 @@ class EditorInterface(EditorActions, AppInterface):
         if c[0] == 'c':
             self.duplicateSelected()
             return True
-            
+
         if c[0] == 't':
             self.setParent()
             return True
-            
+
         if c[0] == 'T':
             self.clearParent()
             return True
-        
+
         if c[0] == ',':
             self.selectParent()
             return True
-            
+
         if c[0] == '<':
             self.selectParent(addToSelection=True)
             return True
-        
+
         if c[0] == '.':
             self.selectChildren()
             return True
-            
+
         if c[0] == '>':
             self.selectChildren(addToSelection=True)
             return True
@@ -168,7 +168,7 @@ class EditorInterface(EditorActions, AppInterface):
         if c[0] == 'o':
             self.adjustOriginOfSelected()
             return True
-            
+
         if c[0] == 'r':
             self.rotateSelected()
             return True
@@ -244,7 +244,7 @@ class EditorInterface(EditorActions, AppInterface):
         if c[0] == 'p':
             self.paint()
             return True
-        
+
         if c[0] == 'f':
             if len(c) == 1:
                 return False
@@ -263,11 +263,11 @@ class EditorInterface(EditorActions, AppInterface):
         return True
 
     def evaluateAdjustCommand(self, c):
-        
+
         if c[0] == '\r':
             self.completeAdjust()
             return True
-        
+
         if c[0] == 'x':
             self.selectAdjustAxis(EditorActions.X)
             return True
@@ -325,13 +325,13 @@ class EditorInterface(EditorActions, AppInterface):
             else:
                 print("Invalid command", c)
             return True
-        
+
         # if no match
         print("Unrecognized command", c)
         return True
 
 
-    # mouse buttons: left=0, middle=1, right=2, 
+    # mouse buttons: left=0, middle=1, right=2,
     #   scroll-up=3, scroll-down=4, scroll-left=5, scroll-right=6
     def mousePressed(self, button, mouseX, mouseY):
         if button == 0:
@@ -353,7 +353,7 @@ class EditorInterface(EditorActions, AppInterface):
             self.flySpeed *= 1.1
         if button == 4:
             self.flySpeed /= 1.1
-    
+
     def mouseReleased(self, button, mouseX, mouseY):
         pass
 
@@ -380,7 +380,7 @@ class EditorInterface(EditorActions, AppInterface):
 
         mouseXDiff = mouseX - pmouseX
         mouseYDiff = -mouseY + pmouseY # up should be positive
-        
+
         change = [0.0, 0.0] # change in first / second axes
 
         if self.state.snapEnabled:
@@ -407,7 +407,7 @@ class EditorInterface(EditorActions, AppInterface):
         else:
             change[0] = float(mouseXDiff) / float(mouseGrid) * grid
             change[1] = float(mouseYDiff) / float(mouseGrid) * grid
-            
+
         if self.state.axisLockEnabled:
             value = list(self.adjustor.getAxes())
             value[0] += change[0]
@@ -419,16 +419,16 @@ class EditorInterface(EditorActions, AppInterface):
             # 0 is looking down -x, 1 is looking down +y,
             # 2 is looking down +x, 3 is looking down -y
             quarter = round(self.state.cameraRotation.z / (math.pi / 2)) % 4
-            
+
             # 0 - 3
             # 0 is towards -x/+y, 1 is towards +x/+y,
             # 2 is towards +x/-y, 3 is towards -x/-y
             quadrant = math.floor(self.state.cameraRotation.z / (math.pi / 2))
-            
+
             axes = self.selectedAxes
             if axes[0] > axes[1]: # put axes in order
                 axes = (axes[1], axes[0])
-                
+
             if axes[0] == EditorActions.X and axes[1] == EditorActions.Y:
                 if quarter == 0:
                     axes = (EditorActions.Y, EditorActions.X)
@@ -447,16 +447,16 @@ class EditorInterface(EditorActions, AppInterface):
             elif axes[0] == EditorActions.Y:
                 if quadrant == 1 or quadrant == 2:
                     change[0] = -change[0]
-            
+
             # looking up reverses y mouse movement
             if axes[1] != EditorActions.Z \
                     and self.state.cameraRotation.y < math.pi:
                 change[1] = -change[1]
-                    
+
             value = list(self.adjustor.getAxes())
             value[axes[0]] += change[0]
             value[axes[1]] += change[1]
-            
+
             self.adjustor.setAxes(tuple(value))
 
 
@@ -541,10 +541,10 @@ class EditorInterface(EditorActions, AppInterface):
                                 .getPosition()) + " | "
                     else:
                         text += str(num) + " vertices | "
-                
+
                 text += "Paint: " + self.getMaterialName(
                     self.state.currentMaterial) + " | "
-        
+
         if self.currentCommand == "":
             if self.movingCamera:
                 text += "WASDQE: fly, click: exit, scroll: change speed"
@@ -552,7 +552,7 @@ class EditorInterface(EditorActions, AppInterface):
                 text += "Click: complete"
         else:
             text += self.currentCommand
-        
+
         return text
 
     def getMaterialName(self, material):

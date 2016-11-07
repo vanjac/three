@@ -8,7 +8,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 class GLGraphicsTools(GraphicsTools):
-    
+
     def drawPoint(self, position, color, size):
         glColor(color[0], color[1], color[2])
         glPointSize(size)
@@ -27,7 +27,7 @@ class GLGraphicsTools(GraphicsTools):
                     texture = True
                     glEnable(GL_TEXTURE_2D)
                     glBindTexture(GL_TEXTURE_2D, mat.getNumber())
-            
+
             glBegin(GL_POLYGON)
             for v in f.getVertices():
                 pos = v.vertex.getPosition()

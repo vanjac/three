@@ -13,7 +13,7 @@ import ast
 # utilities for parsing properties
 def stringToTripleTuple(s):
     return ast.literal_eval(s)
-    
+
 def stringToBoolean(s):
     s = s.lower().strip()
     return not (s == 'false' or s == '0' or s == '')
@@ -23,19 +23,19 @@ class EditorObject:
     An abstract class for objects that can be manipulated in the editor, and
     that tie to SimObjects in the World.
     """
-    
+
     def __init__(self):
         self.name = ""
         self.children = [ ]
         self.parent = None
         self.selected = False
-    
+
     def __repr__(self):
         if name == "":
             return "[Unnamed object]"
         else:
             return self.getName()
-    
+
     def getName(self):
         """
         Return the name of the EditorObject as a string. Names usually have no
@@ -49,32 +49,32 @@ class EditorObject:
         Set the name of the EditorObject.
         """
         self.name = name
-    
+
     def getType(self):
         """
         Return a string describing the EditorObject. Override this.
         """
         return "EditorObject"
-    
+
     def getPosition(self):
         """
         Return a Vector. Override this.
         """
         pass
-    
+
     def getRotation(self):
         """
         Return a Rotation. Override this.
         """
         pass
-    
+
     def getBounds(self):
         """
         Return a tuple of 2 Vectors: (min_coordinates, max_coordinates). Bounds
         are relative to the object position. Override this.
         """
         pass
-        
+
     def getTranslatedBounds(self):
         """
         Similar to ``getBounds``, but bounds are in absolute coordinates and not
@@ -110,13 +110,13 @@ class EditorObject:
         Set the rotation. Override this.
         """
         pass
-    
+
     def applyRotation(self):
         """
         Apply the current rotation so that it becomes 0. Override this.
         """
         pass
-    
+
     def scale(self, factor):
         """
         Apply a scale factor to the object. ``factor`` is a Vector. Override
@@ -208,11 +208,11 @@ class EditorObject:
 
     def removeFromParent(self):
         """
-        Remove this object as a child from its parent. 
+        Remove this object as a child from its parent.
         """
         if self.parent != None:
             self.parent.removeChild(self)
-    
+
     def isSelected(self):
         """
         This ``isSelected`` flag is set automatically.
@@ -233,7 +233,7 @@ class EditorObject:
         clone = EditorObject()
         self.addToClone(clone)
         return clone
-    
+
     def addToClone(self, clone):
         """
         Internal method to add this objects properties to a newly created clone.
@@ -244,7 +244,7 @@ class EditorObject:
         clone.setName(self.getName())
         clone.setPosition(self.getPosition())
         clone.setRotation(self.getRotation())
-        
+
     def addToWorld(self, world):
         """
         Add a representation to the world. Return a SimObject that represents
@@ -254,29 +254,29 @@ class EditorObject:
 
 
 class WorldObject(EditorObject):
-    
+
     def __init__(self):
         super().__init__()
-        
+
         # properties
         self.script = "\n\n"
         self.externalScripts = ['default'] # list of script names
-    
+
     def getType(self):
         return "World"
-    
+
     def getPosition(self):
         return Vector(0, 0, 0)
-    
+
     def getRotation(self):
         return Rotate(0, 0, 0)
-    
+
     def getBounds(self):
         return (Vector(0, 0, 0), Vector(0, 0, 0))
 
     def getMesh(self):
         return None
-        
+
     def addToWorld(self, world):
         for scriptName in self.externalScripts:
             path = threelib.files.getScript(scriptName)
@@ -285,9 +285,9 @@ class WorldObject(EditorObject):
                 continue
             script = threelib.files.loadScript(path)
             threelib.script.runScript(script)
-        
+
         threelib.script.runScript(self.script)
-    
+
     def getProperties(self):
         properties = { "name": self.getName(),
                        "script": self.script,
@@ -302,33 +302,33 @@ class WorldObject(EditorObject):
                 self.script = value
             if key == "externalScripts":
                 self.externalScripts = value.split(',')
-    
+
     def clone(self):
         clone = WorldObject()
         self.addToClone(clone)
         return clone
-    
+
     def addToClone(self, clone):
         clone.setName(self.getName())
-        
+
 
 class PointObject(EditorObject):
-    
+
     def __init__(self):
         EditorObject.__init__(self)
         self.position = Vector(0, 0, 0)
         self.rotation = Rotate(0, 0, 0)
         self.baseRotation = Rotate(0, 0, 0)
-        
+
     def getType(self):
         return "Point"
 
     def getPosition(self):
         return self.position
-    
+
     def getRotation(self):
         return self.rotation
-    
+
     def getBounds(self):
         return (Vector(0, 0, 0), Vector(0, 0, 0))
 
@@ -347,16 +347,16 @@ class PointObject(EditorObject):
 
     def getMesh(self):
         return None
-    
+
     def drawObject(self, graphicsTools):
         if self.isSelected():
             graphicsTools.drawPoint(Vector(0,0,0), (0.0, 1.0, 1.0), 12)
         else:
             graphicsTools.drawPoint(Vector(0,0,0), (1.0, 1.0, 1.0), 12)
-    
+
     def drawSelectHull(self, color, graphicsTools):
         graphicsTools.drawPoint(Vector(0,0,0), color, 10)
-    
+
     def getProperties(self):
         return super().getProperties()
 
@@ -367,7 +367,7 @@ class PointObject(EditorObject):
         clone = PointObject()
         self.addToClone(clone)
         return clone
-    
+
     def addToClone(self, clone):
         super().addToClone(clone)
         clone.setRotation(self.baseRotation)
@@ -404,16 +404,16 @@ class MeshObject(EditorObject):
         bottom.addVertex(a).addVertex(c).addVertex(d).addVertex(b)
         back.addVertex(e).addVertex(g).addVertex(c).addVertex(a)
         left.addVertex(f).addVertex(e).addVertex(a).addVertex(b)
-        
+
     def getType(self):
         return "Mesh"
 
     def getPosition(self):
         return self.position
-    
+
     def getRotation(self):
         return self.rotation
-    
+
     def getBounds(self):
         if len(self.mesh.getVertices()) == 0:
             return (Vector(0, 0, 0), Vector(0, 0, 0))
@@ -460,13 +460,13 @@ class MeshObject(EditorObject):
 
     def setMesh(self, mesh):
         self.mesh = mesh
-    
+
     def drawObject(self, graphicsTools):
         graphicsTools.drawMesh(self.mesh)
-    
+
     def drawSelectHull(self, color, graphicsTools):
         graphicsTools.drawMeshSelectHull(self.mesh, color)
-    
+
     def getProperties(self):
         return super().getProperties()
 
@@ -477,7 +477,7 @@ class MeshObject(EditorObject):
         clone = MeshObject()
         self.addToClone(clone)
         return clone
-    
+
     def addToClone(self, clone):
         super().addToClone(clone)
         clone.setMesh(self.mesh.clone())

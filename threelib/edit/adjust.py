@@ -10,7 +10,7 @@ from threelib.edit.objects import MeshObject
 
 
 class NoOpAdjustor(Adjustor):
-    
+
     def __init__(self, gridType):
         self.gridType = gridType
         self.value = (0, 0, 0)
@@ -193,7 +193,7 @@ class MultiRotateAdjustor(Adjustor):
         newRotate = Rotate.fromTuple(tupleToRadians(values))
         diff = newRotate - self.currentRotate
         self.currentRotate = newRotate
-        
+
         for i in range(0, len(self.translators)):
             offset = self.offsets[i]
             offset = offset.rotate(self.currentRotate)
@@ -216,7 +216,7 @@ class ScaleAdjustor(Adjustor):
     # SCALE, and the values will be the bounds dimensions
     def __init__(self, editorObject, resize=False):
         self.editorObject = editorObject
-        
+
         if resize:
             self.scale = self.editorObject.getDimensions()
         else:
@@ -249,13 +249,13 @@ class ScaleAdjustor(Adjustor):
 
 
 class MultiVertexScaleAdjustor(Adjustor):
-    
+
     # edges is a tuple of 3 values for each axis. the values can be 0, to scale
     # in both directions; 1 to scale only the higher edge; or -1, to scale only
     # the lower edge
     def __init__(self, vertices, edges, resize=False):
         self.vertices = list(vertices)
-        
+
         average = Vector(0.0, 0.0, 0.0)
         firstVertexPos = self.vertices[0].getPosition()
         lowX = firstVertexPos.x
@@ -321,7 +321,7 @@ class MultiVertexScaleAdjustor(Adjustor):
         return "Scale " + str(len(self.vertices)) + " vertices"
 
 class MultiScaleAdjustor(Adjustor):
-    
+
     def __init__(self, editorObjects, edges, resize=False):
         self.editorObjects = list(editorObjects)
 
@@ -398,31 +398,31 @@ class MultiScaleAdjustor(Adjustor):
 
 
 class ExtrudeAdjustor(Adjustor):
-    
+
     # meshObject is the mesh object that the face comes from
     def __init__(self, face, meshObject, state):
         self.extrudeAmount = 0
         self.state = state
-        
+
         newMesh = Mesh()
         self.newEditorObject = meshObject.clone()
         self.newEditorObject.setMesh(newMesh)
         state.objects.append(self.newEditorObject)
-        
+
         baseFace = MeshFace()
         self.extrudedFace = MeshFace()
-        
+
         for vertex in face.getVertices():
             newVertex1 = vertex.vertex.clone()
             newVertex2 = vertex.vertex.clone()
             newMesh.addVertex(newVertex1)
             newMesh.addVertex(newVertex2)
             newTextureVertex = vertex.textureVertex
-            
+
             self.extrudedFace.addVertex(newVertex2, newTextureVertex)
             # add vertices in reverse order
             baseFace.addVertex(newVertex1, newTextureVertex, index=0)
-            
+
         vertices = self.extrudedFace.getVertices()
         self.normal = Vector.normal(vertices[0].vertex.getPosition(),
                                     vertices[1].vertex.getPosition(),
@@ -447,22 +447,22 @@ class ExtrudeAdjustor(Adjustor):
             v3 = baseFace.getVertices()[j].vertex
             v4 = baseFace.getVertices()[jIncr].vertex
             sideFace.addVertex(v1).addVertex(v2).addVertex(v3).addVertex(v4)
-                
+
             newMesh.addFace(sideFace)
             sideFace.copyMaterialInfo(face)
-                
-            
+
+
     def getAxes(self):
         return (self.extrudeAmount, 0.0, 0.0)
 
     def setAxes(self, values):
         diff = values[0] - self.extrudeAmount
         self.extrudeAmount = values[0]
-        
+
         for vertex in self.extrudedFace.getVertices():
             vertex.vertex.setPosition(vertex.vertex.getPosition()
                                       + (self.normal * diff))
-            
+
 
     def cancel(self):
         self.state.objects.remove(self.newEditorObject)
@@ -548,7 +548,7 @@ class ArrowEndAdjustor(Adjustor):
 
     def getDescription(self):
         return "Arrow end"
-        
+
 
 class MaterialTranslateAdjustor(Adjustor):
 
@@ -564,7 +564,7 @@ class MaterialTranslateAdjustor(Adjustor):
         newValue = Vector.fromTuple(values)
         diff = newValue - self.value
         self.value = newValue
-        
+
         for face in self.faces:
             face.textureShift += diff
             face.calculateTextureVertices()
@@ -589,7 +589,7 @@ class MaterialRotateAdjustor(Adjustor):
         newValue = values[0]
         diff = newValue - self.value
         self.value = newValue
-        
+
         for face in self.faces:
             face.textureRotate += math.radians(diff)
             face.calculateTextureVertices()
@@ -620,7 +620,7 @@ class MaterialScaleAdjustor(Adjustor):
             newValue = newValue.setZ(self.value.z)
         factor = newValue / self.value
         self.value = newValue
-        
+
         for face in self.faces:
             face.textureScale *= factor
             face.calculateTextureVertices()

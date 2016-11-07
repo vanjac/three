@@ -8,13 +8,13 @@ class ButtonInput:
 
     def __init__(self):
         self._lastPressed = self.isPressed()
-        
+
     def isPressed(self):
         """
         Check if the button is pressed. Override this!
         """
         return False
-        
+
     def getEvent(self):
         """
         Check if the button was pressed or released since the last time this
@@ -22,16 +22,16 @@ class ButtonInput:
         ``ButtonInput.PRESSED_EVENT``, or ``ButtonInput.RELEASED_EVENT``
         """
         pressed = self.isPressed()
-        
+
         if pressed == self._lastPressed:
             event = ButtonInput.NO_EVENT
         elif pressed and (not self._lastPressed):
             event = ButtonInput.PRESSED_EVENT
         elif (not pressed) and self._lastPressed:
             event = ButtonInput.RELEASED_EVENT
-        
+
         self._lastPressed = pressed
-        return event        
+        return event
 
 class AxisInput:
 
@@ -43,7 +43,7 @@ class AxisInput:
         Get the value of the axis as a float. Override this!
         """
         return 0.0
-        
+
     def getChange(self):
         """
         Get the amount the axis value has changed since the last time this
@@ -60,25 +60,25 @@ class SimpleButtonInput(ButtonInput):
     def __init__(self):
         self.pressed = False
         super().__init__()
-        
+
     def isPressed(self):
         return self.pressed
-        
+
     def setPressed(self, pressed):
         self.pressed = pressed
 
 class SimpleAxisInput(AxisInput):
-    
+
     def __init__(self):
         self.value = 0.0
         super().__init__()
 
     def getValue(self):
         return self.value
-        
+
     def setValue(self, value):
         self.value = float(value)
-        
+
     def changeValue(self, amount):
         self.value += amount
 
@@ -90,7 +90,7 @@ class ButtonAxis(AxisInput):
         self.offValue = float(offValue)
         self.onValue = float(onValue)
         super().__init__()
-        
+
     def getValue(self):
         return self.onValue if self.button.isPressed() else self.offValue
 
@@ -100,7 +100,7 @@ class AxisOffset(AxisInput):
         self.axis = axis
         self.offset = float(offset)
         super().__init__()
-        
+
     def getValue(self):
         return self.axis.getValue() + self.offset
 
@@ -110,16 +110,16 @@ class AxisScale(AxisInput):
         self.axis = axis
         self.scale = float(scale)
         super().__init__()
-        
+
     def getValue(self):
         return self.axis.getValue() * self.scale
-        
+
 class AxisOpposite(AxisInput):
 
     def __init__(self, axis):
         self.axis = axis
         super().__init__()
-        
+
     def getValue(self):
         return -float(self.axis.getValue())
 
@@ -128,7 +128,7 @@ class AxisReciprocal(AxisInput):
     def __init__(self, axis):
         self.axis = axis
         super().__init__()
-        
+
     def getValue(self):
         return 1.0 / self.axis.getValue()
 
@@ -138,7 +138,7 @@ class AxisSum(AxisInput):
         self.axis1 = axis1
         self.axis2 = axis2
         super().__init__()
-        
+
     def getValue(self):
         return float(self.axis1.getValue()) + float(self.axis2.getValue())
 
@@ -148,7 +148,7 @@ class AxisProduct(AxisInput):
         self.axis1 = axis1
         self.axis2 = axis2
         super().__init__()
-        
+
     def getValue(self):
         return float(self.axis1.getValue()) * float(self.axis2.getValue())
 

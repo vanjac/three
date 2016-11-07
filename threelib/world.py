@@ -10,25 +10,25 @@ class World:
     """
     def __init__(self):
         self.simulator = None
-        
+
         self.camera = None # special Entity
-    
+
         self.materials = [ ] # list of MaterialReference's
         self.addedMaterials = [ ]
         self.removedMaterials = [ ]
         self.updatedMaterials = [ ]
-        
+
         self.renderMeshes = [ ]
         self.rayCollisionMeshes = [ ]
         self.collisionMeshes = [ ]
-        
+
         self.directionalLights = [ ] # list of Lights
         self.positionalLights = [ ]
         self.spotLights = [ ]
-        
+
         self.buttonInputs = { }
         self.axisInputs = { }
-        
+
         self.rayCollisionRequests = [ ]
 
     def onLoad(self):
@@ -52,11 +52,11 @@ class World:
         references, it is removed from the world.
         """
         material.removeReference()
-        
+
         if material.hasNoReferences():
             self.removeMaterial(material)
             print("Removing unused material", material.getName())
-            
+
     def removeMaterial(self, material):
         """
         Remove a material from the world.
@@ -83,7 +83,7 @@ class World:
             self.removeMaterial(material)
             print("Removing unused material", material.getName())
 
-    
+
     def getAddedMaterials(self):
         """
         Get the materials that have been added since the last check.
@@ -119,9 +119,9 @@ class World:
                 return matRef
 
         return None
-        
+
     # ray collision
-    
+
     def getFaceAtRay(self, callback, start, direction,
                      nearClip=None, farClip=None):
         """
@@ -136,7 +136,7 @@ class World:
         self.rayCollisionRequests.append(
             RayCollisionRequest(RayCollisionRequest.GET_FACE, callback,
                                 start, direction, nearClip, farClip) )
-    
+
     def getDepthAtRay(self, callback, start, direction,
                      nearClip=None, farClip=None):
         """
@@ -146,7 +146,7 @@ class World:
         self.rayCollisionRequests.append(
             RayCollisionRequest(RayCollisionRequest.GET_DEPTH, callback,
                                 start, direction, nearClip, farClip) )
-    
+
     def getFaceDepthAtRay(self, callback, start, direction,
                      nearClip=None, farClip=None):
         """
@@ -157,15 +157,15 @@ class World:
         self.rayCollisionRequests.append(
             RayCollisionRequest(RayCollisionRequest.GET_FACE_DEPTH, callback,
                                 start, direction, nearClip, farClip) )
-    
+
     # ray collision requests to be accessed by the game runner AppInterface
-    
+
     def nextRayCollisionRequest(self):
         """
         Get the next pending ray collision request and remove it from the list.
         """
         return self.rayCollisionRequests.pop(0)
-        
+
     def hasRayCollisionRequest(self):
         """
         Internal method: check if there are any pending ray collision requests.
@@ -174,7 +174,7 @@ class World:
 
 
 class Resource:
-    
+
     def __init__(self):
         self.references = 0
 
@@ -189,14 +189,14 @@ class Resource:
 
     def hasNoReferences(self):
         return self.references == 0
-        
+
 
 class RayCollisionRequest:
-    
+
     GET_FACE = "face"
     GET_DEPTH = "depth"
     GET_FACE_DEPTH = "face-depth"
-    
+
     def __init__(self, mode, callback, start, direction, nearClip, farClip):
         self.mode = mode
         self.callback = callback
@@ -217,19 +217,19 @@ def buildWorld(editorState):
     threelib.script.runScript("from threelib.sim.tools.firstPerson import *")
     threelib.script.runScript(
         "from threelib.sim.tools.firstPersonDebug import *")
-    
+
     threelib.script.setVariableValue("world", editorState.world)
-    
+
     world = editorState.world
     world.simulator = Simulator()
-    
+
     editorState.worldObject.addToWorld(world)
-    
+
     objectEntities = { }
-    
+
     for o in editorState.objects:
         objectEntities[o] = o.addToWorld(world)
-    
+
     # add children
     for editorObject, entity in objectEntities.items():
         if entity != None:
@@ -243,7 +243,7 @@ def buildWorld(editorState):
                           editorObject, "- No corresponding entity")
                 else:
                     entity.addChild(childEntity)
-        
+
     if world.camera == None:
         world.camera = Entity()
         world.simulator.addObject(world.camera)

@@ -24,7 +24,7 @@ mouseMovementLock = threading.Lock()
 
 
 class GLAppInstance(AppInstance):
-    
+
     def __init__(self, appInterface, flags):
         # Global projection settings
         # Call resetProjection() if any of these are changed
@@ -55,15 +55,15 @@ class GLAppInstance(AppInstance):
         self.lastFpsTime = time.time()
         self.fpsCount = 0
         self.fps = 0
-        
+
         self.appInterface = appInterface
         appInterface.setAppInstance(self)\
-        
+
         # OpenGL Init:
-        
+
         # pass arguments to init
         glutInit(sys.argv)
-        
+
         # Specify type of display mode:
         #  RGBA color (alpha supported)
         #  Double buffer
@@ -72,14 +72,14 @@ class GLAppInstance(AppInstance):
 
         glutInitWindowSize(self.width, self.height)
         glutInitWindowPosition(0, 0)
-        
+
         glutCreateWindow(b'three') # must be byte string
-        
+
         print("Using OpenGL version:", glGetString(GL_VERSION).decode())
-        
+
         # uncomment this to make the window fullscreen
         #glutFullScreen()
-        
+
         # Register event functions
         glutDisplayFunc(self.drawGL)
         if not MANUAL_FRAMERATE_TIMING:
@@ -92,15 +92,15 @@ class GLAppInstance(AppInstance):
         glutPassiveMotionFunc(self.mouseMovement)
         # called while mouse buttons are pressed
         glutMotionFunc(self.mouseMovement)
-        
+
         glutIgnoreKeyRepeat(True)
-        
+
         # initialize the window
         self.initGL(self.width, self.height)
-        
+
         # start main loop and event processing
         glutMainLoop()
-    
+
 
     def getFps(self):
         return self.fps
@@ -116,10 +116,10 @@ class GLAppInstance(AppInstance):
 
     def getFOV(self):
         return self.fov
-        
+
     def getNearClip(self):
         return self.nearClip
-        
+
     def getFarClip(self):
         return self.farClip
 
@@ -155,7 +155,7 @@ class GLAppInstance(AppInstance):
         self.mouseLocked = False
         glutSetCursor(GLUT_CURSOR_INHERIT)
 
-    
+
     def initGL(self, width, height):
         glClearColor(0.0, 0.0, 0.0, 0.0)
         glClearDepth(1.0) # enables clearing of depth buffer
@@ -165,7 +165,7 @@ class GLAppInstance(AppInstance):
 
         glEnable(GL_CULL_FACE)
         glCullFace(GL_BACK)
-    
+
         self.width = width
         self.height = height
         self.resetProjection()
@@ -180,12 +180,12 @@ class GLAppInstance(AppInstance):
         # done drawing loading screen
 
         self.appInterface.init()
-    
+
     # Called when window is resized
     def resizeGL(self, width, height):
-        if height == 0: # prevent divide by zero error 
+        if height == 0: # prevent divide by zero error
             height = 1
-    
+
         self.width = width
         self.height = height
         # reset the current viewport and perspective transformation
@@ -200,11 +200,11 @@ class GLAppInstance(AppInstance):
         glLoadIdentity()
         gluPerspective(self.fov, self.aspect, self.nearClip, self.farClip)
         glMatrixMode(GL_MODELVIEW)
-        
+
     # Draw loop
     def drawGL(self):
         self.fpsCount += 1
-        
+
         seconds = time.time()
         if seconds - self.lastFpsTime > 1:
             self.lastFpsTime = seconds
@@ -214,13 +214,13 @@ class GLAppInstance(AppInstance):
         # clear screen and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity() # reset the view
-        
+
         self.appInterface.draw()
-        
+
         if glGetError() != GL_NO_ERROR:
             print("GL Error!")
-        
-        #  double buffered - swap the buffers to display what just got drawn. 
+
+        #  double buffered - swap the buffers to display what just got drawn.
         glutSwapBuffers()
 
         if MANUAL_FRAMERATE_TIMING:
@@ -231,7 +231,7 @@ class GLAppInstance(AppInstance):
         glutPostRedisplay()
 
     # info passed as tuple: (button, eventType, mouseX, mouseY)
-    # button: left=0, middle=1, right=2, 
+    # button: left=0, middle=1, right=2,
     #   scroll-up=3, scroll-down=4, scroll-left=5, scroll-right=6
     # eventType: mousePressed=0, mouseReleased=1
     def mouseEvent(self, *args):
@@ -245,7 +245,7 @@ class GLAppInstance(AppInstance):
 
     def mouseMovement(self, mouseX, mouseY):
         # ignore mouse movements created by locking
-        if (abs(mouseX - self.pmouseX) > self.width / 2 
+        if (abs(mouseX - self.pmouseX) > self.width / 2
             or abs(mouseY - self.pmouseY) > self.height / 2):
             self.pmouseX = mouseX
             self.pmouseY = mouseY
@@ -293,7 +293,7 @@ class GLAppInstance(AppInstance):
                 self.framesSinceMouseLockMove = 0
         self.pmouseX = mouseX
         self.pmouseY = mouseY
-        
+
     def keyPressedEvent(self, key, mouseX, mouseY):
         if key in self.keysPressed:
             # ignore key repeat
@@ -301,7 +301,7 @@ class GLAppInstance(AppInstance):
         else:
             self.keysPressed.append(key)
             self.appInterface.keyPressed(key)
-        
+
     def keyReleasedEvent(self, key, mouseX, mouseY):
         if key in self.keysPressed:
             self.keysPressed.remove(key)
@@ -310,7 +310,7 @@ class GLAppInstance(AppInstance):
     def drawText(self, text, font, x, y):
         depthEnabled = glIsEnabled(GL_DEPTH_TEST)
         glDisable(GL_DEPTH_TEST)
-        
+
         glMatrixMode(GL_PROJECTION)
         glPushMatrix()
         glLoadIdentity()
@@ -319,15 +319,15 @@ class GLAppInstance(AppInstance):
         glRasterPos(x,y)
         for c in text :
             glutBitmapCharacter(font, ctypes.c_int(ord(c)))
-        
+
         if depthEnabled:
             glEnable(GL_DEPTH_TEST)
 
         glPopMatrix()
         glMatrixMode(GL_MODELVIEW)
-        
+
     # gl-specific and three-specific functions:
-    
+
     def updateMaterials(self, world):
         """
         Should be called every loop
@@ -337,32 +337,32 @@ class GLAppInstance(AppInstance):
             texture = m.loadAlbedoTexture()
             texName = glGenTextures(1)
             m.setNumber(texName)
-            
+
             # even if the texture was not loaded correctly, it might be
             # reloaded correctly in the future, so everything has to be set up
             glBindTexture(GL_TEXTURE_2D, texName)
-            
+
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                             GL_NEAREST)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                             GL_NEAREST)
-            
+
             self.sendTexture(texture)
 
         for m in world.getUpdatedMaterials():
             m.setLoaded(True)
             texture = m.loadAlbedoTexture()
             texName = m.getNumber()
-            
+
             glBindTexture(GL_TEXTURE_2D, texName)
             self.sendTexture(texture)
-        
+
         for m in world.getRemovedMaterials():
             texName = m.getNumber()
             glDeleteTextures([texName])
-    
+
     def sendTexture(self, texture):
         if texture != None:
             mode = texture.getDataType()
@@ -375,9 +375,9 @@ class GLAppInstance(AppInstance):
             else:
                 print("Unrecognized texture mode!")
                 return
-            
-            glTexImage2D(GL_TEXTURE_2D, 0, glMode, texture.getXLen(), 
-                         texture.getYLen(), 0, glMode, GL_UNSIGNED_BYTE, 
+
+            glTexImage2D(GL_TEXTURE_2D, 0, glMode, texture.getXLen(),
+                         texture.getYLen(), 0, glMode, GL_UNSIGNED_BYTE,
                          texture.getData())
             print("Done sending")
 

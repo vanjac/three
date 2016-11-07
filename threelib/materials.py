@@ -23,7 +23,7 @@ class Texture:
         self.dataType = dataType
         self.xLen = xLen
         self.yLen = yLen
-    
+
     def getData(self):
         """
         An array of chars, of size xLen * yLen * numChannels.
@@ -54,7 +54,7 @@ class MaterialReference(Resource):
     """
     A material that can be painted onto a mesh face.
     """
-    
+
     def __init__(self, name):
         """
         Create a material with the specified name. The name is a path relative
@@ -72,7 +72,7 @@ class MaterialReference(Resource):
         materials directory, without a file extension.
         """
         return self.name
-    
+
     def getNumber(self):
         """
         Return the number stored with ``setNumber``.
@@ -86,7 +86,7 @@ class MaterialReference(Resource):
         texture object's "name."
         """
         self.number = number
-    
+
     def isLoaded(self):
         """
         Check if the material loaded flag was set by ``setLoaded``.
@@ -119,7 +119,7 @@ class MaterialReference(Resource):
         if materialPath == None:
             print("Material not found:", self.name)
             return None
-        
+
         print("Reading image at", materialPath)
         image = Image.open(materialPath)
         image.load()
@@ -127,7 +127,7 @@ class MaterialReference(Resource):
             image = image.convert('RGB')
         xLen = image.width
         yLen = image.height
-        
+
         # dimensions need to be a power of 2
         if not (isPowerOf2(xLen) and isPowerOf2(yLen)):
             print("Scaling from", str(xLen) + ", " + str(yLen), end=' ')
@@ -135,11 +135,11 @@ class MaterialReference(Resource):
             xLen = 2 ** math.ceil(math.log(xLen, 2))
             yLen = 2 ** math.ceil(math.log(yLen, 2))
             print("to", str(xLen) + ", " + str(yLen))
-            
+
             image = image.resize((xLen, yLen), Image.BICUBIC)
         else:
             print("Size is", str(xLen) + ", " + str(yLen))
-        
+
         texture = list(image.tobytes())
         self.hasTexture = True
         self.aspectRatio = float(xLen) / float(yLen)

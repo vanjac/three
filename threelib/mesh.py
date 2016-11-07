@@ -59,10 +59,10 @@ class MeshVertex:
         """
         if face in self.references:
             self.references.remove(face)
-            
+
     def clearReferences(self):
         """
-        Clear the list of faces that use this vertex. This should not be 
+        Clear the list of faces that use this vertex. This should not be
         called directly outside of internal mesh code!
         """
         self.references = [ ]
@@ -111,14 +111,14 @@ class MeshFace:
         be added at the specified index in the list of vertices - otherwise
         it will be added onto the end. If ``textureVertex`` is not specified,
         the texture vertices for each vertex will be recalculated.
-        
+
         This MeshFace is returned, for easy chaining of ``addVertex`` commands.
         """
         calculate = False
         if textureVertex == None:
             textureVertex = Vector(0,0)
             calculate = True
-        
+
         v = MeshFaceVertex(vertex=meshVertex, textureVertex=textureVertex)
         if index == None:
             self.vertices.append(v)
@@ -128,7 +128,7 @@ class MeshFace:
 
         if calculate:
             self.calculateTextureVertices()
-        
+
         return self
 
     def findFaceVertex(self, meshVertex):
@@ -290,7 +290,7 @@ class MeshFace:
 
 
 class Mesh:
-    
+
     def __init__(self):
         self.vertices = [ ] # list of MeshVertex's
         self.faces = [ ] # list of MeshFace's
@@ -310,10 +310,10 @@ class Mesh:
         """
         self.vertices = [v.clone() for v in other.vertices]
         self.faces = [ ]
-        
+
         for face in other.faces:
             newFace = MeshFace()
-            
+
             for vertex in face.getVertices():
                 vertexIndex = other.vertices.index(vertex.vertex)
                 newFace.addVertex(self.vertices[vertexIndex],
@@ -446,7 +446,7 @@ class Mesh:
                 self.vertices.remove(v)
 
             i += 1
-    
+
     def isEmpty(self):
         """
         Return true if the mesh has 0 vertices.

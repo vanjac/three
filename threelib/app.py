@@ -6,7 +6,7 @@ class AppInstance:
     Represents an application window. Has utilities for getting information
     about the application state and inputs.
     """
-    
+
     def getFps(self):
         """
         Get the average number of frames per second over a short timespan. This
@@ -19,7 +19,7 @@ class AppInstance:
         Get the width of the window in pixels.
         """
         return None
-    
+
     def windowHeight(self):
         """
         Get the height of the window in pixels.
@@ -37,13 +37,13 @@ class AppInstance:
         Get the field of view of the perspective projection.
         """
         return None
-        
+
     def getNearClip(self):
         """
         Get the near clipping plane of the perspective projection.
         """
         return None
-        
+
     def getFarClip(self):
         """
         Get the far clipping plane of the perspective projection.
@@ -101,13 +101,13 @@ class AppInstance:
         locked.
         """
         pass
-        
+
 
 class AppInterface:
     """
     An interface for an app that can be used with any AppInstance.
     """
-    
+
     def setAppInstance(self, instance):
         """
         Set the AppInstance that is being used to show this AppInterface.
@@ -119,7 +119,7 @@ class AppInterface:
         Called by the AppInstance once the drawing surface is ready.
         """
         pass
-        
+
     def draw(self):
         """
         Called by the AppInstance every frame before the screen is refreshed.
@@ -131,13 +131,13 @@ class AppInterface:
         Called by the AppInstance when a key is pressed.
         """
         pass
-    
+
     def keyReleased(self, key):
         """
         Called by the AppInstance when a key is released.
         """
         pass
-        
+
     def mousePressed(self, button, mouseX, mouseY):
         """
         Called by the AppInstance when a mouse button is pressed. 0 is left,
@@ -145,13 +145,13 @@ class AppInterface:
         wheel moves up, down, left, or right.
         """
         pass
-        
+
     def mouseReleased(self, button, mouseX, mouseY):
         """
         Called by the AppInstance when a mouse button is released.
         """
         pass
-    
+
     def mouseMoved(self, mouseX, mouseY, pmouseX, pmouseY):
         """
         Called by the AppInstance when the mouse is moved. Mouse positions are

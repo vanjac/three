@@ -18,14 +18,14 @@ class EditorState:
     def __init__(self):
         self.MAJOR_VERSION = EditorState.CURRENT_MAJOR_VERSION
         self.MINOR_VERSION = EditorState.CURRENT_MINOR_VERSION
-        
+
         self.world = World()
 
         self.cameraPosition = Vector(-32, 0, 0)
         self.cameraRotation = Rotate(0, 0, 0)
         self.objects = [ ]
         self.worldObject = WorldObject()
-        
+
         self.selectMode = EditorState.SELECT_OBJECTS
         self.selectedObjects = [ ]
         self.selectedFaces = [ ]
@@ -65,12 +65,12 @@ class EditorState:
         for o in self.objects:
             o.setSelected(True)
         self.selectedObjects = list(self.objects)
-        
+
     def deselectAll(self):
         for o in self.selectedObjects:
             o.setSelected(False)
         self.selectedObjects = [ ]
-    
+
     def getGridSize(self, gridType):
         if gridType == Adjustor.TRANSLATE:
             return self.translateGridSize
@@ -91,9 +91,9 @@ class EditorState:
     def setCurrentMaterial(self, materialReference):
         if self.currentMaterial != None:
             self.world.removeMaterialReference(self.currentMaterial)
-        
+
         self.currentMaterial = materialReference
-        
+
         if self.currentMaterial != None:
             self.currentMaterial.addReference()
 
@@ -101,11 +101,11 @@ class EditorState:
 # used for adjusting an objects position, rotation, etc using the mouse
 # an abstract class
 class Adjustor:
-    
+
     TRANSLATE = 0
     ROTATE = 1
     SCALE = 2
-    
+
     # should return a tuple of 3 Vectors -- the current values of the axes
     # these are absolute values
     def getAxes(self):

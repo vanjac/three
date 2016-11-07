@@ -72,7 +72,7 @@ assert math.degrees(b.angleBetween(a)) == 90
 # test 2d directions / rotations
 
 a = Vector(3**.5, 1)
-assert round(math.degrees(a.direction2())) == 30.0 
+assert round(math.degrees(a.direction2())) == 30.0
 b = Vector(5, 7, 9)
 a = a + b
 assert round(math.degrees(b.direction2Towards(a))) == 30

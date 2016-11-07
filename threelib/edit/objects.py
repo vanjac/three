@@ -13,24 +13,24 @@ from threelib.sim.rayCollision import RayCollisionMesh
 from threelib.sim.playerPhysics import CollisionMesh
 
 import threelib.script
-      
-        
+
+
 class SolidMeshObject(MeshObject):
 
     def __init__(self, scale=1):
         super().__init__(scale)
-        
+
         # properties:
         self.constructor = ""
         self.script = "\n\n"
-        
+
         self.generateVisibleMesh = True
         self.visible = True
-        
+
         self.generateRayCollision = True
         self.rayCollisionEnabled = True
         self.useAction = ""
-        
+
         self.generateCollision = True
         self.collisionEnabled = True
         self.isSolid = True
@@ -38,7 +38,7 @@ class SolidMeshObject(MeshObject):
         self.floorStartTouchAction = ""
         self.floorEndTouchAction = ""
         self.ceilingCollideAction = ""
-    
+
     def addToWorld(self, world):
         threelib.script.runScript(self.script)
         entity = threelib.script.setVariable(self.constructor,
@@ -46,28 +46,28 @@ class SolidMeshObject(MeshObject):
         if entity == None:
             entity = Entity()
             threelib.script.setVariableValue(self.getName(), entity)
-        
+
         world.simulator.addObject(entity)
-        
+
         if self.generateVisibleMesh:
             renderMesh = RenderMesh(self.getMesh())
             renderMesh.setVisible(self.visible)
-            
+
             world.simulator.addObject(renderMesh)
             world.renderMeshes.append(renderMesh)
             entity.addChild(renderMesh)
-        
+
         if self.generateRayCollision:
             rayCollisionMesh = RayCollisionMesh(self.getMesh())
             rayCollisionMesh.setEnabled(self.rayCollisionEnabled)
             def useAction():
                 threelib.script.runScript(self.useAction)
             rayCollisionMesh.setUseAction(useAction)
-            
+
             world.simulator.addObject(rayCollisionMesh)
             world.rayCollisionMeshes.append(rayCollisionMesh)
             entity.addChild(rayCollisionMesh)
-        
+
         if self.generateCollision:
             collisionMesh = CollisionMesh(self.getMesh())
             collisionMesh.setEnabled(self.collisionEnabled)
@@ -84,28 +84,28 @@ class SolidMeshObject(MeshObject):
             def ceilingCollideAction():
                 threelib.script.runScript(self.ceilingCollideAction)
             collisionMesh.setCeilingCollideAction(ceilingCollideAction)
-            
+
             world.simulator.addObject(collisionMesh)
             world.collisionMeshes.append(collisionMesh)
             entity.addChild(collisionMesh)
-        
-        
+
+
         entity.translate(self.getPosition())
         entity.rotate(self.getRotation())
-        
+
         return entity
-        
+
     def getProperties(self):
         props = super().getProperties()
         props.update({ "constructor" : self.constructor,
                        "script" : self.script,
                        "generateVisibleMesh" : str(self.generateVisibleMesh),
                        "visible" : str(self.visible),
-                       
+
                        "generateRayCollision" : str(self.generateRayCollision),
                        "rayCollisionEnabled" : str(self.rayCollisionEnabled),
                        "useAction" : self.useAction,
-                       
+
                        "generateCollision" : str(self.generateCollision),
                        "collisionEnabled" : str(self.collisionEnabled),
                        "isSolid" : str(self.isSolid),
@@ -115,7 +115,7 @@ class SolidMeshObject(MeshObject):
                        "ceilingCollideAction" : self.ceilingCollideAction
                      })
         return props
-        
+
     def setProperties(self, properties):
         super().setProperties(properties)
         for key, value in properties.items():
@@ -123,19 +123,19 @@ class SolidMeshObject(MeshObject):
                 self.constructor = value
             if key == "script":
                 self.script = value
-            
+
             if key == "generateVisibleMesh":
                 self.generateVisibleMesh = stringToBoolean(value)
             if key == "visible":
                 self.visible = stringToBoolean(value)
-            
+
             if key == "generateRayCollision":
                 self.generateRayCollision = stringToBoolean(value)
             if key == "rayCollisionEnabled":
                 self.rayCollisionEnabled = stringToBoolean(value)
             if key == "useAction":
                 self.useAction = value
-            
+
             if key == "generateCollision":
                 self.generateCollision = stringToBoolean(value)
             if key == "collisionEnabled":
@@ -150,7 +150,7 @@ class SolidMeshObject(MeshObject):
                 self.floorEndTouchAction = value
             if key == "ceilingCollideAction":
                 self.ceilingCollideAction = value
-                
+
     def clone(self):
         clone = SolidMeshObject()
         self.addToClone(clone)
@@ -158,17 +158,17 @@ class SolidMeshObject(MeshObject):
 
     def addToClone(self, clone):
         super().addToClone(clone)
-        
+
         clone.constructor = self.constructor
         clone.script = self.script
-        
+
         clone.generateVisibleMesh = self.generateVisibleMesh
         clone.visible = self.visible
-        
+
         clone.generateRayCollision = self.generateRayCollision
         clone.rayCollisionEnabled = self.rayCollisionEnabled
         clone.useAction = self.useAction
-        
+
         clone.generateCollision = self.generateCollision
         clone.collisionEnabled = self.collisionEnabled
         clone.isSolid = self.isSolid
@@ -182,11 +182,11 @@ class ScriptPointObject(PointObject):
 
     def __init__(self):
         super().__init__()
-        
+
         # properties
         self.constructor = ""
         self.script = "\n\n"
-    
+
     def addToWorld(self, world):
         threelib.script.runScript(self.script)
         entity = threelib.script.setVariable(self.constructor,
@@ -194,15 +194,15 @@ class ScriptPointObject(PointObject):
         if entity == None:
             entity = Entity()
             threelib.script.setVariableValue(self.getName(), entity)
-        
+
         entity.translate(self.getPosition())
         entity.rotate(self.getRotation())
-        
+
         world.simulator.addObject(entity)
-        
+
         if self.getName() == "cam":
             world.camera = entity
-        
+
         return entity
 
     def getProperties(self):
@@ -211,7 +211,7 @@ class ScriptPointObject(PointObject):
                        "script" : self.script
                       })
         return props
-        
+
     def setProperties(self, properties):
         super().setProperties(properties)
         for key, value in properties.items():
@@ -219,7 +219,7 @@ class ScriptPointObject(PointObject):
                 self.constructor = value
             if key == "script":
                 self.script = value
-    
+
     def clone(self):
         clone = ScriptPointObject()
         self.addToClone(clone)
@@ -227,7 +227,7 @@ class ScriptPointObject(PointObject):
 
     def addToClone(self, clone):
         super().addToClone(clone)
-        
+
         clone.constructor = self.constructor
         clone.script = self.script
 
@@ -236,16 +236,16 @@ class DirectionalLightObject(ScriptPointObject):
 
     def __init__(self):
         super().__init__()
-        
+
         # properties
         self.constructor = "Light()"
         self.ambient = (0.0, 0.0, 0.0)
         self.diffuse = (1.0, 1.0, 1.0)
         self.specular = (1.0, 1.0, 1.0)
-    
+
     def getType(self):
         return "Directional Light"
-    
+
     def addToWorld(self, world):
         light = super().addToWorld(world)
         light.setAmbient(self.ambient)
@@ -261,7 +261,7 @@ class DirectionalLightObject(ScriptPointObject):
                        "specular" : str(self.specular)
                       })
         return props
-        
+
     def setProperties(self, properties):
         super().setProperties(properties)
         for key, value in properties.items():
@@ -271,7 +271,7 @@ class DirectionalLightObject(ScriptPointObject):
                 self.diffuse = threelib.edit.base.stringToTripleTuple(value)
             if key == "specular":
                 self.specular = threelib.edit.base.stringToTripleTuple(value)
-    
+
     def clone(self):
         clone = DirectionalLightObject()
         self.addToClone(clone)
@@ -279,7 +279,7 @@ class DirectionalLightObject(ScriptPointObject):
 
     def addToClone(self, clone):
         super().addToClone(clone)
-        
+
         clone.ambient = self.ambient
         clone.diffuse = self.diffuse
         clone.specular = self.specular
@@ -289,16 +289,16 @@ class PositionalLightObject(DirectionalLightObject):
 
     def __init__(self):
         super().__init__()
-        
+
         # properties
         self.constructor = "PositionalLight()"
         self.attenuationConstant = 0.0
         self.attenuationLinear = 0.03
         self.attenuationQuadratic = 0.0
-    
+
     def getType(self):
         return "Positional Light"
-    
+
     def addToWorld(self, world):
         light = ScriptPointObject.addToWorld(self, world)
         light.setAmbient(self.ambient)
@@ -317,7 +317,7 @@ class PositionalLightObject(DirectionalLightObject):
                        "attenuationQuadratic" : str(self.attenuationQuadratic)
                       })
         return props
-        
+
     def setProperties(self, properties):
         super().setProperties(properties)
         for key, value in properties.items():
@@ -327,7 +327,7 @@ class PositionalLightObject(DirectionalLightObject):
                 self.attenuationLinear = float(value)
             if key == "attenuationQuadratic":
                 self.attenuationQuadratic = float(value)
-    
+
     def clone(self):
         clone = PositionalLightObject()
         self.addToClone(clone)
@@ -335,7 +335,7 @@ class PositionalLightObject(DirectionalLightObject):
 
     def addToClone(self, clone):
         super().addToClone(clone)
-        
+
         clone.attenuationConstant = self.attenuationConstant
         clone.attenuationLinear = self.attenuationLinear
         clone.attenuationQuadratic = self.attenuationQuadratic
@@ -345,15 +345,15 @@ class SpotLightObject(PositionalLightObject):
 
     def __init__(self):
         super().__init__()
-        
+
         # properties
         self.constructor = "SpotLight()"
         self.exponent = 0.0
         self.cutoff = 45.0
-        
+
     def getType(self):
         return "Spot Light"
-    
+
     def addToWorld(self, world):
         light = ScriptPointObject.addToWorld(self, world)
         light.setAmbient(self.ambient)
@@ -373,7 +373,7 @@ class SpotLightObject(PositionalLightObject):
                        "cutoff" : str(self.cutoff),
                       })
         return props
-        
+
     def setProperties(self, properties):
         super().setProperties(properties)
         for key, value in properties.items():
@@ -381,7 +381,7 @@ class SpotLightObject(PositionalLightObject):
                 self.exponent = float(value)
             if key == "cutoff":
                 self.cutoff = float(value)
-    
+
     def clone(self):
         clone = SpotLightObject()
         self.addToClone(clone)
@@ -389,7 +389,7 @@ class SpotLightObject(PositionalLightObject):
 
     def addToClone(self, clone):
         super().addToClone(clone)
-        
+
         clone.exponent = self.exponent
         clone.cutoff = self.cutoff
 
