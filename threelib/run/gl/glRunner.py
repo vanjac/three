@@ -31,7 +31,6 @@ class GLRunner(GameInterface):
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
         glMaterialfv(GL_FRONT, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
         glMaterialfv(GL_FRONT, GL_SHININESS, [50.0])
-        glEnable(GL_LIGHTING)
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.0, 0.0, 0.0, 0.0])
 
         lightIndex = 0
@@ -45,6 +44,8 @@ class GLRunner(GameInterface):
             light.setNumber(lightIndex)
             lightIndex += 1
         print(str(lightIndex) + " lights")
+        if lightIndex != 0:
+            glEnable(GL_LIGHTING)
 
         self.instance.updateMaterials(self.world)
 
