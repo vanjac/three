@@ -12,9 +12,9 @@ class FirstPersonPlayer(Entity):
 
     def __init__(self, world, xLookAxis, yLookAxis, xWalkAxis, yWalkAxis,
                  jumpButton,
-                 cameraHeight=17.0, playerHeight=18.0, playerWidth=12.0,
-                 walkSpeed = 50.0, fallMoveSpeed=30.0, maxWalkAngle=45.0,
-                 jumpVelocity=40.0):
+                 cameraHeight=17.0, playerHeight=18.0, playerWidth=8.0,
+                 walkSpeed = 14.0, fallMoveSpeed=10.0, maxWalkAngle=45.0,
+                 jumpVelocity=30.0):
         super().__init__()
         self.world = world
         self.xLookAxis = xLookAxis
