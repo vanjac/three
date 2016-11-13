@@ -949,12 +949,14 @@ class EditorActions:
                 if foundEdge is None:
                     print("WARNING: Cannot complete face!",
                           len(newFace.getVertices()), "vertices so far.")
+                    print("Vertices: ", str(newFace.getVertices()))
                     break
                 else:
                     newFaceEdges.remove(foundEdge)
 
             if len(newFace.getVertices()) < 3:
                 print("WARNING: Invalid face!")
+                print("Vertices: ", str(newFace.getVertices()))
                 mesh.removeFace(newFace)
             else:
                 print("Completed face with", len(newFace.getVertices()),
