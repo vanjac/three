@@ -363,6 +363,7 @@ class GLEditor(EditorInterface):
 
     # display list
     def drawAxes(self):
+        glLineWidth(4)
         glBegin(GL_LINES)
         # x axis
         glColor(1.0, 0.0, 0.0)
@@ -377,6 +378,7 @@ class GLEditor(EditorInterface):
         glVertex(0.0, 0.0, 0.0)
         glVertex(0.0, 1.0, 0.0)
         glEnd()
+        glLineWidth(1)
 
     # display list
     def drawMiniAxes1(self):
