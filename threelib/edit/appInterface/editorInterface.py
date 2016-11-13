@@ -544,9 +544,10 @@ class EditorInterface(EditorActions, AppInterface):
                         text += "Vertex select | "
                     elif num == 1:
                         text += "1 vertex   | "
-                        text += "Pos: " + \
-                                str(self.state.selectedVertices[0].vertex \
-                                .getPosition()) + " | "
+                        selectedVertex = self.state.selectedVertices[0]
+                        position = selectedVertex.vertex.getPosition() + \
+                                   selectedVertex.editorObject.getPosition()
+                        text += "Pos: " + str(position) + " | "
                     else:
                         text += str(num) + " vertices | "
 
