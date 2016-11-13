@@ -732,20 +732,27 @@ class EditorActions:
     def clipSelected(self):
         print("Clip")
         planePoint = self.arrowStart
-        # arrow points in direction of half to remove
         planeNormal = (planePoint - self.arrowEnd).normalize()
 
         objectsToRemove = [ ]
         for o in self.state.selectedObjects:
             if o.getMesh() is not None:
+                oClone = o.clone()
+                self.state.objects.append(oClone)
+                
                 # translate everything relative to mesh
                 relativePoint = planePoint - o.getPosition()
+                
                 self.clipMesh(o.getMesh(), relativePoint, planeNormal)
+                self.clipMesh(oClone.getMesh(), relativePoint, -planeNormal)
+                
                 if o.getMesh().isEmpty():
                     objectsToRemove.append(o)
+                if oClone.getMesh().isEmpty():
+                    objectsToRemove.append(oClone)
         for o in objectsToRemove:
             print("Removing object")
-            self.state.selectedObjects.remove(o)
+            self.state.deselect(o)
             self.state.objects.remove(o)
 
     # planePoint must be relative to mesh
