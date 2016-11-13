@@ -210,9 +210,31 @@ class GLEditor(EditorInterface):
             glDisable(GL_POLYGON_STIPPLE)
             glDisable(GL_POLYGON_OFFSET_FILL)
 
-        # status bar
-        glColor(1,1,1)
         glPopMatrix()
+
+        # status bar
+
+        # background
+        glDisable(GL_DEPTH_TEST)
+        glDisable(GL_CULL_FACE)
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        gluOrtho2D(0.0, self.editorMain.windowWidth(), 0.0, self.editorMain.windowHeight())
+
+        glColor(0,0,0)
+        glBegin(GL_QUADS)
+        glVertex(0, 0)
+        glVertex(self.editorMain.windowWidth(), 0)
+        glVertex(self.editorMain.windowWidth(), 16)
+        glVertex(0, 16)
+        glEnd()
+
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
+
+        # text
+        glColor(1,1,1)
         self.editorMain.drawText(self.getStatusBar(),
                                  GLUT_BITMAP_8_BY_13, 4, 4)
         self.editorMain.drawText(str(self.editorMain.getFps()) + " FPS",
@@ -224,6 +246,9 @@ class GLEditor(EditorInterface):
         glRotate(math.degrees(rotate.y), -1, 0, 0)
         glRotate(math.degrees(rotate.z), 0, 1, 0)
         glCallList(self.drawMiniAxesList2)
+
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_CULL_FACE)
 
 
     def cursorSelect(self):
