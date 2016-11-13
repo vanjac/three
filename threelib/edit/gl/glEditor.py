@@ -98,6 +98,14 @@ class GLEditor(EditorInterface):
         glCallList(self.drawAxesList)
         glPopMatrix()
 
+        # draw create position
+        createPos = self.state.createPosition
+        glColor(1.0, 0.0, 1.0)
+        glPointSize(14)
+        glBegin(GL_POINTS)
+        glVertex(createPos.y, createPos.z, createPos.x)
+        glEnd()
+
         # draw arrow
         if self.arrowShown:
             startPos = self.arrowStart
@@ -209,6 +217,7 @@ class GLEditor(EditorInterface):
                 glPopMatrix()
             glDisable(GL_POLYGON_STIPPLE)
             glDisable(GL_POLYGON_OFFSET_FILL)
+
 
         glPopMatrix()
 

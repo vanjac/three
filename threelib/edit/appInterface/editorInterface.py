@@ -553,6 +553,7 @@ class EditorInterface(EditorActions, AppInterface):
 
                 text += "Paint: " + self.getMaterialName(
                     self.state.currentMaterial) + " | "
+                text += "Create: " + str(self.state.createPosition) + " | "
 
         if self.currentCommand == "":
             if self.movingCamera:
