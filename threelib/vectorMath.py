@@ -33,8 +33,9 @@ def tripleTupleToString(t):
         numToStr(t[2])
 
 def numToStr(num):
-    if num % 1.0 == 0.0:
-        return str(int(num))
+    distToInt = abs(num % 1.0)
+    if distToInt < 0.0009 or distToInt > .9991:
+        return str(int(round(num)))
     else:
         return "{0:.3f}".format(num)
 
