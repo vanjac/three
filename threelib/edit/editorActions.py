@@ -303,6 +303,7 @@ class EditorActions:
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
             if len(self.state.selectedObjects) == 0:
                 print("Nothing selected")
+                return
             elif len(self.state.selectedObjects) == 1:
                 self.setupAdjustMode(TranslateAdjustor(
                     self.state.selectedObjects[0]))
@@ -314,6 +315,7 @@ class EditorActions:
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
             if len(self.state.selectedVertices) == 0:
                 print("Nothing selected")
+                return
             elif len(self.state.selectedVertices) == 1:
                 selected = self.state.selectedVertices[0]
                 self.setupAdjustMode(VertexTranslateAdjustor(
@@ -329,6 +331,7 @@ class EditorActions:
         elif self.state.selectMode == EditorState.SELECT_FACES:
             if len(self.state.selectedFaces) == 0:
                 print("Nothing selected")
+                return
             else:
                 adjustors = [ ]
                 for f in self.state.selectedFaces:
@@ -338,11 +341,17 @@ class EditorActions:
                             f.editorObject))
                 self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
 
+        def setCreatePosition():
+            self.state.createPosition = \
+                Vector.fromTuple(self.adjustor.getAxes())
+        self.adjustCompleteAction = setCreatePosition
+
 
     def adjustOriginOfSelected(self):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
             if len(self.state.selectedObjects) == 0:
                 print("Nothing selected")
+                return
             elif len(self.state.selectedObjects) == 1:
                 self.setupAdjustMode(OriginAdjustor(
                     self.state.selectedObjects[0]))
@@ -351,6 +360,11 @@ class EditorActions:
                 for o in self.state.selectedObjects:
                     adjustors.append(OriginAdjustor(o))
                 self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
+
+            def setCreatePosition():
+                self.state.createPosition = \
+                    Vector.fromTuple(self.adjustor.getAxes())
+            self.adjustCompleteAction = setCreatePosition
         else:
             print("Only objects have origins")
 
