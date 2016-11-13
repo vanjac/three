@@ -1,6 +1,7 @@
 __author__ = "jacobvanthoog"
 
 import math
+import numbers
 
 from threelib.edit.editorActions import EditorActions
 from threelib.edit.state import *
@@ -8,6 +9,8 @@ from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 import threelib.vectorMath as vectorMath
 from threelib.app import AppInterface
+
+MATH_SYMBOLS = ['.', '+', '-', '*', '/', '(', ')']
 
 class EditorInterface(EditorActions, AppInterface):
 
@@ -307,14 +310,19 @@ class EditorInterface(EditorActions, AppInterface):
             else:
                 print("Invalid command", c)
                 return True
-        if c[0].isdigit() or c[0] == '.' or c[0] == '-':
-            if c[-1].isdigit() or c[-1] == '.' or c[-1] == '-':
+        if c[0].isdigit() or c[0] in MATH_SYMBOLS:
+            if c[-1].isdigit() or c[-1] in MATH_SYMBOLS:
                 return False
             axisChar = c[-1].lower()
             try:
-                number = float(c[:-1])
-            except ValueError:
+                number = eval(c[:-1])
+                if not isinstance(number, numbers.Number):
+                    print("Invalid command", c)
+                    print(str(number), "is not a number")
+                    return True
+            except BaseException as e:
                 print("Invalid command", c)
+                print(e)
                 return True
             if axisChar == 'x':
                 self.setAdjustAxisValue(EditorActions.X, number)
