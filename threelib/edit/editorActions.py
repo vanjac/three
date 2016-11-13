@@ -1102,7 +1102,6 @@ class EditorActions:
             origin = self.adjustorOriginalValue
         value[axis] = number + origin[axis]
         self.adjustor.setAxes(tuple(value))
-        print(value)
 
     def completeAdjust(self):
         self.inAdjustMode = False
