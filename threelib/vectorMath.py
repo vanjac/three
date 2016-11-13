@@ -222,6 +222,8 @@ class Vector:
 
     def __truediv__(self, v):
         if isinstance(v, numbers.Number):
+            if isclose(v, 0):
+                raise ZeroDivisionError
             return Vector(self.x / v, self.y / v, self.z / v)
         else:
             return Vector(self.x / v.x, self.y / v.y, self.z / v.z)
@@ -242,7 +244,10 @@ class Vector:
         """
         Project this vector onto another.
         """
-        return self.dot(v / v.magnitude())
+        vMag = v.magnitude()
+        if isclose(vMag, 0):
+            return Vector(0, 0, 0)
+        return self.dot(v / vMag)
 
     def orthogonal(self, v):
         """
@@ -290,7 +295,7 @@ class Vector:
         magnitude.
         """
         currentMag = self.magnitude()
-        if currentMag == 0:
+        if isclose(currentMag, 0):
             return self
         return self * (newMag / currentMag)
 
@@ -383,6 +388,8 @@ class Vector:
         Convert the homogeneous coordinates of a 2d vector (in the form of a 3d
         vector) to a regular 2d vector.
         """
+        if isclose(self.z, 0):
+            raise ZeroDivisionError
         return Vector(self.x / self.z, self.y / self.z)
 
     def rotation(self):
@@ -568,6 +575,8 @@ class Rotate:
 
     def __truediv__(self, v):
         if isinstance(v, numbers.Number):
+            if isclose(v, 0):
+                raise ZeroDivisionError
             return Rotate(self.x / v, self.y / v, self.z / v)
         else:
             return Rotate(self.x / v.x, self.y / v.y, self.z / v.z)
