@@ -1117,6 +1117,15 @@ class EditorActions:
         value[axis] = number + origin[axis]
         self.adjustor.setAxes(tuple(value))
 
+    def adjustToCreatePosition(self):
+        if self.adjustor.gridType() == Adjustor.TRANSLATE:
+            print("To create position")
+            self.adjustor.setAxes(self.state.createPosition.getTuple())
+        elif self.adjustor.gridType() == Adjustor.ROTATE:
+            print("Can't rotate to create position")
+        elif self.adjustor.gridType() == Adjustor.SCALE:
+            print("Can't scale to create position")
+
     def completeAdjust(self):
         self.inAdjustMode = False
         self.editorMain.unlockMouse()
