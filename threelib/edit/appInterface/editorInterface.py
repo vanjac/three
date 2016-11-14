@@ -301,6 +301,7 @@ class EditorInterface(EditorActions, AppInterface):
             return True
         if c[0] == 'l':
             self.toggleAxisLock()
+            return True
         if c[0] == 'c':
             self.adjustToCreatePosition()
             return True
