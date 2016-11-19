@@ -849,7 +849,7 @@ class EditorActions:
                 # partly inside plane and partly outside; clip the face
 
                 # rotate/translate both the face and clip plane so the face is
-                # at x = 0
+                # coplanar with the x = 0 plane
                 # vertex 0 will be the origin
                 origin = face.getVertices()[0].vertex.getPosition()
                 faceNormalRotate = face.getNormal().rotation()
@@ -862,6 +862,8 @@ class EditorActions:
                                             rotatedPlane[3])
 
                 # remove vertices outside the clip plane
+                # any edges between inside and outside vertices will be added
+                # to edgesToClip
                 verticesToRemove = [ ]
                 vertexInsertationIndices = [ ]
                 edgesToClip = [ ]
@@ -882,6 +884,8 @@ class EditorActions:
                             vertexInsertationIndices.append(i)
                     i += 1
                 newVertices = [ ]
+                # create new vertices along any edges to clip,
+                # but don't give them a position yet.
                 # reverse array to prevent lower indices from pushing up higher
                 # indices
                 for i in reversed(vertexInsertationIndices):
@@ -913,6 +917,7 @@ class EditorActions:
                     edgeLineConstants = Vector( v0.z - v1.z,
                                                 v1.y - v0.y,
                                                 v0.y*v1.z - v1.y*v0.z )
+                    # TODO: divide by zero errors here:
                     intersectionPoint = edgeLineConstants.cross(
                         planeLineConstants).homogeneousTo2d()
                     intersectionPoint = Vector(0,
@@ -921,6 +926,8 @@ class EditorActions:
                     # undo any rotations
                     intersectionPoint = intersectionPoint.inverseRotate(
                         faceNormalRotate) + origin
+                    # this is where the position of new vertices is set
+                    # TODO: this position is not always right
                     newVertices[i].setPosition(intersectionPoint)
                     i += 1
 
