@@ -178,6 +178,12 @@ class GLRunner(GameInterface):
 
         glPopMatrix()
 
+        # Frame rate text
+        self.instance.drawText(str(self.instance.getFps()) + " FPS",
+                               GLUT_BITMAP_9_BY_15,
+                               4, self.instance.windowHeight() - 19) # 4+15
+
+
     def updateLights(self):
         for light in self.world.directionalLights:
             glLight = self.getGLLightConstant(light.getNumber())
