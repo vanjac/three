@@ -779,17 +779,26 @@ class EditorActions:
 
         # if something goes wrong, use this backup to restore the original mesh
         # data
+        # TODO: this is never used!
         backupMesh = mesh.clone()
 
         INSIDE = 0
         ON_PLANE = 1 # counts as inside
         OUTSIDE = 2
 
-        newFaceEdges = [ ] # pairs of vectors
+        # pairs of vectors representing edges that have been created by clipping
+        # faces. these edges will new faces
+        newFaceEdges = [ ]
+
         facesToRemove = [ ]
 
         for face in mesh.getFaces():
-            vertexLocations = [ ] # INSIDE, OUTSIDE, or ON_PLANE
+            # mark each vertex of the face as inside, outside, or on the plane
+            # of the clip area...
+
+            # an array of INSIDE's, OUTSIDE's, or ON_PLANE's; one for each
+            # vertex
+            vertexLocations = [ ]
             hasInside = False
             hasOutside = False
             hasOnPlane = False
@@ -810,9 +819,8 @@ class EditorActions:
                 else:
                     vertexLocations.append(OUTSIDE)
                     hasOutside = True
-            #print(vertexLocations)
 
-            if (not hasInside) and (not hasOutside):
+            if (not hasInside) and (not hasOutside): # all vertices are ON_PLANE
                 if planeNormal.isClose(face.getNormal()):
                     facesToRemove.append(face)
                 elif planeNormal.isClose(-face.getNormal()):
@@ -820,8 +828,9 @@ class EditorActions:
                 else:
                     print("WARNING: Face and plane are coplanar, but normals"
                           " do not match")
-                continue
-            if hasOnPlane:
+                continue # to next face
+
+            if hasOnPlane: # some vertices are ON_PLANE
                 # search for edges on the plane and add them to the list
                 for i in range(0, len(vertexLocations)):
                     # -1 is a valid index
@@ -830,11 +839,13 @@ class EditorActions:
                         edge = (face.getVertices()[i].vertex.getPosition(),
                                 face.getVertices()[i-1].vertex.getPosition())
                         self.addUniqueEdge(edge, newFaceEdges)
-            if not hasInside:
+                # don't continue; clip as normal
+
+            if not hasInside: # all vertices are OUTISDE or ON_PLANE
                 facesToRemove.append(face) # face is entirely outside plane
                 continue # to next face
 
-            if hasInside and hasOutside:
+            if hasInside and hasOutside: # some vertices INSIDE, some OUTSIDE
                 # partly inside plane and partly outside; clip the face
 
                 # rotate/translate both the face and clip plane so the face is
