@@ -791,17 +791,26 @@ class EditorActions:
 
         # if something goes wrong, use this backup to restore the original mesh
         # data
+        # TODO: this is never used!
         backupMesh = mesh.clone()
 
         INSIDE = 0
         ON_PLANE = 1 # counts as inside
         OUTSIDE = 2
 
-        newFaceEdges = [ ] # pairs of vectors
+        # pairs of vectors representing edges that have been created by clipping
+        # faces. these edges will new faces
+        newFaceEdges = [ ]
+
         facesToRemove = [ ]
 
         for face in mesh.getFaces():
-            vertexLocations = [ ] # INSIDE, OUTSIDE, or ON_PLANE
+            # mark each vertex of the face as inside, outside, or on the plane
+            # of the clip area...
+
+            # an array of INSIDE's, OUTSIDE's, or ON_PLANE's; one for each
+            # vertex
+            vertexLocations = [ ]
             hasInside = False
             hasOutside = False
             hasOnPlane = False
@@ -822,9 +831,8 @@ class EditorActions:
                 else:
                     vertexLocations.append(OUTSIDE)
                     hasOutside = True
-            #print(vertexLocations)
 
-            if (not hasInside) and (not hasOutside):
+            if (not hasInside) and (not hasOutside): # all vertices are ON_PLANE
                 if planeNormal.isClose(face.getNormal()):
                     facesToRemove.append(face)
                 elif planeNormal.isClose(-face.getNormal()):
@@ -832,8 +840,9 @@ class EditorActions:
                 else:
                     print("WARNING: Face and plane are coplanar, but normals"
                           " do not match")
-                continue
-            if hasOnPlane:
+                continue # to next face
+
+            if hasOnPlane: # some vertices are ON_PLANE
                 # search for edges on the plane and add them to the list
                 for i in range(0, len(vertexLocations)):
                     # -1 is a valid index
@@ -842,15 +851,17 @@ class EditorActions:
                         edge = (face.getVertices()[i].vertex.getPosition(),
                                 face.getVertices()[i-1].vertex.getPosition())
                         self.addUniqueEdge(edge, newFaceEdges)
-            if not hasInside:
+                # don't continue; clip as normal
+
+            if not hasInside: # all vertices are OUTISDE or ON_PLANE
                 facesToRemove.append(face) # face is entirely outside plane
                 continue # to next face
 
-            if hasInside and hasOutside:
+            if hasInside and hasOutside: # some vertices INSIDE, some OUTSIDE
                 # partly inside plane and partly outside; clip the face
 
                 # rotate/translate both the face and clip plane so the face is
-                # at x = 0
+                # coplanar with the x = 0 plane
                 # vertex 0 will be the origin
                 origin = face.getVertices()[0].vertex.getPosition()
                 faceNormalRotate = face.getNormal().rotation()
@@ -863,6 +874,8 @@ class EditorActions:
                                             rotatedPlane[3])
 
                 # remove vertices outside the clip plane
+                # any edges between inside and outside vertices will be added
+                # to edgesToClip
                 verticesToRemove = [ ]
                 vertexInsertationIndices = [ ]
                 edgesToClip = [ ]
@@ -883,6 +896,8 @@ class EditorActions:
                             vertexInsertationIndices.append(i)
                     i += 1
                 newVertices = [ ]
+                # create new vertices along any edges to clip,
+                # but don't give them a position yet.
                 # reverse array to prevent lower indices from pushing up higher
                 # indices
                 for i in reversed(vertexInsertationIndices):
@@ -914,6 +929,7 @@ class EditorActions:
                     edgeLineConstants = Vector( v0.z - v1.z,
                                                 v1.y - v0.y,
                                                 v0.y*v1.z - v1.y*v0.z )
+                    # TODO: divide by zero errors here:
                     intersectionPoint = edgeLineConstants.cross(
                         planeLineConstants).homogeneousTo2d()
                     intersectionPoint = Vector(0,
@@ -922,6 +938,8 @@ class EditorActions:
                     # undo any rotations
                     intersectionPoint = intersectionPoint.inverseRotate(
                         faceNormalRotate) + origin
+                    # this is where the position of new vertices is set
+                    # TODO: this position is not always right
                     newVertices[i].setPosition(intersectionPoint)
                     i += 1
 
@@ -1128,6 +1146,15 @@ class EditorActions:
             origin = self.adjustorOriginalValue
         value[axis] = number + origin[axis]
         self.adjustor.setAxes(tuple(value))
+
+    def adjustToCreatePosition(self):
+        if self.adjustor.gridType() == Adjustor.TRANSLATE:
+            print("To create position")
+            self.adjustor.setAxes(self.state.createPosition.getTuple())
+        elif self.adjustor.gridType() == Adjustor.ROTATE:
+            print("Can't rotate to create position")
+        elif self.adjustor.gridType() == Adjustor.SCALE:
+            print("Can't scale to create position")
 
     def completeAdjust(self):
         self.inAdjustMode = False
