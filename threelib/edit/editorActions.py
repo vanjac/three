@@ -9,6 +9,7 @@ import threelib.vectorMath as vectorMath
 from threelib.edit.objects import *
 from threelib.edit.adjust import *
 from threelib.materials import MaterialReference
+from threelib.edit.modelFile.load import loadModel
 
 from threelib import files
 
@@ -202,6 +203,17 @@ class EditorActions:
         print("Create spot light")
         light = SpotLightObject()
         self.createObject(light)
+
+    def importMesh(self, name):
+        print("Import mesh", name)
+        meshPath = files.getMesh(name)
+        mesh = loadModel(meshPath)
+        if mesh == None:
+            print("Could not load mesh", name)
+            return
+        solidMesh = SolidMeshObject()
+        solidMesh.setMesh(mesh)
+        self.createObject(solidMesh)
 
     def createObject(self, newObject):
         self.selectMode(EditorState.SELECT_OBJECTS)

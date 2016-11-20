@@ -132,6 +132,17 @@ class EditorInterface(EditorActions, AppInterface):
                     self.createSpotLight()
                     return True
 
+        if c[0] == 'i':
+            if c[-1] == '\r':
+                if len(c) < 4:
+                    print("Invalid command", c)
+                    return True
+                if c[1] == 'm':
+                    self.importMesh(c[2:-1])
+                    return True
+            else:
+                return False
+
         if c[0] == 'a':
             self.selectAll()
             return True

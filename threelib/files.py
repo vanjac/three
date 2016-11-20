@@ -138,6 +138,18 @@ def loadScript(path):
     with path.open() as f:
         return f.read()
 
+def getMeshDir():
+    """
+    Get the Path to the directory containing meshes.
+    """
+    return getGameDir() / "meshes"
+
+def getMesh(name):
+    """
+    Get the Path to the mesh with the specified name.
+    """
+    return getResourcePath(getMeshDir(), name)
+
 def saveMapState(path, state):
     """
     Save map state to a file. ``path`` is a Path to the map file. ``state`` is
