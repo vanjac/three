@@ -113,7 +113,7 @@ class EditorActions:
         inMultiLine = False
         multiLineKey = ""
         multiLineValue = ""
-        for line in text.split('\n'):
+        for line in text.splitlines():
             if not inMultiLine:
                 line = line.strip()
                 if line == '':
