@@ -207,6 +207,9 @@ class EditorActions:
     def importMesh(self, name):
         print("Import mesh", name)
         meshPath = files.getMesh(name)
+        if meshPath == None:
+            print("Could not find mesh", name)
+            return
         mesh = loadModel(meshPath)
         if mesh == None:
             print("Could not load mesh", name)
