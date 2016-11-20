@@ -802,7 +802,7 @@ class EditorActions:
         OUTSIDE = 2
 
         # pairs of vectors representing edges that have been created by clipping
-        # faces. these edges will new faces
+        # faces. these edges will be used to create new faces
         newFaceEdges = [ ]
 
         facesToRemove = [ ]
