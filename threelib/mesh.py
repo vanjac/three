@@ -329,8 +329,9 @@ class Mesh:
 
     def addVertex(self, vertex=None):
         """
-        Add a MeshVertex to the mesh. Clears all of the vertex's references - do
-        this before adding the vertex to a face
+        Add a MeshVertex to the mesh. If a vertex is not given, a new one is
+        created. This clears all of the vertex's references, so do this BEFORE
+        adding the vertex to a face. Returns the vertex.
         """
         if vertex is None:
             # can't be used as default value
