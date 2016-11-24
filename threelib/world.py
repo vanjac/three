@@ -250,6 +250,7 @@ def buildWorld(editorState):
         world.simulator.addObject(world.camera)
 
     # subdivide renderMesh faces
+    print("Subdividing faces...")
     for renderMesh in world.renderMeshes:
         mesh = renderMesh.getMesh().clone()
         renderMesh.setMesh(mesh)
@@ -261,7 +262,6 @@ def subdivideMeshFace(mesh, face):
     MAX_FACE_AREA = 144
     area = face.getArea()
     if area > MAX_FACE_AREA:
-        print("Subdivide face (area: " + str(area) + ")")
         if len(face.getVertices()) > 3:
             # split into triangles
             newFaces = [ ]
@@ -278,21 +278,60 @@ def subdivideMeshFace(mesh, face):
             for newFace in newFaces:
                 mesh.addFace(newFace)
 
-            print("Face split into", len(newFaces), "triangles")
             for newFace in newFaces:
                 subdivideMeshFace(mesh, newFace)
         else:
             # find the longest edge...
-            v1 = face.getVertices()[0].vertex.getPosition()
-            v2 = face.getVertices()[1].vertex.getPosition()
-            v3 = face.getVertices()[2].vertex.getPosition()
-            dist1 = v2.distanceTo(v3)
-            dist2 = v1.distanceTo(v3)
-            dist3 = v1.distanceTo(v2)
+            v1 = face.getVertices()[0]
+            v2 = face.getVertices()[1]
+            v3 = face.getVertices()[2]
+            dist1 = v2.vertex.getPosition().distanceTo(v3.vertex.getPosition())
+            dist2 = v1.vertex.getPosition().distanceTo(v3.vertex.getPosition())
+            dist3 = v1.vertex.getPosition().distanceTo(v2.vertex.getPosition())
+
+            # divide the face along the longest edge
+            newFaces = [ ]
             if dist1 >= dist2 and dist1 >= dist3:
-                midpoint = v2.lerp(v3, .5)
-            if dist2 >= dist1 and dist2 >= dist3:
-                midpoint = v1.lerp(v3, .5)
+                midpoint = v2.vertex.getPosition().lerp(
+                    v3.vertex.getPosition(), .5)
+                v4 = mesh.addVertex(MeshVertex(midpoint))
+                newFace = MeshFace().addVertex(v1.vertex, v1.textureVertex)\
+                                    .addVertex(v2.vertex, v2.textureVertex)\
+                                    .addVertex(v4)
+                newFaces.append(newFace)
+                newFace = MeshFace().addVertex(v1.vertex, v1.textureVertex)\
+                                    .addVertex(v4)\
+                                    .addVertex(v3.vertex, v3.textureVertex)
+                newFaces.append(newFace)
+            elif dist2 >= dist1 and dist2 >= dist3:
+                midpoint = v1.vertex.getPosition().lerp(
+                    v3.vertex.getPosition(), .5)
+                v4 = mesh.addVertex(MeshVertex(midpoint))
+                newFace = MeshFace().addVertex(v1.vertex, v1.textureVertex)\
+                                    .addVertex(v2.vertex, v2.textureVertex)\
+                                    .addVertex(v4)
+                newFaces.append(newFace)
+                newFace = MeshFace().addVertex(v4)\
+                                    .addVertex(v2.vertex, v2.textureVertex)\
+                                    .addVertex(v3.vertex, v3.textureVertex)
+                newFaces.append(newFace)
             else:
-                midpoint = v1.lerp(v2, .5)
+                midpoint = v1.vertex.getPosition().lerp(
+                    v2.vertex.getPosition(), .5)
+                v4 = mesh.addVertex(MeshVertex(midpoint))
+                newFace = MeshFace().addVertex(v1.vertex, v1.textureVertex)\
+                                    .addVertex(v4)\
+                                    .addVertex(v3.vertex, v3.textureVertex)
+                newFaces.append(newFace)
+                newFace = MeshFace().addVertex(v4)\
+                                    .addVertex(v2.vertex, v2.textureVertex)\
+                                    .addVertex(v3.vertex, v3.textureVertex)
+                newFaces.append(newFace)
+
+            mesh.removeFace(face)
+            for newFace in newFaces:
+                mesh.addFace(newFace)
+
+            for newFace in newFaces:
+                subdivideMeshFace(mesh, newFace)
 
