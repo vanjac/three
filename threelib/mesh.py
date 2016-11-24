@@ -1,5 +1,6 @@
 __author__ = "jacobvanthoog"
 
+import math
 from threelib.vectorMath import Vector
 from collections import namedtuple
 from threelib import vectorMath
@@ -279,6 +280,9 @@ class MeshFace:
         """
         Get the normal Vector of the face, based on the first 3 vertices.
         Return None if there aren't enough vertices to calculate a normal.
+        Each time the vertices of the face change, the normal only has to be
+        calculated once - after that it is stored and reused when this method
+        is called.
         """
         if not self.normalUpdated:
             if len(self.vertices) >= 3:
@@ -290,6 +294,25 @@ class MeshFace:
                 self.normal = None
             self.normalUpdated = True
         return self.normal
+
+    def getArea(self):
+        """
+        Calculate the area of the face.
+        """
+        if len(self.vertices) < 3:
+            return None
+        area = 0
+        v1 = self.vertices[0].vertex.getPosition()
+        for i in range(1, len(self.vertices) - 1):
+            v2 = self.vertices[i].vertex.getPosition()
+            v3 = self.vertices[i + 1].vertex.getPosition()
+            dist1 = v2.distanceTo(v3)
+            dist2 = v1.distanceTo(v3)
+            dist3 = v1.distanceTo(v2)
+            # Heron's formula!
+            s = (dist1 + dist2 + dist3) / 2
+            area += math.sqrt(s * (s-dist1) * (s-dist2) * (s-dist3))
+        return area
 
     def getPlane(self):
         """
