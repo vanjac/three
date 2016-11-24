@@ -146,6 +146,7 @@ class GLRunner(GameInterface):
 
         # Draw RenderMeshes
 
+        glColor(0.8, 0.8, 0.8)
         for renderMesh in self.world.renderMeshes:
             if not renderMesh.isVisible():
                 continue
@@ -153,7 +154,6 @@ class GLRunner(GameInterface):
             glPushMatrix()
             self.transformEntity(renderMesh)
 
-            glColor(0.8, 0.8, 0.8)
             for f in renderMesh.getMesh().getFaces():
                 texture = False
 
