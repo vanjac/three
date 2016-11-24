@@ -138,7 +138,7 @@ class GLRunner(GameInterface):
         glRotate(math.degrees(rotate.y), 1, 0, 0)
         glRotate(math.degrees(rotate.z) + 180.0, 0, 1, 0)
         glTranslate(translate.y, translate.z, translate.x)
-        
+
         if self.lightingEnabled:
             glEnable(GL_LIGHTING)
 
@@ -180,7 +180,7 @@ class GLRunner(GameInterface):
         glDisable(GL_TEXTURE_2D)
 
         glPopMatrix()
-        
+
         if self.lightingEnabled:
             glDisable(GL_LIGHTING)
 
