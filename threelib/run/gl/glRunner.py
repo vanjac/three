@@ -21,6 +21,7 @@ class GLRunner(GameInterface):
     def __init__(self, state=None):
         super().__init__(state)
         print("OpenGL 1 Game Runner")
+        self.lightingEnabled = False
 
     def init(self):
         super().init()
@@ -44,8 +45,7 @@ class GLRunner(GameInterface):
             light.setNumber(lightIndex)
             lightIndex += 1
         print(str(lightIndex) + " lights")
-        if lightIndex != 0:
-            glEnable(GL_LIGHTING)
+        self.lightingEnabled = lightIndex != 0
 
         self.instance.updateMaterials(self.world)
 
@@ -138,6 +138,9 @@ class GLRunner(GameInterface):
         glRotate(math.degrees(rotate.y), 1, 0, 0)
         glRotate(math.degrees(rotate.z) + 180.0, 0, 1, 0)
         glTranslate(translate.y, translate.z, translate.x)
+        
+        if self.lightingEnabled:
+            glEnable(GL_LIGHTING)
 
         self.updateLights()
 
@@ -177,6 +180,9 @@ class GLRunner(GameInterface):
             glPopMatrix()
 
         glPopMatrix()
+        
+        if self.lightingEnabled:
+            glDisable(GL_LIGHTING)
 
         # Frame rate text
         self.instance.drawText(str(self.instance.getFps()) + " FPS",
