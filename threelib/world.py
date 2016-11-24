@@ -3,6 +3,7 @@ __author__ = "jacobvanthoog"
 from threelib.sim.base import Simulator
 from threelib.sim.base import Entity
 import threelib.script
+from threelib.mesh import *
 
 class World:
     """
@@ -247,4 +248,51 @@ def buildWorld(editorState):
     if world.camera is None:
         world.camera = Entity()
         world.simulator.addObject(world.camera)
+
+    # subdivide renderMesh faces
+    for renderMesh in world.renderMeshes:
+        mesh = renderMesh.getMesh().clone()
+        renderMesh.setMesh(mesh)
+        faces = list(mesh.getFaces()) # prevent problems as new faces are added
+        for face in faces:
+            subdivideMeshFace(mesh, face)
+
+def subdivideMeshFace(mesh, face):
+    MAX_FACE_AREA = 144
+    area = face.getArea()
+    if area > MAX_FACE_AREA:
+        print("Subdivide face (area: " + str(area) + ")")
+        if len(face.getVertices()) > 3:
+            # split into triangles
+            newFaces = [ ]
+            v1 = face.getVertices()[0]
+            for i in range(1, len(face.getVertices()) - 1):
+                v2 = face.getVertices()[i]
+                v3 = face.getVertices()[i + 1]
+                newFace = MeshFace().addVertex(v1.vertex, v1.textureVertex)\
+                                    .addVertex(v2.vertex, v2.textureVertex)\
+                                    .addVertex(v3.vertex, v3.textureVertex)
+                newFaces.append(newFace)
+
+            mesh.removeFace(face)
+            for newFace in newFaces:
+                mesh.addFace(newFace)
+
+            print("Face split into", len(newFaces), "triangles")
+            for newFace in newFaces:
+                subdivideMeshFace(mesh, newFace)
+        else:
+            # find the longest edge...
+            v1 = face.getVertices()[0].vertex.getPosition()
+            v2 = face.getVertices()[1].vertex.getPosition()
+            v3 = face.getVertices()[2].vertex.getPosition()
+            dist1 = v2.distanceTo(v3)
+            dist2 = v1.distanceTo(v3)
+            dist3 = v1.distanceTo(v2)
+            if dist1 >= dist2 and dist1 >= dist3:
+                midpoint = v2.lerp(v3, .5)
+            if dist2 >= dist1 and dist2 >= dist3:
+                midpoint = v1.lerp(v3, .5)
+            else:
+                midpoint = v1.lerp(v2, .5)
 
