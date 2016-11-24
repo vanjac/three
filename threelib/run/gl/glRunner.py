@@ -146,6 +146,9 @@ class GLRunner(GameInterface):
 
         # Draw RenderMeshes
 
+        currentMat = None
+        glDisable(GL_TEXTURE_2D)
+        glColor(0.8, 0.8, 0.8)
         for renderMesh in self.world.renderMeshes:
             if not renderMesh.isVisible():
                 continue
@@ -153,17 +156,13 @@ class GLRunner(GameInterface):
             glPushMatrix()
             self.transformEntity(renderMesh)
 
-            currentMat = None
-            glDisable(GL_TEXTURE_2D)
-            glColor(0.8, 0.8, 0.8)
             for f in renderMesh.getMesh().getFaces():
                 faceMat = f.getMaterial()
-                if faceMat != currentMat:
+                if faceMat is not currentMat:
                     if faceMat is None:
                         glDisable(GL_TEXTURE_2D)
                     else:
                         if faceMat.isLoaded():
-                            texture = True
                             glEnable(GL_TEXTURE_2D)
                             glBindTexture(GL_TEXTURE_2D, faceMat.getNumber())
                     currentMat = faceMat
