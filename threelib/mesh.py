@@ -41,6 +41,7 @@ class MeshVertex:
         self.v = position
         for face in self.references:
             face.calculateTextureVertices()
+            face.verticesChanged()
 
     def addReference(self, face):
         """
@@ -94,9 +95,20 @@ class MeshFace:
         self.textureShift = Vector(0, 0)
         self.textureScale = Vector(32, 32)
         self.textureRotate = 0
+        
+        self.normal = None
+        self.normalUpdated = False
 
     def __repr__(self):
         return "Face with " + str(self.vertices)
+    
+    def verticesChanged(self):
+        """
+        Called when the number or position of vertices on the face has changed.
+        """
+        # this should never call calculateTextureVertices
+        # unless something changes with addVertex
+        self.normalUpdated = False
 
     def getVertices(self):
         """
@@ -128,6 +140,7 @@ class MeshFace:
 
         if calculate:
             self.calculateTextureVertices()
+        self.verticesChanged()
 
         return self
 
@@ -148,6 +161,7 @@ class MeshFace:
         if meshFaceVertex in self.vertices:
             self.vertices.remove(meshFaceVertex)
         meshFaceVertex.vertex.removeReference(self)
+        self.verticesChanged()
 
     def replaceVertex(self, old, new):
         """
@@ -158,6 +172,7 @@ class MeshFace:
         old.vertex.removeReference(self)
         new.vertex.addReference(self)
         self.calculateTextureVertices()
+        self.verticesChanged()
 
     def indexOf(self, meshVertex):
         """
@@ -179,6 +194,7 @@ class MeshFace:
                            textureVertex = meshFaceVertex.textureVertex)
         self.replaceVertex(meshFaceVertex, v)
         self.calculateTextureVertices()
+        self.verticesChanged()
 
     def clearVertices(self):
         """
@@ -187,6 +203,7 @@ class MeshFace:
         for v in self.vertices:
             v.vertex.removeReference(self)
         self.vertices = [ ]
+        self.verticesChanged()
 
     def setTextureTransform(self, shift, rotate, scale):
         """
@@ -263,12 +280,16 @@ class MeshFace:
         Get the normal Vector of the face, based on the first 3 vertices.
         Return None if there aren't enough vertices to calculate a normal.
         """
-        if len(self.vertices) >= 3:
-            return Vector.normal(self.vertices[0].vertex.getPosition(),
-                                 self.vertices[1].vertex.getPosition(),
-                                 self.vertices[2].vertex.getPosition())
-        else:
-            return None
+        if not self.normalUpdated:
+            if len(self.vertices) >= 3:
+                self.normal = Vector.normal(
+                    self.vertices[0].vertex.getPosition(),
+                    self.vertices[1].vertex.getPosition(),
+                    self.vertices[2].vertex.getPosition())
+            else:
+                self.normal = None
+            self.normalUpdated = True
+        return self.normal
 
     def getPlane(self):
         """
