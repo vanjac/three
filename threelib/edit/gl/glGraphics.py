@@ -18,15 +18,17 @@ class GLGraphicsTools(GraphicsTools):
 
     def drawMesh(self, mesh):
         glColor(0.8, 0.8, 0.8)
+        currentMat = None
+        glDisable(GL_TEXTURE_2D)
         for f in mesh.getFaces():
-            texture = False
-
-            mat = f.getMaterial()
-            if mat is not None:
-                if mat.isLoaded():
-                    texture = True
+            faceMat = f.getMaterial()
+            if faceMat is not currentMat:
+                if faceMat is None or not faceMat.isLoaded():
+                    glDisable(GL_TEXTURE_2D)
+                else:
                     glEnable(GL_TEXTURE_2D)
-                    glBindTexture(GL_TEXTURE_2D, mat.getNumber())
+                    glBindTexture(GL_TEXTURE_2D, faceMat.getNumber())
+                currentMat = faceMat
 
             glBegin(GL_POLYGON)
             for v in f.getVertices():
@@ -35,9 +37,7 @@ class GLGraphicsTools(GraphicsTools):
                 glTexCoord(texPos.x, texPos.y)
                 glVertex(pos.y, pos.z, pos.x)
             glEnd()
-
-            if texture:
-                glDisable(GL_TEXTURE_2D)
+        glDisable(GL_TEXTURE_2D)
 
     def drawMeshSelectHull(self, mesh, color):
         glColor(color[0], color[1], color[2])
