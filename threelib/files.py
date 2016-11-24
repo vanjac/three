@@ -1,5 +1,6 @@
 __author__ = "jacobvanthoog"
 
+import sys
 from pathlib import Path
 import os.path
 import pickle
@@ -155,8 +156,18 @@ def saveMapState(path, state):
     Save map state to a file. ``path`` is a Path to the map file. ``state`` is
     an EditorState object
     """
-    with path.open('wb') as f:
-        pickle.dump(state, f, protocol=4)
+    # large meshes will cause a lot of recursion while pickling
+    # the recursion limit will temporarily be increased
+    # TODO: some testing needs to be done for the best recursion depth value
+    # TODO: avoid recursion in meshes?
+    oldRecursionLimit = sys.getrecursionlimit() # default is 1000 for me
+    sys.setrecursionlimit(10000)
+    
+    try:
+        with path.open('wb') as f:
+            pickle.dump(state, f, protocol=4)
+    finally:
+        sys.setrecursionlimit(oldRecursionLimit)
 
 def loadMapState(path):
     """
