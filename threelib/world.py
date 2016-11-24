@@ -23,6 +23,8 @@ class World:
         self.rayCollisionMeshes = [ ]
         self.collisionMeshes = [ ]
 
+        self.renderMeshSubdivideSize = 144
+
         self.directionalLights = [ ] # list of Lights
         self.positionalLights = [ ]
         self.spotLights = [ ]
@@ -256,12 +258,11 @@ def buildWorld(editorState):
         renderMesh.setMesh(mesh)
         faces = list(mesh.getFaces()) # prevent problems as new faces are added
         for face in faces:
-            subdivideMeshFace(mesh, face)
+            subdivideMeshFace(mesh, face, world.renderMeshSubdivideSize)
 
-def subdivideMeshFace(mesh, face):
-    MAX_FACE_AREA = 144
+def subdivideMeshFace(mesh, face, maxSize):
     area = face.getArea()
-    if area > MAX_FACE_AREA:
+    if area > maxSize:
         if len(face.getVertices()) > 3:
             # split into triangles
             newFaces = [ ]
@@ -279,7 +280,7 @@ def subdivideMeshFace(mesh, face):
                 mesh.addFace(newFace)
 
             for newFace in newFaces:
-                subdivideMeshFace(mesh, newFace)
+                subdivideMeshFace(mesh, newFace, maxSize)
         else:
             # find the longest edge...
             v1 = face.getVertices()[0]
@@ -333,5 +334,5 @@ def subdivideMeshFace(mesh, face):
                 mesh.addFace(newFace)
 
             for newFace in newFaces:
-                subdivideMeshFace(mesh, newFace)
+                subdivideMeshFace(mesh, newFace, maxSize)
 

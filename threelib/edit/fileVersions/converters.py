@@ -30,3 +30,11 @@ def convert_1_0_to_1_1(state):
     state.MINOR_VERSION = 1
     return state
 
+@ editorStateConverter(1, 1)
+def convert_1_1_to_1_2(state):
+    state.world.renderMeshSubdivideSize = 144
+
+    state.MAJOR_VERSION = 1
+    state.MINOR_VERSION = 2
+    return state
+
