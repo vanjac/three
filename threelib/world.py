@@ -275,9 +275,10 @@ def subdivideMeshFace(mesh, face, maxSize):
                                     .addVertex(v3.vertex, v3.textureVertex)
                 newFaces.append(newFace)
 
-            mesh.removeFace(face)
             for newFace in newFaces:
+                newFace.copyMaterialInfo(face)
                 mesh.addFace(newFace)
+            mesh.removeFace(face)
 
             for newFace in newFaces:
                 subdivideMeshFace(mesh, newFace, maxSize)
@@ -329,9 +330,10 @@ def subdivideMeshFace(mesh, face, maxSize):
                                     .addVertex(v3.vertex, v3.textureVertex)
                 newFaces.append(newFace)
 
-            mesh.removeFace(face)
             for newFace in newFaces:
+                newFace.copyMaterialInfo(face)
                 mesh.addFace(newFace)
+            mesh.removeFace(face)
 
             for newFace in newFaces:
                 subdivideMeshFace(mesh, newFace, maxSize)
