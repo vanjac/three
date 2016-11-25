@@ -251,14 +251,17 @@ def buildWorld(editorState):
         world.camera = Entity()
         world.simulator.addObject(world.camera)
 
-    # subdivide renderMesh faces
-    print("Subdividing faces...")
-    for renderMesh in world.renderMeshes:
-        mesh = renderMesh.getMesh().clone()
-        renderMesh.setMesh(mesh)
-        faces = list(mesh.getFaces()) # prevent problems as new faces are added
-        for face in faces:
-            subdivideMeshFace(mesh, face, world.renderMeshSubdivideSize)
+    if len(world.directionalLights) > 0 or \
+       len(world.positionalLights) > 0 or \
+       len(world.spotLights) > 0:
+        # subdivide renderMesh faces
+        print("Subdividing faces...")
+        for renderMesh in world.renderMeshes:
+            mesh = renderMesh.getMesh().clone()
+            renderMesh.setMesh(mesh)
+            faces = list(mesh.getFaces()) # prevent problems as new faces are added
+            for face in faces:
+                subdivideMeshFace(mesh, face, world.renderMeshSubdivideSize)
 
 def subdivideMeshFace(mesh, face, maxSize):
     area = face.getArea()
