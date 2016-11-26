@@ -2,6 +2,7 @@ __author__ = "jacobvanthoog"
 
 from threelib.mesh import *
 from threelib.vectorMath import Vector
+from threelib.materials import MaterialReference
 
 # TODO: smoothing groups
 # TODO: normals
@@ -17,6 +18,8 @@ def loadOBJ(path):
     mesh = Mesh()
     textureVertices = [ ]
     vertexNormals = [ ]
+    materials = { } # maps names to MaterialReferences
+    currentMaterial = None
 
     for line in lines:
         line = line.strip()
@@ -30,7 +33,13 @@ def loadOBJ(path):
             continue
         elif command == 'usemtl':
             # material set
-            pass # TODO
+            materialName = words[1]
+            if materialName in materials:
+                currentMaterial = materials[materialName]
+            else:
+                materialPath = "mesh/" + path.stem + "/" + materialName
+                currentMaterial = MaterialReference(materialPath)
+                materials[materialName] = currentMaterial
         elif command == 'v':
             # vertex
             try:
@@ -92,6 +101,7 @@ def loadOBJ(path):
                 vertexNormal = objIndex(vertexNormals, vertexNormalIndex)
                 # TODO do something with the normal
                 face.addVertex(vertex, textureVertex=textureVertex)
+            face.setMaterial(currentMaterial)
             mesh.addFace(face)
 
     if mesh.isEmpty():

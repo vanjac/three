@@ -214,6 +214,17 @@ class EditorActions:
         if mesh is None:
             print("Could not load mesh", name)
             return
+
+        newMaterials = [ ]
+        for face in mesh.getFaces():
+            mat = face.getMaterial()
+            if not mat in newMaterials:
+                newMaterials.append(mat)
+                self.state.world.addMaterial(mat)
+        print(len(newMaterials), "materials for this mesh:")
+        for mat in newMaterials:
+            print(mat.getName())
+
         solidMesh = SolidMeshObject()
         solidMesh.setMesh(mesh)
         self.createObject(solidMesh)
