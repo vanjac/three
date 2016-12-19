@@ -14,7 +14,8 @@ class FirstPersonPlayer(Entity):
                  jumpButton,
                  cameraHeight=17.0, playerHeight=18.0, playerWidth=8.0,
                  walkSpeed = 14.0, fallMoveSpeed=10.0, maxWalkAngle=45.0,
-                 jumpVelocity=30.0):
+                 jumpVelocity=30.0, walkDeceleration=0.01,
+                 fallDeceleration=0.35):
         super().__init__()
         self.world = world
         self.xLookAxis = xLookAxis
@@ -23,6 +24,7 @@ class FirstPersonPlayer(Entity):
         self.yWalkAxis = yWalkAxis
         self.jumpButton = jumpButton
 
+        self.xyVelocity = Vector(0.0, 0.0)
         self.zVelocity = 0.0
         self.currentFloor = None
         self.currentVolumes = [ ]
@@ -34,6 +36,8 @@ class FirstPersonPlayer(Entity):
         self.playerWidth = playerWidth
         self.walkSpeed = walkSpeed
         self.fallMoveSpeed = fallMoveSpeed
+        self.walkDeceleration = walkDeceleration
+        self.fallDeceleration = fallDeceleration
         self.maxWalkAngle = maxWalkAngle # in degrees
         self.minWalkNormalZ = Vector(1.0, 0.0)\
             .rotate2(math.radians(self.maxWalkAngle)).x
@@ -47,6 +51,8 @@ class FirstPersonPlayer(Entity):
                       *timeElapsed * self.walkSpeed
 
         def do(toUpdateList):
+            nonlocal translation
+
             # LOOK
 
             self.rotation += rotation
@@ -64,12 +70,23 @@ class FirstPersonPlayer(Entity):
                 # gravity
                 self.zVelocity += FirstPersonPlayer.GRAVITY * timeElapsed
 
-            movement = translation.rotate2(self.rotation.z)
+            translation = translation.rotate2(self.rotation.z)
+            if self.currentFloor is None:
+                translation *= float(self.fallMoveSpeed) / self.walkSpeed
+            if self.xyVelocity.magnitude() < translation.magnitude():
+                self.xyVelocity = translation
+            else:
+                if self.currentFloor is None:
+                    self.xyVelocity *= (self.fallDeceleration ** timeElapsed)
+                else:
+                    self.xyVelocity *= (self.walkDeceleration ** timeElapsed)
+
+            movement = self.xyVelocity
             sliding = False
 
             # uphill slopes should slow down movement
             # downhill slopes should speed up movement
-            slopeFactor = float(self.fallMoveSpeed) / self.walkSpeed
+            slopeFactor = 1.0
             if self.currentFloor is not None:
                 point = self._topPoint(self.currentFloor, self.position)
                 if point is not None:
