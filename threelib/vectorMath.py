@@ -2,6 +2,22 @@ __author__ = "jacobvanthoog"
 
 import numbers
 import math
+import decimal
+
+def setDecimalMode(enabled=True):
+    if enabled:
+        toNumber = toDecimal
+    else:
+        toNumber = toFloat
+
+def toDecimal(n):
+    return decimal.Decimal(n)
+
+def toFloat(n):
+    return float(n)
+
+def toNumber(n):
+    return float(n)
 
 # Based on JMath3d
 
@@ -11,7 +27,7 @@ def fixRotation(n):
     """
     Limit rotation to be between 0 and 2pi.
     """
-    n = float(n)
+    n = toNumber(n)
     if n < 0:
         circles = math.ceil(-n / CIRCLE)
         n += circles * CIRCLE
@@ -76,6 +92,11 @@ def rotatePlane(point, normal, rotate):
     normal = normal.rotate(rotate)
     return calculatePlaneConstants(point, normal)
 
+def inverseRotatePlane(point, normal, rotate):
+    point = point.inverseRotate(rotate)
+    normal = normal.inverseRotate(rotate)
+    return calculatePlaneConstants(point, normal)
+
 def boxesIntersect(boxA, boxB):
     """
     Check if 2 boxes intersect, each defined by a tuple of 2 Vectors describing
@@ -134,9 +155,9 @@ class Vector:
         Create a vector from 2 or 3 numbers, which are automatically converted
         to floats.
         """
-        self.x = float(x)
-        self.y = float(y)
-        self.z = float(z)
+        self.x = toNumber(x)
+        self.y = toNumber(y)
+        self.z = toNumber(z)
 
     def __repr__(self):
         return tripleTupleToString(self.getTuple())

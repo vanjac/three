@@ -881,7 +881,7 @@ class EditorActions:
                 faceNormalRotate = face.getNormal().rotation()
 
                 translatedPlanePoint = planePoint - origin
-                rotatedPlane = vectorMath.rotatePlane(translatedPlanePoint,
+                rotatedPlane = vectorMath.inverseRotatePlane(translatedPlanePoint,
                                                 planeNormal, -faceNormalRotate)
                 planeLineConstants = Vector(rotatedPlane[1],
                                             rotatedPlane[2],
@@ -936,8 +936,10 @@ class EditorActions:
                     # vector 0 and vector 1 are the two points of the rotated
                     # edge. after rotating the edges, x values for all will be
                     # 0 (not always exact because of float inaccuracies)
-                    v0 = (edge[0] - origin).rotate(-faceNormalRotate)
-                    v1 = (edge[1] - origin).rotate(-faceNormalRotate)
+                    v0 = (edge[0] - origin).inverseRotate(-faceNormalRotate)
+                    v1 = (edge[1] - origin).inverseRotate(-faceNormalRotate)
+                    assert vectorMath.isclose(v0.x, 0)
+                    assert vectorMath.isclose(v1.x, 0)
                     # equation for the line: ax+by+c=0
                     # represented as a Vector of homogeneous coordinates
                     edgeLineConstants = Vector( v0.z - v1.z,
@@ -950,7 +952,7 @@ class EditorActions:
                                                intersectionPoint.x,
                                                intersectionPoint.y)
                     # undo any rotations
-                    intersectionPoint = intersectionPoint.inverseRotate(
+                    intersectionPoint = intersectionPoint.rotate(
                         faceNormalRotate) + origin
                     # this is where the position of new vertices is set
                     # TODO: this position is not always right
