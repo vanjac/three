@@ -135,7 +135,7 @@ class Simulator(SimObject):
         def do(toUpdateList):
             self.objects.remove(o)
             if self.started:
-                o.stop()
+                o.end()
             if self.initialized:
                 o.destroy()
         self.actions.addAction(do)
