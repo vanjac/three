@@ -68,6 +68,20 @@ class GameInterface(AppInterface):
 
     def draw(self):
         self.runner.tick(time.time())
+        self._removeDeadObjects(self.world.renderMeshes)
+        self._removeDeadObjects(self.world.rayCollisionMeshes)
+        self._removeDeadObjects(self.world.collisionMeshes)
+        self._removeDeadObjects(self.world.directionalLights)
+        self._removeDeadObjects(self.world.positionalLights)
+        self._removeDeadObjects(self.world.spotLights)
+
+    def _removeDeadObjects(self, l):
+        toRemove = [ ]
+        for simObject in l:
+            if simObject.readyToRemove():
+                toRemove.append(simObject)
+        for simObject in toRemove:
+            l.remove(simObject)
 
     def setAppInstance(self, instance):
         self.instance = instance
