@@ -28,3 +28,9 @@ def setVariableValue(varName, value):
     if varName != "":
         localDict[varName] = value
 
+def deleteVariable(varName):
+    """
+    Delete a variable.
+    """
+    if varName != "":
+        del localDict[varName]

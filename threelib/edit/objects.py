@@ -61,7 +61,9 @@ class SolidMeshObject(MeshObject):
             rayCollisionMesh = RayCollisionMesh(self.getMesh())
             rayCollisionMesh.setEnabled(self.rayCollisionEnabled)
             def useAction():
+                threelib.script.setVariableValue("self", entity)
                 threelib.script.runScript(self.useAction)
+                threelib.script.deleteVariable("self")
             rayCollisionMesh.setUseAction(useAction)
 
             world.simulator.addObject(rayCollisionMesh)
@@ -73,16 +75,24 @@ class SolidMeshObject(MeshObject):
             collisionMesh.setEnabled(self.collisionEnabled)
             collisionMesh.setSolid(self.isSolid)
             def wallCollideAction():
+                threelib.script.setVariableValue("self", entity)
                 threelib.script.runScript(self.wallCollideAction)
+                threelib.script.deleteVariable("self")
             collisionMesh.setWallCollideAction(wallCollideAction)
             def floorStartTouchAction():
+                threelib.script.setVariableValue("self", entity)
                 threelib.script.runScript(self.floorStartTouchAction)
+                threelib.script.deleteVariable("self")
             collisionMesh.setFloorStartTouchAction(floorStartTouchAction)
             def floorEndTouchAction():
+                threelib.script.setVariableValue("self", entity)
                 threelib.script.runScript(self.floorEndTouchAction)
+                threelib.script.deleteVariable("self")
             collisionMesh.setFloorEndTouchAction(floorEndTouchAction)
             def ceilingCollideAction():
+                threelib.script.setVariableValue("self", entity)
                 threelib.script.runScript(self.ceilingCollideAction)
+                threelib.script.deleteVariable("self")
             collisionMesh.setCeilingCollideAction(ceilingCollideAction)
 
             world.simulator.addObject(collisionMesh)
