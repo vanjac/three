@@ -38,3 +38,10 @@ def convert_1_1_to_1_2(state):
     state.MINOR_VERSION = 2
     return state
 
+@ editorStateConverter(1, 2)
+def convert_1_2_to_1_3(state):
+    state.MAJOR_VERSION = 1
+    state.MINOR_VERSION = 3
+    # "self" variable was added for action scripts
+    # "math" module was added for scripts
+    return state
