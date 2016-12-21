@@ -48,7 +48,7 @@ class FirstPersonPlayer(Entity):
                              -float(self.xLookAxis.getChange()))
         translation = Vector( self.yWalkAxis.getValue(),
                              -self.xWalkAxis.getValue()).limitMagnitude(1.0) \
-                      *timeElapsed * self.walkSpeed
+                      * self.walkSpeed
 
         def do(toUpdateList):
             nonlocal translation
@@ -81,7 +81,7 @@ class FirstPersonPlayer(Entity):
                 else:
                     self.xyVelocity *= (self.walkDeceleration ** timeElapsed)
 
-            movement = self.xyVelocity
+            movement = self.xyVelocity * timeElapsed
             sliding = False
 
             # uphill slopes should slow down movement
