@@ -212,6 +212,8 @@ class ScriptPointObject(PointObject):
 
         if self.getName() == "cam":
             world.camera = entity
+        elif self.getName() == "skycam":
+            world.skyCamera = entity
 
         return entity
 
