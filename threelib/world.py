@@ -23,6 +23,7 @@ class World:
         self.renderMeshes = [ ]
         self.rayCollisionMeshes = [ ]
         self.collisionMeshes = [ ]
+        self.skyRenderMeshes = [ ]
 
         self.renderMeshSubdivideSize = 144
 

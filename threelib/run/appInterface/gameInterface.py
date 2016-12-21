@@ -72,9 +72,12 @@ class GameInterface(AppInterface):
         self._removeDeadObjects(self.world.renderMeshes)
         self._removeDeadObjects(self.world.rayCollisionMeshes)
         self._removeDeadObjects(self.world.collisionMeshes)
+        self._removeDeadObjects(self.world.skyRenderMeshes)
         self._removeDeadObjects(self.world.directionalLights)
         self._removeDeadObjects(self.world.positionalLights)
         self._removeDeadObjects(self.world.spotLights)
+        if self._isDead(self.world.skyCamera):
+            self.world.skyCamera = None
 
     def _removeDeadObjects(self, l):
         toRemove = [ ]
@@ -83,6 +86,11 @@ class GameInterface(AppInterface):
                 toRemove.append(simObject)
         for simObject in toRemove:
             l.remove(simObject)
+
+    def _isDead(self, simObject):
+        if simObject is not None:
+            return simObject.readyToRemove()
+        return False
 
     def setAppInstance(self, instance):
         self.instance = instance
