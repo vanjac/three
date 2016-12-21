@@ -27,8 +27,10 @@ class GameInterface(AppInterface):
     def __init__(self, state):
         self.instance = None
 
+        self.state = state
         self.world = state.world
 
+    def init(self):
         self.mouseXInput = SimpleAxisInput()
         self.mouseYInput = SimpleAxisInput()
 
@@ -54,7 +56,7 @@ class GameInterface(AppInterface):
         self.mouseLocked = False
 
         print("Building world...")
-        threelib.world.buildWorld(state)
+        threelib.world.buildWorld(self.state)
         print("Done building world")
 
         self.world.simulator.init()
@@ -62,7 +64,6 @@ class GameInterface(AppInterface):
 
         self.runner = GameRunner(self.world.simulator, time.time())
 
-    def init(self):
         self.instance.lockMouse()
         self.mouseLocked = True
 
