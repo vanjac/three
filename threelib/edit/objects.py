@@ -39,7 +39,18 @@ class SolidMeshObject(MeshObject):
         self.floorEndTouchAction = ""
         self.ceilingCollideAction = ""
 
+    def _isInSky(self):
+        parent = self
+        while True:
+            parent = self.getParent()
+            if parent == None:
+                return False
+            if parent.getName() == "skycam":
+                return True
+
     def addToWorld(self, world):
+        inSky = self._isInSky()
+
         threelib.script.runScript(self.script)
         entity = threelib.script.setVariable(self.constructor,
                                              self.getName())
@@ -54,10 +65,13 @@ class SolidMeshObject(MeshObject):
             renderMesh.setVisible(self.visible)
 
             world.simulator.addObject(renderMesh)
-            world.renderMeshes.append(renderMesh)
+            if inSky:
+                world.skyRenderMeshes.append(renderMesh)
+            else:
+                world.renderMeshes.append(renderMesh)
             entity.addChild(renderMesh)
 
-        if self.generateRayCollision:
+        if self.generateRayCollision and not inSky:
             rayCollisionMesh = RayCollisionMesh(self.getMesh())
             rayCollisionMesh.setEnabled(self.rayCollisionEnabled)
             def useAction():
@@ -70,7 +84,7 @@ class SolidMeshObject(MeshObject):
             world.rayCollisionMeshes.append(rayCollisionMesh)
             entity.addChild(rayCollisionMesh)
 
-        if self.generateCollision:
+        if self.generateCollision and not inSky:
             collisionMesh = CollisionMesh(self.getMesh())
             collisionMesh.setEnabled(self.collisionEnabled)
             collisionMesh.setSolid(self.isSolid)
