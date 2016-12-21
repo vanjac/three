@@ -52,6 +52,9 @@ class GLRunner(GameInterface):
     def draw(self):
         super().draw()
 
+        # clear screen and depth buffer
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
         # Ray collisions
         while self.world.hasRayCollisionRequest():
             request = self.world.nextRayCollisionRequest()

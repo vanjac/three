@@ -74,6 +74,9 @@ class GLEditor(EditorInterface):
     def draw(self):
         self.editorMain.updateMaterials(self.state.world)
 
+        # clear screen and depth buffer
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
         glPushMatrix()
         rotate = self.state.cameraRotation
         translate = self.state.cameraPosition

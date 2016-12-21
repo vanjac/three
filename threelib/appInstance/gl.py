@@ -211,8 +211,6 @@ class GLAppInstance(AppInstance):
             self.fps = self.fpsCount
             self.fpsCount = 0
 
-        # clear screen and depth buffer
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity() # reset the view
 
         self.appInterface.draw()
