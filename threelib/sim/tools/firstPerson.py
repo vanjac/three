@@ -245,6 +245,24 @@ class FirstPersonPlayer(Entity):
                             self.newCurrentFloor.doFloorEndTouchAction()
                             self.newCurrentFloor = collision
                             collision.doFloorStartTouchAction()
+                # allow walking off the edge of one floor, immediately onto
+                # another
+                if currentFloorPreviousPoint is not None \
+                        and currentFloorCurrentPoint is None:
+                    currentFloorPreviousZ = currentFloorPreviousPoint.height
+                    nextFloorCurrentZ = topPoint.height
+                    if vectorMath.isclose(currentFloorPreviousZ,
+                                          nextFloorCurrentZ):
+                        # if the new floor's slope is too steep,
+                        # don't walk onto it
+                        if topPoint.normal.z < self.minWalkNormalZ:
+                            self.positionChange = \
+                                Vector(0, 0, self.positionChange.z)
+                        else:
+                            self.newZVelocity = 0.0
+                            self.newCurrentFloor.doFloorEndTouchAction()
+                            self.newCurrentFloor = collision
+                            collision.doFloorStartTouchAction()
         # end check floor collision
 
         # check ceiling collision
