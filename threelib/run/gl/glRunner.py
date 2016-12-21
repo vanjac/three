@@ -146,10 +146,24 @@ class GLRunner(GameInterface):
 
         # Draw RenderMeshes
 
+        self.drawRenderMeshes(self.world.renderMeshes)
+
+        glPopMatrix()
+
+        if self.lightingEnabled:
+            glDisable(GL_LIGHTING)
+
+        # Frame rate text
+        self.instance.drawText(str(self.instance.getFps()) + " FPS",
+                               GLUT_BITMAP_9_BY_15,
+                               4, self.instance.windowHeight() - 19) # 4+15
+
+
+    def drawRenderMeshes(self, renderMeshes):
         currentMat = None
         glDisable(GL_TEXTURE_2D)
         glColor(0.8, 0.8, 0.8)
-        for renderMesh in self.world.renderMeshes:
+        for renderMesh in renderMeshes:
             if not renderMesh.isVisible():
                 continue
 
@@ -178,16 +192,6 @@ class GLRunner(GameInterface):
 
             glPopMatrix()
         glDisable(GL_TEXTURE_2D)
-
-        glPopMatrix()
-
-        if self.lightingEnabled:
-            glDisable(GL_LIGHTING)
-
-        # Frame rate text
-        self.instance.drawText(str(self.instance.getFps()) + " FPS",
-                               GLUT_BITMAP_9_BY_15,
-                               4, self.instance.windowHeight() - 19) # 4+15
 
 
     def updateLights(self):
