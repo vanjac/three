@@ -75,6 +75,16 @@ def isclose(a, b, rel_tol=1e-9, abs_tol=1e-9):
              (diff <= abs(rel_tol * a))) or
             (diff <= abs_tol))
 
+def greaterOrClose(a, b, rel_tol=1e-9, abs_tol=1e-9):
+    if a > b:
+        return True
+    return isclose(a, b)
+
+def lessOrClose(a, b, rel_tol=1e-9, abs_tol=1e-9):
+    if a < b:
+        return True
+    return isclose(a, b)
+
 def calculatePlaneConstants(point, normal):
     """
     Given a point on a plane and its normal, calculate the constants of the
