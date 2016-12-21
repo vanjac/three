@@ -13,6 +13,7 @@ class World:
         self.simulator = None
 
         self.camera = None # special Entity
+        self.skyCamera = None
 
         self.materials = [ ] # list of MaterialReference's
         self.addedMaterials = [ ]

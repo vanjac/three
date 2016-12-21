@@ -45,3 +45,11 @@ def convert_1_2_to_1_3(state):
     # "self" variable was added for action scripts
     # "math" module was added for scripts
     return state
+
+@ editorStateConverter(1, 3)
+def convert_1_3_to_1_4(state):
+    state.world.skyCamera = None
+
+    state.MAJOR_VERSION = 1
+    state.MINOR_VERSION = 4
+    return state
