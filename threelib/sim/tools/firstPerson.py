@@ -169,8 +169,10 @@ class FirstPersonPlayer(Entity):
 
 
     def _checkSolidMeshCollision(self, collision):
-        topPoint = self._topPoint(collision, self.position + self.positionChange)
-        bottomPoint = self._bottomPoint(collision, self.position + self.positionChange)
+        topPoint = self._topPoint(collision,
+                                  self.position + self.positionChange)
+        bottomPoint = self._bottomPoint(collision,
+                                        self.position + self.positionChange)
 
         # check wall collision
         if (not self._inBounds(collision, self.position)) \
@@ -189,7 +191,8 @@ class FirstPersonPlayer(Entity):
         if topPoint is not None:
             if self.newCurrentFloor is None:
                 # TODO: cleanup!
-                currentZ = self._playerBottom(self.position + self.positionChange).z
+                currentZ = self._playerBottom(
+                    self.position + self.positionChange).z
                 previousZ = self._playerBottom(self.position).z
 
                 # if player just hit this floor
@@ -231,7 +234,8 @@ class FirstPersonPlayer(Entity):
                         # if the new floor's slope is too steep,
                         # don't walk onto it
                         if topPoint.normal.z < self.minWalkNormalZ:
-                            self.positionChange = Vector(0, 0, self.positionChange.z)
+                            self.positionChange = \
+                                Vector(0, 0, self.positionChange.z)
                         else:
                             self.newZVelocity = 0.0
                             self.newCurrentFloor.doFloorEndTouchAction()
@@ -243,7 +247,8 @@ class FirstPersonPlayer(Entity):
         if bottomPoint is not None:
             if self.newCurrentFloor is None:
                 # TODO: cleanup!
-                currentZ = self._playerTop(self.position + self.positionChange).z
+                currentZ = self._playerTop(
+                    self.position + self.positionChange).z
                 previousZ = self._playerTop(self.position).z
 
                 # if player just hit this ceiling
