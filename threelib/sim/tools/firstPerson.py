@@ -44,18 +44,106 @@ class FirstPersonPlayer(Entity):
         self.jumpVelocity = jumpVelocity
 
     def scan(self, timeElapsed, totalTime):
-        rotation = Rotate(0, -float(self.yLookAxis.getChange()), \
-                             -float(self.xLookAxis.getChange()))
-        translation = Vector( self.yWalkAxis.getValue(),
-                             -self.xWalkAxis.getValue()).limitMagnitude(1.0) \
-                      * self.walkSpeed
+        self.positionChange = Vector(0, 0, 0)
+        self.newZVelocity = self.zVelocity
+        self.newXYVelocity = self.xyVelocity
+        self.newCurrentFloor = self.currentFloor
+
+        # LOOK
+        self.rotationChange = Rotate(0, -float(self.yLookAxis.getChange()),
+                                   -float(self.xLookAxis.getChange()))
+
+        inputTranslation = Vector( self.yWalkAxis.getValue(),
+            -self.xWalkAxis.getValue()).limitMagnitude(1.0) * self.walkSpeed
+
+        # PHYSICS
+
+        if self.newCurrentFloor is None:
+            # gravity
+            self.newZVelocity += FirstPersonPlayer.GRAVITY * timeElapsed
+
+        inputTranslation = inputTranslation.rotate2(self.rotation.z)
+        if self.newCurrentFloor is None:
+            inputTranslation *= float(self.fallMoveSpeed) / self.walkSpeed
+        if self.newXYVelocity.magnitude() < inputTranslation.magnitude():
+            self.newXYVelocity = inputTranslation
+        else:
+            if self.newCurrentFloor is None:
+                self.newXYVelocity *= (self.fallDeceleration ** timeElapsed)
+            else:
+                self.newXYVelocity *= (self.walkDeceleration ** timeElapsed)
+
+        movement = self.newXYVelocity * timeElapsed
+        sliding = False
+
+        # uphill slopes should slow down movement
+        # downhill slopes should speed up movement
+        slopeFactor = 1.0
+        if self.newCurrentFloor is not None:
+            point = self._topPoint(self.newCurrentFloor,
+                                   self.position + self.positionChange)
+            if point is not None:
+                # if slope is too steep, slide down it
+                if point.normal.z < self.minWalkNormalZ:
+                    movement = point.normal.setZ(0).setMagnitude(1.0)
+                    sliding = True
+
+                # this uses vector projection and magic
+                slopeFactor = 1.0 + movement.project(point.normal)
+
+        jumpEvent = self.jumpButton.getEvent()
+        if self.newCurrentFloor is not None:
+            if jumpEvent == ButtonInput.PRESSED_EVENT and sliding == False:
+                self.newZVelocity = self.jumpVelocity
+                self.newCurrentFloor.doFloorEndTouchAction()
+                self.newCurrentFloor = None
+
+        # walk
+        self.positionChange += movement * slopeFactor
+        if self.newCurrentFloor is None:
+            # z velocity
+            self.positionChange += Vector(0, 0, self.newZVelocity * timeElapsed)
+
+        self.previousWallCollisions = self.wallCollisions
+        self.wallCollisions = list()
+
+        for collision in self.world.collisionMeshes:
+            if collision.isEnabled() and collision != self.newCurrentFloor:
+
+                if collision.isSolid():
+                    if self._inBounds(collision,
+                                      self.position + self.positionChange):
+                        self._checkSolidMeshCollision(collision)
+                else: # collision is volume
+                    topPoint = self._topPoint(collision,
+                        self.position + self.positionChange)
+                    bottomPoint = \
+                        self._bottomPoint(collision,
+                                          self.position + self.positionChange)
+                    if self._inBounds(collision,
+                                self.position + self.positionChange) \
+                            and vectorMath.rangesIntersect(
+                                self._playerBottom(
+                                    self.position + self.positionChange).z,
+                                self._playerTop(
+                                    self.position + self.positionChange).z,
+                                bottomPoint.height, topPoint.height):
+                        if not collision in self.currentVolumes:
+                            self.currentVolumes.append(collision)
+                            collision.doFloorStartTouchAction()
+                    else:
+                        if collision in self.currentVolumes:
+                            self.currentVolumes.remove(collision)
+                            collision.doFloorEndTouchAction()
+        # end for each collision mesh
+
 
         def do(toUpdateList):
-            nonlocal translation
-
-            # LOOK
-
-            self.rotation += rotation
+            self.translate(self.positionChange)
+            self.rotation += self.rotationChange
+            self.zVelocity = self.newZVelocity
+            self.xyVelocity = self.newXYVelocity
+            self.currentFloor = self.newCurrentFloor
 
             # prevent from looking too far up or down
             yRot = self.rotation.y
@@ -63,82 +151,7 @@ class FirstPersonPlayer(Entity):
                 self.rotation = self.rotation.setY(math.pi/2)
             if yRot > math.pi and yRot < math.pi*3/2:
                 self.rotation = self.rotation.setY(math.pi*3/2)
-
-            # PHYSICS
-
-            if self.currentFloor is None:
-                # gravity
-                self.zVelocity += FirstPersonPlayer.GRAVITY * timeElapsed
-
-            translation = translation.rotate2(self.rotation.z)
-            if self.currentFloor is None:
-                translation *= float(self.fallMoveSpeed) / self.walkSpeed
-            if self.xyVelocity.magnitude() < translation.magnitude():
-                self.xyVelocity = translation
-            else:
-                if self.currentFloor is None:
-                    self.xyVelocity *= (self.fallDeceleration ** timeElapsed)
-                else:
-                    self.xyVelocity *= (self.walkDeceleration ** timeElapsed)
-
-            movement = self.xyVelocity * timeElapsed
-            sliding = False
-
-            # uphill slopes should slow down movement
-            # downhill slopes should speed up movement
-            slopeFactor = 1.0
-            if self.currentFloor is not None:
-                point = self._topPoint(self.currentFloor, self.position)
-                if point is not None:
-                    # if slope is too steep, slide down it
-                    if point.normal.z < self.minWalkNormalZ:
-                        movement = point.normal.setZ(0).setMagnitude(1.0)
-                        sliding = True
-
-                    # this uses vector projection and magic
-                    slopeFactor = 1.0 + movement.project(point.normal)
-
-            jumpEvent = self.jumpButton.getEvent()
-            if self.currentFloor is not None:
-                if jumpEvent == ButtonInput.PRESSED_EVENT and sliding == False:
-                    self.zVelocity = self.jumpVelocity
-                    self.currentFloor.doFloorEndTouchAction()
-                    self.currentFloor = None
-
-            previousPosition = self.position
-            # walk
-            self.position += movement * slopeFactor
-            if self.currentFloor is None:
-                # z velocity
-                self.position += Vector(0, 0, self.zVelocity * timeElapsed)
-
-            self.previousWallCollisions = self.wallCollisions
-            self.wallCollisions = list()
-
-            for collision in self.world.collisionMeshes:
-                if collision.isEnabled() and collision != self.currentFloor:
-
-                    if collision.isSolid():
-                        if self._inBounds(collision, self.position):
-                            self._checkSolidMeshCollision(collision,
-                                previousPosition)
-                    else: # collision is volume
-                        topPoint = self._topPoint(collision, self.position)
-                        bottomPoint = \
-                            self._bottomPoint(collision, self.position)
-                        if self._inBounds(collision, self.position) \
-                                and vectorMath.rangesIntersect(
-                                self._playerBottom(self.position).z,
-                                self._playerTop(self.position).z,
-                                bottomPoint.height, topPoint.height):
-                            if not collision in self.currentVolumes:
-                                self.currentVolumes.append(collision)
-                                collision.doFloorStartTouchAction()
-                        else:
-                            if collision in self.currentVolumes:
-                                self.currentVolumes.remove(collision)
-                                collision.doFloorEndTouchAction()
-            # end for each collision mesh
+            toUpdateList.append(self)
 
             if self.currentFloor is not None:
                 point = self._topPoint(self.currentFloor, self.position)
@@ -151,23 +164,21 @@ class FirstPersonPlayer(Entity):
                     def do(toUpdateList):
                         self.position = self.position.setZ(z)
                     self.actions.addAction(do)
-
-            toUpdateList.append(self)
         self.actions.addAction(do)
     # end def scan
 
 
-    def _checkSolidMeshCollision(self, collision, previousPosition):
-        topPoint = self._topPoint(collision, self.position)
-        bottomPoint = self._bottomPoint(collision, self.position)
+    def _checkSolidMeshCollision(self, collision):
+        topPoint = self._topPoint(collision, self.position + self.positionChange)
+        bottomPoint = self._bottomPoint(collision, self.position + self.positionChange)
 
         # check wall collision
-        if (not self._inBounds(collision, previousPosition)) \
+        if (not self._inBounds(collision, self.position)) \
             and vectorMath.rangesIntersect(
-                self._playerBottom(self.position).z,
-                self._playerTop(self.position).z,
+                self._playerBottom(self.position + self.positionChange).z,
+                self._playerTop(self.position + self.positionChange).z,
                 bottomPoint.height, topPoint.height):
-            self.position = previousPosition.setZ(self.position.z)
+            self.positionChange = Vector(0, 0, self.positionChange.z)
             if not collision in self.previousWallCollisions:
                 collision.doWallCollideAction()
             self.wallCollisions.append(collision)
@@ -176,37 +187,37 @@ class FirstPersonPlayer(Entity):
 
         # check floor collision
         if topPoint is not None:
-            if self.currentFloor is None:
+            if self.newCurrentFloor is None:
                 # TODO: cleanup!
-                currentZ = self._playerBottom(self.position).z
-                previousZ = self._playerBottom(previousPosition).z
+                currentZ = self._playerBottom(self.position + self.positionChange).z
+                previousZ = self._playerBottom(self.position).z
 
                 # if player just hit this floor
                 if currentZ <= topPoint.height and previousZ > topPoint.height:
-                    self.zVelocity = 0.0
-                    self.currentFloor = collision
+                    self.newZVelocity = 0.0
+                    self.newCurrentFloor = collision
                     collision.doFloorStartTouchAction()
                 else:
                     # what if the floor height has changed as the player moves?
                     nextFloorPreviousPoint = self._topPoint(
-                        collision, previousPosition)
+                        collision, self.position)
 
                     if nextFloorPreviousPoint is not None:
                         if currentZ <= topPoint.height \
                           and previousZ > nextFloorPreviousPoint.height:
-                            self.zVelocity = 0.0
-                            self.currentFloor = collision
+                            self.newZVelocity = 0.0
+                            self.newCurrentFloor = collision
                             collision.doFloorStartTouchAction()
 
             # already on a floor
-            elif self._inBounds(collision, previousPosition):
+            elif self._inBounds(collision, self.position):
                 # these checks are required
                 currentFloorPreviousPoint = self._topPoint(
-                    self.currentFloor, previousPosition)
+                    self.newCurrentFloor, self.position)
                 currentFloorCurrentPoint = self._topPoint(
-                    self.currentFloor, self.position)
+                    self.newCurrentFloor, self.position + self.positionChange)
                 nextFloorPreviousPoint = self._topPoint(
-                    collision, previousPosition)
+                    collision, self.position)
                 if currentFloorPreviousPoint is not None \
                         and currentFloorCurrentPoint is not None \
                         and nextFloorPreviousPoint is not None:
@@ -220,37 +231,36 @@ class FirstPersonPlayer(Entity):
                         # if the new floor's slope is too steep,
                         # don't walk onto it
                         if topPoint.normal.z < self.minWalkNormalZ:
-                            self.position = previousPosition \
-                                .setZ(self.position.z)
+                            self.positionChange = Vector(0, 0, self.positionChange.z)
                         else:
-                            self.zVelocity = 0.0
-                            self.currentFloor.doFloorEndTouchAction()
-                            self.currentFloor = collision
+                            self.newZVelocity = 0.0
+                            self.newCurrentFloor.doFloorEndTouchAction()
+                            self.newCurrentFloor = collision
                             collision.doFloorStartTouchAction()
         # end check floor collision
 
         # check ceiling collision
         if bottomPoint is not None:
-            if self.currentFloor is None:
+            if self.newCurrentFloor is None:
                 # TODO: cleanup!
-                currentZ = self._playerTop(self.position).z
-                previousZ = self._playerTop(previousPosition).z
+                currentZ = self._playerTop(self.position + self.positionChange).z
+                previousZ = self._playerTop(self.position).z
 
                 # if player just hit this ceiling
                 if currentZ >= bottomPoint.height \
                         and previousZ < bottomPoint.height:
-                    self.zVelocity = 0.0
+                    self.newZVelocity = 0.0
                     collision.doCeilingCollideAction()
                 else:
                     # what if the ceiling height has changed as the
                     # player moves?
                     ceilingPreviousPoint = self._bottomPoint(
-                        collision, previousPosition)
+                        collision, self.position)
 
                     if ceilingPreviousPoint is not None:
                         if currentZ >= bottomPoint.height \
                                 and previousZ < ceilingPreviousPoint.height:
-                            self.zVelocity = 0.0
+                            self.newZVelocity = 0.0
                             collision.doCeilingCollideAction()
         # end check ceiling collision
     # end def _checkSolidMeshCollision
