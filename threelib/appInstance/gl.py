@@ -77,8 +77,8 @@ class GLAppInstance(AppInstance):
 
         print("Using OpenGL version:", glGetString(GL_VERSION).decode())
 
-        # uncomment this to make the window fullscreen
-        #glutFullScreen()
+        if "fullscreen" in flags:
+            glutFullScreen()
 
         # Register event functions
         glutDisplayFunc(self.drawGL)
