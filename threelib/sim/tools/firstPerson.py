@@ -49,25 +49,26 @@ class FirstPersonPlayer(Entity):
         self.newXYVelocity = self.xyVelocity
         self.newCurrentFloor = self.currentFloor
 
-        # LOOK
+        # look
         self.rotationChange = Rotate(0, -float(self.yLookAxis.getChange()),
                                    -float(self.xLookAxis.getChange()))
 
         inputTranslation = Vector( self.yWalkAxis.getValue(),
             -self.xWalkAxis.getValue()).limitMagnitude(1.0) * self.walkSpeed
 
-        # PHYSICS
-
         if self.newCurrentFloor is None:
             # gravity
             self.newZVelocity += FirstPersonPlayer.GRAVITY * timeElapsed
 
+        # orient walking direction to look direction
         inputTranslation = inputTranslation.rotate2(self.rotation.z)
         if self.newCurrentFloor is None:
+            # slower movement while in the air
             inputTranslation *= float(self.fallMoveSpeed) / self.walkSpeed
         if self.newXYVelocity.magnitude() < inputTranslation.magnitude():
             self.newXYVelocity = inputTranslation
         else:
+            # when not moving, gradually slow down x-y velocity
             if self.newCurrentFloor is None:
                 self.newXYVelocity *= (self.fallDeceleration ** timeElapsed)
             else:
@@ -92,11 +93,12 @@ class FirstPersonPlayer(Entity):
                 slopeFactor = 1.0 + movement.project(point.normal)
 
         jumpEvent = self.jumpButton.getEvent()
-        if self.newCurrentFloor is not None:
-            if jumpEvent == ButtonInput.PRESSED_EVENT and sliding == False:
-                self.newZVelocity = self.jumpVelocity
-                self.newCurrentFloor.doFloorEndTouchAction()
-                self.newCurrentFloor = None
+        if self.newCurrentFloor is not None \
+                and jumpEvent == ButtonInput.PRESSED_EVENT \
+                and sliding == False:
+            self.newZVelocity = self.jumpVelocity
+            self.newCurrentFloor.doFloorEndTouchAction()
+            self.newCurrentFloor = None
 
         # walk
         self.positionChange += movement * slopeFactor
