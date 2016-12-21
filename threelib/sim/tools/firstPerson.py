@@ -184,6 +184,7 @@ class FirstPersonPlayer(Entity):
                 self._playerTop(self.position + self.positionChange).z,
                 bottomPoint.height, topPoint.height):
             self.positionChange = Vector(0, 0, self.positionChange.z)
+            self.newXYVelocity = Vector(0, 0)
             if not collision in self.previousWallCollisions:
                 collision.doWallCollideAction()
             self.wallCollisions.append(collision)
@@ -241,6 +242,7 @@ class FirstPersonPlayer(Entity):
                         if topPoint.normal.z < self.minWalkNormalZ:
                             self.positionChange = \
                                 Vector(0, 0, self.positionChange.z)
+                            self.newXYVelocity = Vector(0, 0)
                         else:
                             self.newZVelocity = 0.0
                             self.newCurrentFloor.doFloorEndTouchAction()
