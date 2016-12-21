@@ -139,7 +139,6 @@ class FirstPersonPlayer(Entity):
                             collision.doFloorEndTouchAction()
         # end for each collision mesh
 
-
         def do(toUpdateList):
             self.translate(self.positionChange)
             self.rotation += self.rotationChange
@@ -153,22 +152,24 @@ class FirstPersonPlayer(Entity):
                 self.rotation = self.rotation.setY(math.pi/2)
             if yRot > math.pi and yRot < math.pi*3/2:
                 self.rotation = self.rotation.setY(math.pi*3/2)
+
             toUpdateList.append(self)
-
-            if self.currentFloor is not None:
-                point = self._topPoint(self.currentFloor, self.position)
-                if point is None:
-                    self.zVelocity = 0.0
-                    self.currentFloor.doFloorEndTouchAction()
-                    self.currentFloor = None
-                else:
-                    z = point.height + self.cameraHeight
-                    def do(toUpdateList):
-                        self.position = self.position.setZ(z)
-                    self.actions.addAction(do)
         self.actions.addAction(do)
-    # end def scan
 
+        if self.newCurrentFloor is not None:
+            point = self._topPoint(self.newCurrentFloor,
+                                   self.position + self.positionChange)
+            if point is None:
+                self.newZVelocity = 0.0
+                self.newCurrentFloor.doFloorEndTouchAction()
+                self.newCurrentFloor = None
+            else:
+                z = point.height + self.cameraHeight
+                def do(toUpdateList):
+                    self.position = self.position.setZ(z)
+                self.actions.addAction(do)
+
+    # end def scan
 
     def _checkSolidMeshCollision(self, collision):
         topPoint = self._topPoint(collision,
