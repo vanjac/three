@@ -52,8 +52,11 @@ class GLRunner(GameInterface):
     def draw(self):
         super().draw()
 
-        # clear screen and depth buffer
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        if self.world.skyCamera == None or self.world.hasRayCollisionRequest():
+            # clear screen and depth buffer
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        else:
+            glClear(GL_DEPTH_BUFFER_BIT)
 
         # Ray collisions
         while self.world.hasRayCollisionRequest():
@@ -132,22 +135,22 @@ class GLRunner(GameInterface):
         # end for each ray collision request
 
 
-        # Translate camera
+        if self.world.skyCamera != None:
+            glPushMatrix()
+            self.translateCamera(self.world.skyCamera.getPosition(),
+                                 self.world.camera.getRotation())
+            self.drawRenderMeshes(self.world.skyRenderMeshes)
+            glPopMatrix()
+            glClear(GL_DEPTH_BUFFER_BIT)
 
         glPushMatrix()
-        rotate = -self.world.camera.getRotation()
-        translate = -self.world.camera.getPosition()
-        glRotate(math.degrees(rotate.x), 0, 0, 1)
-        glRotate(math.degrees(rotate.y), 1, 0, 0)
-        glRotate(math.degrees(rotate.z) + 180.0, 0, 1, 0)
-        glTranslate(translate.y, translate.z, translate.x)
+        self.translateCamera(self.world.camera.getPosition(),
+                             self.world.camera.getRotation())
 
         if self.lightingEnabled:
             glEnable(GL_LIGHTING)
 
         self.updateLights()
-
-        # Draw RenderMeshes
 
         self.drawRenderMeshes(self.world.renderMeshes)
 
@@ -160,6 +163,15 @@ class GLRunner(GameInterface):
         self.instance.drawText(str(self.instance.getFps()) + " FPS",
                                GLUT_BITMAP_9_BY_15,
                                4, self.instance.windowHeight() - 19) # 4+15
+
+
+    def translateCamera(self, translation, rotation):
+        rotate = -rotation
+        translate = -translation
+        glRotate(math.degrees(rotate.x), 0, 0, 1)
+        glRotate(math.degrees(rotate.y), 1, 0, 0)
+        glRotate(math.degrees(rotate.z) + 180.0, 0, 1, 0)
+        glTranslate(translate.y, translate.z, translate.x)
 
 
     def drawRenderMeshes(self, renderMeshes):
