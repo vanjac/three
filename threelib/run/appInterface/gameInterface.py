@@ -67,6 +67,7 @@ class GameInterface(AppInterface):
 
         self.world.simulator.init()
         self.world.simulator.start()
+        self.world.simulator.update()
 
         self.runner = GameRunner(self.world.simulator, time.time())
 
