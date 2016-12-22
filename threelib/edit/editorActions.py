@@ -1125,7 +1125,7 @@ class EditorActions:
 
     def multiplyGrid(self, factor):
         gridType = self.adjustor.gridType()
-        self.state.setGridSize(gridType, \
+        self.state.setGridSize(gridType,
                                self.state.getGridSize(gridType) * factor)
 
     def toggleSnap(self):

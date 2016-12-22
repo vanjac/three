@@ -82,7 +82,7 @@ class EditorObject:
         """
         bounds = self.getBounds()
         pos = self.getPosition()
-        return (bounds[0] + pos, bounds[1] + pos)
+        return bounds[0] + pos, bounds[1] + pos
 
     def getCenter(self):
         """
@@ -272,7 +272,7 @@ class WorldObject(EditorObject):
         return Rotate(0, 0, 0)
 
     def getBounds(self):
-        return (Vector(0, 0, 0), Vector(0, 0, 0))
+        return Vector(0, 0, 0), Vector(0, 0, 0)
 
     def getMesh(self):
         return None
@@ -330,7 +330,7 @@ class PointObject(EditorObject):
         return self.rotation
 
     def getBounds(self):
-        return (Vector(0, 0, 0), Vector(0, 0, 0))
+        return Vector(0, 0, 0), Vector(0, 0, 0)
 
     def setPosition(self, position):
         self.position = position
@@ -416,7 +416,7 @@ class MeshObject(EditorObject):
 
     def getBounds(self):
         if len(self.mesh.getVertices()) == 0:
-            return (Vector(0, 0, 0), Vector(0, 0, 0))
+            return Vector(0, 0, 0), Vector(0, 0, 0)
         firstVertexPos = self.mesh.getVertices()[0].getPosition()
         lowX = firstVertexPos.x
         lowY = firstVertexPos.y
@@ -438,7 +438,7 @@ class MeshObject(EditorObject):
                 lowZ = pos.z
             if pos.z > highZ:
                 highZ = pos.z
-        return ( Vector(lowX, lowY, lowZ), Vector(highX, highY, highZ) )
+        return Vector(lowX, lowY, lowZ), Vector(highX, highY, highZ)
 
     def setPosition(self, position):
         self.position = position
