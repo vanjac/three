@@ -42,7 +42,7 @@ class SolidMeshObject(MeshObject):
     def _isInSky(self):
         parent = self
         while True:
-            parent = self.getParent()
+            parent = parent.getParent()
             if parent == None:
                 return False
             if parent.getName() == "skycam":
