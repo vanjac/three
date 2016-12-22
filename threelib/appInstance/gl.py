@@ -32,8 +32,8 @@ class GLAppInstance(AppInstance):
         self.width = 1024
         self.height = 736
         self.fov = 60 # field of view
-        self.nearClip = 1
-        self.farClip = 3072.0
+        self.nearClip = 0.1
+        self.farClip = 2048.0
 
         # Mouse info
         self.mouseButtonPressed = [ False for i in range(0, 7) ]
