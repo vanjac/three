@@ -5,6 +5,7 @@ from threelib.run.runner import GameRunner
 import threelib.world
 from threelib.sim.input import SimpleAxisInput
 from threelib.sim.input import SimpleButtonInput
+from threelib.run.controller import GameController
 
 import time
 
@@ -22,9 +23,10 @@ def unshift(char):
         return char
 
 
-class GameInterface(AppInterface):
+class GameInterface(AppInterface, GameController):
 
     def __init__(self, state):
+        GameController.__init__(self)
         self.instance = None
         self.world = None
         self.initialState = state
@@ -45,6 +47,10 @@ class GameInterface(AppInterface):
         self.setState(self.initialState)
 
     def setState(self, state):
+        if self.world is not None:
+            self.world.simulator.end()
+            self.world.simulator.destroy()
+
         self.world = state.world
 
         self.keyInputs = { }
@@ -70,6 +76,9 @@ class GameInterface(AppInterface):
         self.world.simulator.update()
 
         self.runner = GameRunner(self.world.simulator, time.time())
+
+    def getRunner(self):
+        return self.runner
 
     def draw(self):
         self.runner.tick(time.time())
