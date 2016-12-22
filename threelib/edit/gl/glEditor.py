@@ -433,14 +433,14 @@ class GLEditor(EditorInterface):
         r = index % 256
         g = int(index / 256) % 256
         b = int(index / (256**2)) % 256
-        return (float(r)/256.0, float(g)/256.0, float(b)/256.0)
+        return float(r) / 256.0, float(g) / 256.0, float(b) / 256.0
 
     def subObjectIndexToColor(self, objectIndex, subIndex):
         objectIndex = int(objectIndex) + 1
         r = int(subIndex) % 256
         g = objectIndex % 256
         b = int(objectIndex / 256) % 256
-        return (float(r)/256.0, float(g)/256.0, float(b)/256.0)
+        return float(r) / 256.0, float(g) / 256.0, float(b) / 256.0
 
     # return -1 for no object
     def colorToObjectIndex(self, color):

@@ -138,11 +138,11 @@ class OriginAdjustor(Adjustor):
 
 # convert a tuple of 3 values to degrees
 def tupleToDegrees(t):
-    return (math.degrees(t[0]), math.degrees(t[1]), math.degrees(t[2]))
+    return math.degrees(t[0]), math.degrees(t[1]), math.degrees(t[2])
 
 # convert a tuple of 3 values to radians
 def tupleToRadians(t):
-    return (math.radians(t[0]), math.radians(t[1]), math.radians(t[2]))
+    return math.radians(t[0]), math.radians(t[1]), math.radians(t[2])
 
 
 class RotateAdjustor(Adjustor):
@@ -453,7 +453,7 @@ class ExtrudeAdjustor(Adjustor):
 
 
     def getAxes(self):
-        return (self.extrudeAmount, 0.0, 0.0)
+        return self.extrudeAmount, 0.0, 0.0
 
     def setAxes(self, values):
         diff = values[0] - self.extrudeAmount
@@ -485,7 +485,7 @@ class MultiExtrudeAdjustor(Adjustor):
         self.extrudeAmount = 0
 
     def getAxes(self):
-        return (self.extrudeAmount, 0.0, 0.0)
+        return self.extrudeAmount, 0.0, 0.0
 
     def setAxes(self, values):
         self.extrudeAmount = values[0]
@@ -583,7 +583,7 @@ class MaterialRotateAdjustor(Adjustor):
         self.value = 0.0 # in degrees
 
     def getAxes(self):
-        return (self.value, 0.0, 0.0)
+        return self.value, 0.0, 0.0
 
     def setAxes(self, values):
         newValue = values[0]

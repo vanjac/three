@@ -21,8 +21,8 @@ class FirstPersonFlyingPlayer(Entity):
         self.walkSpeed = 50.0
 
     def scan(self, timeElapsed, totalTime):
-        rotation = Rotate(0, -float(self.yLookAxis.getChange()), \
-                             -float(self.xLookAxis.getChange()))
+        rotation = Rotate(0, -float(self.yLookAxis.getChange()),
+                          -float(self.xLookAxis.getChange()))
         translation = Vector( self.yWalkAxis.getValue(),
                              -self.xWalkAxis.getValue()).limitMagnitude(1.0) \
                       *timeElapsed * self.walkSpeed
@@ -32,9 +32,9 @@ class FirstPersonFlyingPlayer(Entity):
 
             # prevent from looking too far up or down
             yRot = self.rotation.y
-            if yRot > math.pi/2 and yRot < math.pi:
+            if math.pi/2 < yRot < math.pi:
                 self.rotation = self.rotation.setY(math.pi/2)
-            if yRot > math.pi and yRot < math.pi*3/2:
+            if math.pi < yRot < math.pi*3/2:
                 self.rotation = self.rotation.setY(math.pi*3/2)
 
             movement = translation.rotate2(self.rotation.z)

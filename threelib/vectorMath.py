@@ -31,7 +31,7 @@ def fixRotation(n):
     if n < 0:
         circles = math.ceil(-n / CIRCLE)
         n += circles * CIRCLE
-    n = n % CIRCLE
+    n %= CIRCLE
     return n
 
 def doubleTupleToString(t):
@@ -90,7 +90,7 @@ def calculatePlaneConstants(point, normal):
     Given a point on a plane and its normal, calculate the constants of the
     equation: ax + by + cz + d = 0. Return a tuple of 4 numbers: (a, b, c, d).
     """
-    return (normal.x, normal.y, normal.z, -point.dot(normal))
+    return normal.x, normal.y, normal.z, -point.dot(normal)
 
 def rotatePlane(point, normal, rotate):
     """
@@ -194,7 +194,7 @@ class Vector:
         """
         Return a tuple of 3 numbers for the Vector.
         """
-        return (self.x, self.y, self.z)
+        return self.x, self.y, self.z
 
     def isZero(self):
         """
@@ -547,7 +547,7 @@ class Rotate:
         Return a tuple of 3 numbers for the Rotate - the rotations around the
         x, y, and z axes.
         """
-        return (self.x, self.y, self.z)
+        return self.x, self.y, self.z
 
     def getDegreesTuple(self):
         """

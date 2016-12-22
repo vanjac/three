@@ -160,9 +160,9 @@ class FirstPersonPlayer(Entity):
 
             # prevent from looking too far up or down
             yRot = self.rotation.y
-            if yRot > math.pi/2 and yRot < math.pi:
+            if math.pi/2 < yRot < math.pi:
                 self.rotation = self.rotation.setY(math.pi/2)
-            if yRot > math.pi and yRot < math.pi*3/2:
+            if math.pi < yRot < math.pi*3/2:
                 self.rotation = self.rotation.setY(math.pi*3/2)
 
             toUpdateList.append(self)
@@ -200,7 +200,7 @@ class FirstPersonPlayer(Entity):
                 previousZ = self._playerBottom(self.position).z
 
                 # if player just hit this floor
-                if currentZ <= topPoint.height and previousZ > topPoint.height:
+                if currentZ <= topPoint.height < previousZ:
                     self.newZVelocity = 0.0
                     self.newCurrentFloor = collision
                     collision.doFloorStartTouchAction()
@@ -277,8 +277,7 @@ class FirstPersonPlayer(Entity):
                 previousZ = self._playerTop(self.position).z
 
                 # if player just hit this ceiling
-                if currentZ >= bottomPoint.height \
-                        and previousZ < bottomPoint.height:
+                if currentZ >= bottomPoint.height > previousZ:
                     self.newZVelocity = 0.0
                     collision.doCeilingCollideAction()
                 else:

@@ -228,7 +228,7 @@ class CollisionMesh(threelib.sim.base.Entity):
     def _translatePointForConvexHull(self, point):
         # translate the point to factor in the translation and Z rotation of the
         # convex hull
-        return (point - self.getPosition()).rotate2(-(self.getRotation().z))
+        return (point - self.getPosition()).rotate2(-self.getRotation().z)
 
     def _translateConvexHullPointToAbsolute(self, point):
         return point.rotate2(self.getRotation().z) + self.getPosition()

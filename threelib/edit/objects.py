@@ -43,7 +43,7 @@ class SolidMeshObject(MeshObject):
         parent = self
         while True:
             parent = parent.getParent()
-            if parent == None:
+            if parent is None:
                 return False
             if parent.getName() == "skycam":
                 return True

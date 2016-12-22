@@ -52,7 +52,7 @@ class GLRunner(GameInterface):
     def draw(self):
         super().draw()
 
-        if self.world.skyCamera == None or self.world.hasRayCollisionRequest():
+        if self.world.skyCamera is None or self.world.hasRayCollisionRequest():
             # clear screen and depth buffer
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         else:
@@ -135,7 +135,7 @@ class GLRunner(GameInterface):
         # end for each ray collision request
 
 
-        if self.world.skyCamera != None:
+        if self.world.skyCamera is not None:
             glPushMatrix()
             self.translateCamera(self.world.skyCamera.getPosition(),
                                  self.world.camera.getRotation())
@@ -272,7 +272,7 @@ class GLRunner(GameInterface):
         if number > GLRunner.MAX_LIGHTS:
             return None
         else:
-            return [GL_LIGHT0, GL_LIGHT1, GL_LIGHT2, GL_LIGHT3, \
+            return [GL_LIGHT0, GL_LIGHT1, GL_LIGHT2, GL_LIGHT3,
                     GL_LIGHT4, GL_LIGHT5, GL_LIGHT6, GL_LIGHT7] [number]
 
     def drawRayCollision(self):
@@ -313,7 +313,7 @@ class GLRunner(GameInterface):
         r = int(subIndex) % 256
         g = objectIndex % 256
         b = int(objectIndex / 256) % 256
-        return (float(r)/256.0, float(g)/256.0, float(b)/256.0)
+        return float(r) / 256.0, float(g) / 256.0, float(b) / 256.0
 
     # returns a tuple of (rayCollisionMeshIndex, faceIndex)
     # renderMeshIndex is -1 for nothing selected
