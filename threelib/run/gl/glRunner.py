@@ -18,7 +18,7 @@ class GLRunner(GameInterface):
 
     MAX_LIGHTS = 8
 
-    def __init__(self, state=None):
+    def __init__(self, state):
         super().__init__(state)
         print("OpenGL 1 Game Runner")
         self.lightingEnabled = False
@@ -33,6 +33,9 @@ class GLRunner(GameInterface):
         glMaterialfv(GL_FRONT, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
         glMaterialfv(GL_FRONT, GL_SHININESS, [50.0])
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.0, 0.0, 0.0, 0.0])
+
+    def setState(self, state):
+        super().setState(state)
 
         lightIndex = 0
         for light in self.world.directionalLights \

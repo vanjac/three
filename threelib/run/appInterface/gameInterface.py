@@ -26,9 +26,10 @@ class GameInterface(AppInterface):
 
     def __init__(self, state):
         self.instance = None
+        self.world = None
+        self.initialState = state
 
-        self.state = state
-        self.world = state.world
+        self.mouseLocked = False
 
     def init(self):
         self.mouseXInput = SimpleAxisInput()
@@ -38,8 +39,15 @@ class GameInterface(AppInterface):
         self.mouseMiddleInput = SimpleButtonInput()
         self.mouseRightInput = SimpleButtonInput()
 
-        self.keyInputs = { }
+        self.instance.lockMouse()
+        self.mouseLocked = True
 
+        self.setState(self.initialState)
+
+    def setState(self, state):
+        self.world = state.world
+
+        self.keyInputs = { }
 
         # TODO: remove these once input customization has been added!
         self.world.axisInputs['mouse-x'] = self.mouseXInput
@@ -53,19 +61,14 @@ class GameInterface(AppInterface):
         self.world.buttonInputs['d'] = self._getKeyInput('d')
         self.world.buttonInputs['space'] = self._getKeyInput(' ')
 
-        self.mouseLocked = False
-
         print("Building world...")
-        threelib.world.buildWorld(self.state)
+        threelib.world.buildWorld(state)
         print("Done building world")
 
         self.world.simulator.init()
         self.world.simulator.start()
 
         self.runner = GameRunner(self.world.simulator, time.time())
-
-        self.instance.lockMouse()
-        self.mouseLocked = True
 
     def draw(self):
         self.runner.tick(time.time())
