@@ -388,10 +388,10 @@ class EditorInterface(EditorActions, AppInterface):
             self.state.cameraRotation += movement
             # prevent from looking too far up or down
             yRot = self.state.cameraRotation.y
-            if yRot > math.pi/2 and yRot < math.pi:
+            if math.pi/2 < yRot < math.pi:
                 self.state.cameraRotation = self.state.cameraRotation.setY(
                     math.pi/2)
-            if yRot > math.pi and yRot < math.pi*3/2:
+            if math.pi < yRot < math.pi*3/2:
                 self.state.cameraRotation = self.state.cameraRotation.setY(
                     math.pi*3/2)
         elif self.inAdjustMode:
