@@ -34,7 +34,19 @@ class GLRunner(GameInterface):
         glMaterialfv(GL_FRONT, GL_SHININESS, [50.0])
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.0, 0.0, 0.0, 0.0])
 
+    def _fullscreenMessage(self, message):
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glColor(1, 1, 1)
+        self.instance.drawText(message, GLUT_BITMAP_9_BY_15,
+                               self.instance.width / 2,
+                               self.instance.height / 2)
+        glFlush()
+        glFinish()
+        glutSwapBuffers()
+
     def setState(self, state):
+        self._fullscreenMessage("Building world...")
+
         if self.world is not None:
             self.instance.clearMaterials(self.world)
 
@@ -52,6 +64,8 @@ class GLRunner(GameInterface):
             lightIndex += 1
         print(str(lightIndex) + " lights")
         self.lightingEnabled = lightIndex != 0
+
+        self._fullscreenMessage("Loading textures...")
 
         self.instance.updateMaterials(self.world)
 
