@@ -14,6 +14,7 @@ class World:
 
         self.camera = None # special Entity
         self.skyCamera = None
+        self.overlayCamera = None
 
         self.materials = [ ] # list of MaterialReference's
         self.addedMaterials = [ ]
@@ -24,6 +25,7 @@ class World:
         self.rayCollisionMeshes = [ ]
         self.collisionMeshes = [ ]
         self.skyRenderMeshes = [ ]
+        self.overlayRenderMeshes = [ ]
 
         self.renderMeshSubdivideSize = 144
 

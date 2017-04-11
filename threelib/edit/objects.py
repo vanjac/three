@@ -48,8 +48,18 @@ class SolidMeshObject(MeshObject):
             if parent.getName() == "skycam":
                 return True
 
+    def _isInOverlay(self):
+        parent = self
+        while True:
+            parent = parent.getParent()
+            if parent is None:
+                return False
+            if parent.getName() == "overlaycam":
+                return True
+
     def addToWorld(self, world):
         inSky = self._isInSky()
+        inOverlay = self._isInOverlay()
 
         threelib.script.runScript(self.script)
         entity = threelib.script.setVariable(self.constructor,
@@ -67,11 +77,13 @@ class SolidMeshObject(MeshObject):
             world.simulator.addObject(renderMesh)
             if inSky:
                 world.skyRenderMeshes.append(renderMesh)
+            elif inOverlay:
+                world.overlayRenderMeshes.append(renderMesh)
             else:
                 world.renderMeshes.append(renderMesh)
             entity.addChild(renderMesh)
 
-        if self.generateRayCollision and not inSky:
+        if self.generateRayCollision and (not inSky) and (not inOverlay):
             rayCollisionMesh = RayCollisionMesh(self.getMesh())
             rayCollisionMesh.setEnabled(self.rayCollisionEnabled)
             def useAction():
@@ -84,7 +96,7 @@ class SolidMeshObject(MeshObject):
             world.rayCollisionMeshes.append(rayCollisionMesh)
             entity.addChild(rayCollisionMesh)
 
-        if self.generateCollision and not inSky:
+        if self.generateCollision and (not inSky) and (not inOverlay):
             collisionMesh = CollisionMesh(self.getMesh())
             collisionMesh.setEnabled(self.collisionEnabled)
             collisionMesh.setSolid(self.isSolid)
@@ -228,6 +240,8 @@ class ScriptPointObject(PointObject):
             world.camera = entity
         elif self.getName() == "skycam":
             world.skyCamera = entity
+        elif self.getName() == "overlaycam":
+            world.overlayCamera = entity
 
         return entity
 
