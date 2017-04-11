@@ -162,6 +162,30 @@ class GLRunner(GameInterface):
         if self.lightingEnabled:
             glDisable(GL_LIGHTING)
 
+        if self.world.overlayCamera is not None:
+            glClear(GL_DEPTH_BUFFER_BIT)
+
+            glMatrixMode(GL_PROJECTION)
+            glPushMatrix()
+            glLoadIdentity()
+            glOrtho(-64 * self.instance.getAspect(),
+                    64 * self.instance.getAspect(),
+                    -64, 64,
+                    self.instance.getNearClip(), self.instance.getFarClip())
+
+            glMatrixMode(GL_MODELVIEW)
+            glPushMatrix()
+
+            # do things
+            self.translateCamera(self.world.overlayCamera.getPosition(),
+                                 self.world.overlayCamera.getRotation())
+            self.drawRenderMeshes(self.world.overlayRenderMeshes)
+
+            glPopMatrix()
+            glMatrixMode(GL_PROJECTION)
+            glPopMatrix()
+            glMatrixMode(GL_MODELVIEW)
+
         # Frame rate text
         self.instance.drawText(str(self.instance.getFps()) + " FPS",
                                GLUT_BITMAP_9_BY_15,
