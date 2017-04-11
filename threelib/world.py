@@ -268,6 +268,7 @@ def buildWorld(editorState):
             faces = list(mesh.getFaces()) # prevent problems as new faces are added
             for face in faces:
                 subdivideMeshFace(mesh, face, world.renderMeshSubdivideSize)
+            mesh.combineDuplicateVertices()
 
 def subdivideMeshFace(mesh, face, maxSize):
     area = face.getArea()
