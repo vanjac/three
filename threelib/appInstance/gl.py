@@ -326,6 +326,11 @@ class GLAppInstance(AppInstance):
 
     # gl-specific and three-specific functions:
 
+    def clearMaterials(self, world):
+        for m in world.materials:
+            texName = m.getNumber()
+            glDeleteTextures([texName])
+
     def updateMaterials(self, world):
         """
         Should be called every loop

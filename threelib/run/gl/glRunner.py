@@ -35,6 +35,9 @@ class GLRunner(GameInterface):
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.0, 0.0, 0.0, 0.0])
 
     def setState(self, state):
+        if self.world is not None:
+            self.instance.clearMaterials(self.world)
+
         super().setState(state)
 
         lightIndex = 0
