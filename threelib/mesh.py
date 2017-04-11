@@ -1,7 +1,7 @@
 __author__ = "jacobvanthoog"
 
 import math
-from threelib.vectorMath import Vector
+from threelib.vectorMath import Vector, isclose
 from collections import namedtuple
 from threelib import vectorMath
 
@@ -232,6 +232,16 @@ class MeshFace:
         normal = self.getNormal()
         if normal is None:
             return
+        # fix for unpredictable texture vertices with up or down normals
+        if isclose(normal.x, 0.0):
+            normal = normal.setX(0)
+        if isclose(normal.y, 0.0):
+            normal = normal.setY(0)
+        if isclose(normal.z, 1.0):
+            normal = normal.setZ(1)
+        if isclose(normal.z, -1.0):
+            normal = normal.setZ(-1)
+
         normalRot = normal.rotation()
 
         i = 0
