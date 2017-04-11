@@ -612,11 +612,11 @@ class MaterialScaleAdjustor(Adjustor):
 
     def setAxes(self, values):
         newValue = Vector.fromTuple(values)
-        if newValue.x <= 0:
+        if newValue.x == 0:
             newValue = newValue.setX(self.value.x)
-        if newValue.y <= 0:
+        if newValue.y == 0:
             newValue = newValue.setY(self.value.y)
-        if newValue.z <= 0:
+        if newValue.z == 0:
             newValue = newValue.setZ(self.value.z)
         factor = newValue / self.value
         self.value = newValue
