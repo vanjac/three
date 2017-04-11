@@ -54,3 +54,12 @@ def convert_1_3_to_1_4(state):
     state.MAJOR_VERSION = 1
     state.MINOR_VERSION = 4
     return state
+
+@editorStateConverter(1, 4)
+def convert_1_4_to_1_5(state):
+    state.world.overlayCamera = None
+    state.world.overlayRenderMeshes = [ ]
+
+    state.MAJOR_VERSION = 1
+    state.MINOR_VERSION = 5
+    return state
