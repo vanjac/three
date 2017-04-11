@@ -484,23 +484,36 @@ class Mesh:
                 face.removeVertex(v)
 
         i = 0
+        verticesToDelete = [ ]
         while i < len(self.vertices):
             v1 = self.vertices[i]
-            verticesToDelete = [ ]
+            if v1 in verticesToDelete:
+                i += 1
+                continue
             for j in range(i + 1, len(self.vertices)):
                 v2 = self.vertices[j]
+                if v2 in verticesToDelete:
+                    continue
                 if v1.getPosition().isClose(v2.getPosition()):
                     # replace all instances of v2 in every face with v1
-                    for face in v2.getReferences():
-                        for vertex in face.getVertices():
+                    for face in list(v2.getReferences()):
+                        for vertex in list(face.getVertices()):
                             if vertex.vertex == v2:
                                 face.replaceVertex(vertex, MeshFaceVertex(
                                     vertex=v1, textureVertex=Vector(0,0)))
                     verticesToDelete.append(v2)
-            for v in verticesToDelete:
-                self.vertices.remove(v)
-
             i += 1
+
+        for v in verticesToDelete:
+            self.vertices.remove(v)
+
+    def addMissingVertices(self):
+        for f in self.faces:
+            for vertex in f.getVertices():
+                v = vertex.vertex
+                if v not in self.vertices:
+                    self.vertices.append(v)
+                    v.addReference(f)
 
     def isEmpty(self):
         """
