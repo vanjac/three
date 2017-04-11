@@ -31,7 +31,7 @@ class EditorObject:
         self.selected = False
 
     def __repr__(self):
-        if name == "":
+        if self.name == "":
             return "[Unnamed object]"
         else:
             return self.getName()
