@@ -9,7 +9,7 @@ from threelib.world import World
 class EditorState:
 
     CURRENT_MAJOR_VERSION = 1
-    CURRENT_MINOR_VERSION = 5
+    CURRENT_MINOR_VERSION = 6
 
     SELECT_OBJECTS = 0
     SELECT_FACES = 1

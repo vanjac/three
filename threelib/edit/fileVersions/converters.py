@@ -63,3 +63,11 @@ def convert_1_4_to_1_5(state):
     state.MAJOR_VERSION = 1
     state.MINOR_VERSION = 5
     return state
+
+@editorStateConverter(1, 5)
+def convert_1_5_to_1_6(state):
+    state.world.audioStream = None
+
+    state.MAJOR_VERSION = 1
+    state.MINOR_VERSION = 6
+    return state

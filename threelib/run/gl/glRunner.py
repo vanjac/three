@@ -14,6 +14,8 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
+import pyaudio
+
 class GLRunner(GameInterface):
 
     MAX_LIGHTS = 8
@@ -34,6 +36,10 @@ class GLRunner(GameInterface):
         glMaterialfv(GL_FRONT, GL_SHININESS, [50.0])
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.0, 0.0, 0.0, 0.0])
 
+        self.pyaudio = pyaudio.PyAudio()
+        self.pyaudioStream = None
+        self.stream = None
+
     def _fullscreenMessage(self, message):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glColor(1, 1, 1)
@@ -49,6 +55,11 @@ class GLRunner(GameInterface):
 
         if self.world is not None:
             self.instance.clearMaterials(self.world)
+            if self.pyaudioStream is not None:
+                self.pyaudioStream.stop_stream()
+                self.pyaudioStream.close()
+                self.pyaudioStream = None
+                self.stream = None
 
         super().setState(state)
 
@@ -71,6 +82,44 @@ class GLRunner(GameInterface):
 
     def draw(self):
         super().draw()
+
+        # AUDIO
+
+        if self.pyaudioStream is not None \
+                and not self.pyaudioStream.is_active():
+            self.world.audioStream = None
+
+        if self.world.audioStream is not self.stream:
+            if self.stream is not None:
+                self.pyaudioStream.stop_stream()
+                self.pyaudioStream.close()
+
+            if self.world.audioStream is None:
+                self.pyaudioStream = None
+                self.stream = None
+            else:
+                self.stream = self.world.audioStream
+
+                def streamCallback(in_data, frame_count, time_info, status):
+                    data = self.stream.read(frame_count)
+                    if self.stream.finished():
+                        return data, pyaudio.paComplete
+                    else:
+                        return data, pyaudio.paContinue
+
+                properties = self.stream.getSampleProperties()
+                audioFormat = pyaudio.get_format_from_width(
+                    width=properties.width,
+                    unsigned=properties.unsigned)
+                self.pyaudioStream = self.pyaudio.open(
+                    format=audioFormat,
+                    channels=properties.channels,
+                    rate=properties.rate,
+                    output=True,
+                    stream_callback=streamCallback)
+
+                self.pyaudioStream.start_stream()
+
 
         if self.world.skyCamera is None or self.world.hasRayCollisionRequest():
             # clear screen and depth buffer

@@ -38,6 +38,8 @@ class World:
 
         self.rayCollisionRequests = [ ]
 
+        self.audioStream = None
+
     def onLoad(self):
         """
         Internal method. Called when the world is first loaded.
@@ -218,6 +220,7 @@ def buildWorld(editorState):
     threelib.script.runScript("from threelib.vectorMath import *")
     threelib.script.runScript("from threelib.mesh import *")
     threelib.script.runScript("from threelib.files import *")
+    threelib.script.runScript("from threelib.sim.audio import *")
     threelib.script.runScript("from threelib.sim.base import *")
     threelib.script.runScript("from threelib.sim.graphics import *")
     threelib.script.runScript("from threelib.sim.input import *")
