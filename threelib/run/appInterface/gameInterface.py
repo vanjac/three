@@ -122,12 +122,20 @@ class GameInterface(AppInterface, GameController):
             self.mouseLocked = False
             self.instance.unlockMouse()
 
-        char = unshift(key.decode("utf-8"))
+        try:
+            char = unshift(key.decode("utf-8"))
+        except UnicodeDecodeError:
+            # happens when fn + volume change keys are used, for example
+            return
         if char in self.keyInputs:
             self.keyInputs[char].setPressed(True)
 
     def keyReleased(self, key):
-        char = unshift(key.decode("utf-8"))
+        try:
+            char = unshift(key.decode("utf-8"))
+        except UnicodeDecodeError:
+            # happens when fn + volume change keys are used, for example
+            return
         if char in self.keyInputs:
             self.keyInputs[char].setPressed(False)
 
