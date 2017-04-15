@@ -167,8 +167,14 @@ class EditorActions:
             print("Nothing selected")
         else:
             print("Duplicate object(s)")
+            clones = [ ]
             for o in self.state.selectedObjects:
-                self.state.objects.append(o.clone())
+                clone = o.clone()
+                clones.append(clone)
+                self.state.objects.append(clone)
+            self.state.deselectAll()
+            for clone in clones:
+                self.state.select(clone)
 
             self.translateSelected()
 
