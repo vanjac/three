@@ -275,7 +275,7 @@ class Entity(SimObject):
         def do(toUpdateList):
             if self.parent is not None:
                 self.parent.removeChild(self)
-                toUpdateList.append(parent)
+                toUpdateList.append(self.parent)
         self.actions.addAction(do)
 
     def getChildren(self):
@@ -297,9 +297,10 @@ class Entity(SimObject):
         Remove a child. No effect until update().
         """
         def do(toUpdateList):
-            self.children.remove(child)
-            child.setParent(None)
-            toUpdateList.append(child)
+            if child in self.children:
+                self.children.remove(child)
+                child.setParent(None)
+                toUpdateList.append(child)
         self.actions.addAction(do)
 
     def update(self):
