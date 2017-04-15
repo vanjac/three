@@ -181,6 +181,51 @@ class World:
         """
         return len(self.rayCollisionRequests) > 0
 
+    def addObjects(self, objects, createTemplates=False):
+        """
+        Add an editor object or list of editor objects to the world.
+        """
+        if not type(objects).__name__ == 'list':
+            objects = [objects]
+
+        numRenderMeshes = len(self.renderMeshes) # before more are added
+
+        objectEntities = {}
+
+        for o in objects:
+            if o.getTemplateName() != "" and createTemplates:
+                threelib.script.setVariableValue(o.getTemplateName(), o)
+            else:
+                objectEntities[o] = o.addToWorld(self)
+
+        # add children
+        for editorObject, entity in objectEntities.items():
+            if entity is not None:
+                for child in editorObject.getChildren():
+                    try:
+                        childEntity = objectEntities[child]
+                    except KeyError:
+                        childEntity = None
+                    if childEntity is None:
+                        print("WARNING: Cannot add", child, "as a child of",
+                              editorObject, "- No corresponding entity")
+                    else:
+                        entity.addChild(childEntity)
+
+        if len(self.directionalLights) > 0 or \
+                len(self.positionalLights) > 0 or \
+                len(self.spotLights) > 0:
+            # subdivide renderMesh faces
+            print("Subdividing faces...")
+            for renderMesh in self.renderMeshes[numRenderMeshes:]:
+                mesh = renderMesh.getMesh().clone()
+                renderMesh.setMesh(mesh)
+                faces = list(
+                    mesh.getFaces())  # prevent problems as new faces are added
+                for face in faces:
+                    subdivideMeshFace(mesh, face, self.renderMeshSubdivideSize)
+                mesh.combineDuplicateVertices()
+
 
 class Resource:
 
@@ -237,41 +282,11 @@ def buildWorld(editorState):
 
     editorState.worldObject.addToWorld(world)
 
-    objectEntities = { }
-
-    for o in editorState.objects:
-        objectEntities[o] = o.addToWorld(world)
-
-    # add children
-    for editorObject, entity in objectEntities.items():
-        if entity is not None:
-            for child in editorObject.getChildren():
-                try:
-                    childEntity = objectEntities[child]
-                except KeyError:
-                    childEntity = None
-                if childEntity is None:
-                    print("WARNING: Cannot add", child, "as a child of",
-                          editorObject, "- No corresponding entity")
-                else:
-                    entity.addChild(childEntity)
+    world.addObjects(editorState.objects, createTemplates=True)
 
     if world.camera is None:
         world.camera = Entity()
         world.simulator.addObject(world.camera)
-
-    if len(world.directionalLights) > 0 or \
-       len(world.positionalLights) > 0 or \
-       len(world.spotLights) > 0:
-        # subdivide renderMesh faces
-        print("Subdividing faces...")
-        for renderMesh in world.renderMeshes:
-            mesh = renderMesh.getMesh().clone()
-            renderMesh.setMesh(mesh)
-            faces = list(mesh.getFaces()) # prevent problems as new faces are added
-            for face in faces:
-                subdivideMeshFace(mesh, face, world.renderMeshSubdivideSize)
-            mesh.combineDuplicateVertices()
 
 def subdivideMeshFace(mesh, face, maxSize):
     area = face.getArea()

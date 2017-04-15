@@ -71,3 +71,12 @@ def convert_1_5_to_1_6(state):
     state.MAJOR_VERSION = 1
     state.MINOR_VERSION = 6
     return state
+
+@editorStateConverter(1, 6)
+def convert_1_6_to_1_7(state):
+    for o in state.objects:
+        o.templateName = ""
+
+    state.MAJOR_VERSION = 1
+    state.MINOR_VERSION = 7
+    return state

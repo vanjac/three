@@ -29,6 +29,7 @@ class EditorObject:
         self.children = [ ]
         self.parent = None
         self.selected = False
+        self.templateName = ""
 
     def __repr__(self):
         if self.name == "":
@@ -155,6 +156,7 @@ class EditorObject:
         properties = { "name": self.getName(),
                        "position": str(self.getPosition()),
                        "rotation": str(self.getRotation()),
+                       "templateName": self.getTemplateName()
                        }
         return properties
 
@@ -171,6 +173,8 @@ class EditorObject:
             if key == "rotation":
                 self.setRotation(Rotate.fromDegreesTuple(
                     stringToTripleTuple(value)))
+            if key == "templateName":
+                self.setTemplateName(value)
 
     def getParent(self):
         """
@@ -225,6 +229,22 @@ class EditorObject:
         """
         self.selected = selected
 
+    def getTemplateName(self):
+        """
+        If not an empty string, the object will not be added to the world during
+        the ``buildWorld`` phase. Instead this a variable with the this name
+        will be set to this EditorObject.EditorObject.
+        """
+        return self.templateName
+
+    def setTemplateName(self, template):
+        """
+        Set the template variable name of this object (see ``getTemplateName``).
+        An empty string means this isn't a template and will be added to the
+        world.
+        """
+        self.templateName = template
+
     def clone(self):
         """
         Clone this object. The new object will NOT have a parent or children.
@@ -244,6 +264,7 @@ class EditorObject:
         clone.setName(self.getName())
         clone.setPosition(self.getPosition())
         clone.setRotation(self.getRotation())
+        clone.setTemplateName(self.getTemplateName())
 
     def addToWorld(self, world):
         """
