@@ -119,7 +119,9 @@ class EditorActions:
                 if line == '':
                     pass
                 elif '=' in line:
-                    key, value = line.split('=')
+                    splitPoint = line.index('=')
+                    key = line[:splitPoint]
+                    value = line[splitPoint+1:]
                     props[key] = value
                 elif line.endswith(':'):
                     inMultiLine = True
