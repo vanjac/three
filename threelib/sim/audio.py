@@ -11,13 +11,18 @@ SampleProperties = namedtuple("SampleProperties",
     ["rate", "channels", "width", "unsigned"])
 
 DEFAULT_PROPERTIES = \
-    SampleProperties(rate=44100, width=2, unsigned=True, channels=1)
+    SampleProperties(rate=44100, width=2, unsigned=False, channels=1)
+
+# TODO: width of 4 doesn't work
 
 def _structFormatForSampleProperties(props):
-    c = "xbhiq"[props.width]
+    c = "xbhxixxxq"[props.width]
     if props.unsigned:
         c = c.upper()
-    return c
+    return '<' + c
+
+def _frameSize(props):
+    return props.width * props.channels
 
 
 class AudioStream:
@@ -44,7 +49,7 @@ class AudioStream:
 class AudioStreamSequence(AudioStream):
 
     def __init__(self, streams, properties=None):
-        if properties == None:
+        if properties is None:
             properties = DEFAULT_PROPERTIES
         self.streams = streams
         self.streamI = 0
@@ -52,7 +57,7 @@ class AudioStreamSequence(AudioStream):
 
     def read(self, frames):
         framesRemaining = frames
-        frameSize = self.properties.width * self.properties.channels
+        frameSize = _frameSize(self.properties)
         data = bytes()
 
         while framesRemaining > 0:
@@ -120,7 +125,7 @@ class BitshiftVariationsStream(AudioStream):
 class NoteStream(AudioStream):
 
     def __init__(self, frequency, length, properties=None):
-        if properties == None:
+        if properties is None:
             properties = DEFAULT_PROPERTIES
         self.frequency = frequency
         self.length = length
@@ -128,12 +133,11 @@ class NoteStream(AudioStream):
         self.i = 0
 
     def read(self, frames):
-        #if self.finished():
-        #    print("finished!")
-        #    return bytes([0 for i in range(0, frames)])
+        if self.finished():
+            return bytes([0 for i in range(0, frames)])
         data = bytes()
         props = self.getSampleProperties()
-        structFormat = '<' + _structFormatForSampleProperties(props)
+        structFormat = _structFormatForSampleProperties(props)
         maxValue = 2 ** (props.width * 8)
         for j in range(0, frames):
             value = int(float(self.i) * self.frequency * maxValue / props.rate)
@@ -151,3 +155,49 @@ class NoteStream(AudioStream):
 
     def finished(self):
         return self.i > self.length * self.getSampleProperties().rate
+
+
+class AmplitudeModifier(AudioStream):
+
+    # TODO: doesn't work with width=2, unsigned=True
+
+    def __init__(self, stream, amplitude=1.0):
+        self.stream = stream
+        self.amplitude = amplitude
+
+    def setAmplitude(self, amplitude):
+        self.amplitude = amplitude
+
+    def read(self, frames):
+        data = self.stream.read(frames)
+
+        props = self.getSampleProperties()
+        structFormat = _structFormatForSampleProperties(props)
+        maxValue = 2 ** (props.width * 8) // 2 # assuming signed values
+        newData = bytes()
+
+        for i in range(0, len(data) // props.width):
+            dataValue = data[i * props.width : (i+1) * props.width]
+            values = struct.unpack(structFormat, dataValue)
+            assert len(values) == 1
+            value = values[0]
+            if props.unsigned:
+                value -= maxValue
+            value *= self.amplitude
+            value = int(value)
+            if value >= maxValue:
+                value = maxValue - 1
+            if value <= -maxValue:
+                value = -maxValue + 1
+            if props.unsigned:
+                value += maxValue
+            dataValue = struct.pack(structFormat, value)
+            newData += dataValue
+
+        return newData
+
+    def getSampleProperties(self):
+        return self.stream.getSampleProperties()
+
+    def finished(self):
+        return self.stream.finished()
