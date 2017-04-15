@@ -177,7 +177,18 @@ def loadMapState(path):
     try:
         with path.open('rb') as f:
             state = pickle.load(f)
+    except FileNotFoundError:
+        print("File not found:", path)
+        return None
     except EOFError: # map is empty
+        return None
+    except (ImportError, AttributeError, pickle.UnpicklingError) as e:
+        print("The map couldn't be loaded.")
+        print(e)
+        return None
+    except BaseException as e:
+        print("Unknown error while loading map.")
+        print(str(e))
         return None
 
     try:
