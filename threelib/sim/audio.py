@@ -201,3 +201,68 @@ class AmplitudeModifier(AudioStream):
 
     def finished(self):
         return self.stream.finished()
+
+
+class AudioMixer(AudioStream):
+
+    def __init__(self, properties=None):
+        if properties is None:
+            properties = DEFAULT_PROPERTIES
+        self.streams = [ ]
+        self.properties = properties
+
+    def addStream(self, stream):
+        self.streams.append(stream)
+
+    def removeStream(self, stream):
+        self.streams.remove(stream)
+
+    def read(self, frames):
+        finishedStreams = [ ]
+        for stream in self.streams:
+            if stream.finished():
+                finishedStreams.append(stream)
+        for stream in finishedStreams:
+            self.streams.remove(stream)
+
+        structFormat = _structFormatForSampleProperties(self.properties)
+        maxValue = 2 ** (self.properties.width * 8) // 2  # assuming signed
+        mixedData = bytes()
+
+        streamData = [stream.read(frames) for stream in self.streams]
+
+        for i in range(0, frames * self.properties.channels):
+            mixedValue = maxValue if self.properties.unsigned else 0
+            for data in streamData:
+                try:
+                    dataValue = data[i * self.properties.width
+                                     : (i+1) * self.properties.width]
+                except IndexError:
+                    continue
+                value = struct.unpack(structFormat, dataValue)[0]
+                if self.properties.unsigned:
+                    value -= maxValue
+                mixedValue += value
+            if self.properties.unsigned:
+                if mixedValue >= maxValue * 2:
+                    value = maxValue * 2 - 1
+                if value <= 0:
+                    value = 0
+            else:
+                if mixedValue >= maxValue:
+                    value = maxValue - 1
+                if value <= -maxValue:
+                    value = -maxValue + 1
+            mixedDataValue = struct.pack(structFormat, mixedValue)
+            mixedData += mixedDataValue
+
+        return mixedData
+
+    def getSampleProperties(self):
+        return self.properties
+
+    def finished(self):
+        for stream in self.streams:
+            if not stream.finished():
+                return False
+        return True
