@@ -15,6 +15,11 @@ DEFAULT_PROPERTIES = \
 
 # TODO: width of 4 doesn't work
 
+def propertiesForWave(w):
+    sampleWidth = w.getsampwidth()
+    return SampleProperties(rate=w.getframerate(), width=sampleWidth,
+                            unsigned=sampleWidth==1, channels=w.getnchannels())
+
 def _structFormatForSampleProperties(props):
     c = "xbhxixxxq"[props.width]
     if props.unsigned:
@@ -44,6 +49,31 @@ class AudioStream:
         Return if the audio stream is finished.
         """
         return False
+
+
+class AudioDataStream:
+
+    def __init__(self, data, properties=None):
+        if properties is None:
+            properties = DEFAULT_PROPERTIES
+        self.data = data
+        self.properties = properties
+        self.i = 0
+
+    def read(self, frames):
+        if self.i >= len(self.data):
+            return bytes()
+        frameSize = _frameSize(self.properties)
+        dataSize = frames * frameSize
+        data = self.data[self.i : self.i + dataSize]
+        self.i += dataSize
+        return data
+
+    def getSampleProperties(self):
+        return self.properties
+
+    def finished(self):
+        return self.i >= len(self.data)
 
 
 class AudioStreamSequence(AudioStream):

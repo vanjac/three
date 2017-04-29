@@ -151,6 +151,18 @@ def getMesh(name):
     """
     return getResourcePath(getMeshDir(), name)
 
+def getAudioDir():
+    """
+    Get the Path to the directory containing scripts.
+    """
+    return getGameDir() / "audio"
+
+def getAudio(name):
+    """
+    Get the Path to the script with the specified name.
+    """
+    return getResourcePath(getAudioDir(), name)
+
 def saveMapState(path, state):
     """
     Save map state to a file. ``path`` is a Path to the map file. ``state`` is
