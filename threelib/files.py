@@ -5,6 +5,7 @@ from pathlib import Path
 import os.path
 import pickle
 import webbrowser
+import platform
 from threelib.edit.state import EditorState
 
 
@@ -272,7 +273,10 @@ def openProperties(text):
     path = getGameDir() / "propsTemp.txt"
     with path.open('w') as f:
         f.write(text)
-    webbrowser.open(str(path))
+    if platform.system() == "Darwin":
+        os.system("open " + str(path))
+    else:
+        webbrowser.open(str(path))
 
 def readProperties():
     """
