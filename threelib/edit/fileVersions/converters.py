@@ -80,3 +80,17 @@ def convert_1_6_to_1_7(state):
     state.MAJOR_VERSION = 1
     state.MINOR_VERSION = 7
     return state
+
+@editorStateConverter(1, 7)
+def convert_1_7_to_1_8(state):
+    from threelib.vectorMath import Vector
+
+    for o in state.objects:
+        if o.getMesh() is not None:
+            for face in o.getMesh().getFaces():
+                face.textureScale *= Vector(1, -1, 1)
+                face.calculateTextureVertices()
+
+    state.MAJOR_VERSION = 1
+    state.MINOR_VERSION = 8
+    return state
