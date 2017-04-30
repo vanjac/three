@@ -170,15 +170,6 @@ class GLAppInstance(AppInstance):
         self.height = height
         self.resetProjection()
 
-        # draw loading screen
-        glColor(1,1,1)
-        self.drawText("Loading...", GLUT_BITMAP_9_BY_15,
-                              self.width / 2, self.height / 2)
-        glFlush()
-        glFinish()
-        glutSwapBuffers()
-        # done drawing loading screen
-
         self.appInterface.init()
 
     # Called when window is resized

@@ -28,6 +28,8 @@ class GLRunner(GameInterface):
     def init(self):
         super().init()
 
+        self._fullscreenMessage("Loading...")
+
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1) # for getting select pixels
                                              # and storing textures
         # must be GL_MODULATE for lighting to work with textures:

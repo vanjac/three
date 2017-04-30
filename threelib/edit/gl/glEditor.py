@@ -44,6 +44,8 @@ class GLEditor(EditorInterface):
         print("OpenGL 1 Editor")
 
     def init(self):
+        self._fullscreenMessage("Loading...")
+
         glPolygonStipple(stipplePattern)
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1) # for getting select pixels
                                               # and storing textures
@@ -61,6 +63,16 @@ class GLEditor(EditorInterface):
         self.drawMiniAxesList2 = self.makeDisplayList()
         self.drawMiniAxes2()
         glEndList()
+
+    def _fullscreenMessage(self, message):
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glColor(1, 1, 1)
+        self.editorMain.drawText(message, GLUT_BITMAP_9_BY_15,
+                                 self.editorMain.width / 2,
+                                 self.editorMain.height / 2)
+        glFlush()
+        glFinish()
+        glutSwapBuffers()
 
     def makeDisplayList(self):
         l = glGenLists(1)
