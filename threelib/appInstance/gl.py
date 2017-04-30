@@ -44,8 +44,7 @@ class GLAppInstance(AppInstance):
         self.mouseLockX = 0
         self.mouseLockY = 0
 
-        self.mouseLockMargin = 64
-        self.framesSinceMouseLockMove = 0
+        self.mouseLockMargin = 128
 
         # Sometimes GLUT ignores the glutIgnoreKeyRepeat setting.
         # This keeps track of keys that are currently pressed, so multiple
@@ -92,6 +91,7 @@ class GLAppInstance(AppInstance):
         glutPassiveMotionFunc(self.mouseMovement)
         # called while mouse buttons are pressed
         glutMotionFunc(self.mouseMovement)
+        glutEntryFunc(self.mouseEntryEvent)
 
         glutIgnoreKeyRepeat(True)
 
@@ -250,47 +250,30 @@ class GLAppInstance(AppInstance):
             return
 
         self.appInterface.mouseMoved(mouseX, mouseY, self.pmouseX, self.pmouseY)
-        self.framesSinceMouseLockMove += 1
-        if self.mouseLocked and self.framesSinceMouseLockMove > 4:
-            if mouseX > self.width - self.mouseLockMargin:
-                def moveToLeft():
-                    global mouseMovementLock
-                    mouseMovementLock.acquire()
-                    pyautogui.moveRel(-self.width
-                        + 3 * self.mouseLockMargin, 0)
-                    mouseMovementLock.release()
-                # run in a separate thread to prevent frames being dropped
-                threading.Thread(target=moveToLeft).start()
-                self.framesSinceMouseLockMove = 0
-            if mouseX < self.mouseLockMargin:
-                def moveToRight():
-                    global mouseMovementLock
-                    mouseMovementLock.acquire()
-                    pyautogui.moveRel(self.width
-                        - 3 * self.mouseLockMargin, 0)
-                    mouseMovementLock.release()
-                threading.Thread(target=moveToRight).start()
-                self.framesSinceMouseLockMove = 0
-            if mouseY > self.height - self.mouseLockMargin:
-                def moveToTop():
-                    global mouseMovementLock
-                    mouseMovementLock.acquire()
-                    pyautogui.moveRel(0, -self.height
-                        + 3 * self.mouseLockMargin)
-                    mouseMovementLock.release()
-                threading.Thread(target=moveToTop).start()
-                self.framesSinceMouseLockMove = 0
-            if mouseY < self.mouseLockMargin:
-                def moveToBottom():
-                    global mouseMovementLock
-                    mouseMovementLock.acquire()
-                    pyautogui.moveRel(0, self.height
-                        - 3 * self.mouseLockMargin)
-                    mouseMovementLock.release()
-                threading.Thread(target=moveToBottom).start()
-                self.framesSinceMouseLockMove = 0
         self.pmouseX = mouseX
         self.pmouseY = mouseY
+
+    def mouseEntryEvent(self, state):
+        if state == 0 and self.mouseLocked:
+            def moveMouse():
+                global mouseMovementLock
+                mouseMovementLock.acquire()
+
+                relX = 0
+                relY = 0
+                if self.pmouseX > self.width // 2:
+                    relX += -self.pmouseX + self.mouseLockMargin
+                if self.pmouseX < self.width // 2:
+                    relX += self.width - self.pmouseX - self.mouseLockMargin
+                if self.pmouseY > self.height // 2:
+                    relY += -self.pmouseY + self.mouseLockMargin
+                if self.pmouseY < self.height // 2:
+                    relY += self.height - self.pmouseY - self.mouseLockMargin
+
+                pyautogui.moveRel(relX, relY)
+                mouseMovementLock.release()
+            # run in a separate thread to prevent frames being dropped
+            threading.Thread(target=moveMouse).start()
 
     def keyPressedEvent(self, key, mouseX, mouseY):
         if key in self.keysPressed:
