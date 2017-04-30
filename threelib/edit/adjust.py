@@ -160,7 +160,8 @@ class RotateAdjustor(Adjustor):
         return Adjustor.ROTATE
 
     def complete(self):
-        self.editorObject.applyRotation()
+        if self.editorObject.getMesh() is not None:
+            self.editorObject.applyRotation()
 
     def getDescription(self):
         return "Rotate object"
