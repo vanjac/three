@@ -54,6 +54,9 @@ class AudioStream:
 
 
 class Sound(AudioStream):
+    """
+    An AudioStream that supports skipping, starting/stopping, looping, etc.
+    """
 
     def __init__(self):
         self.completeAction = None
@@ -73,6 +76,9 @@ class Sound(AudioStream):
         return 0
 
     def length(self):
+        """
+        Get the length in seconds of the sound.
+        """
         pass
 
     def _play(self, time):
@@ -87,25 +93,51 @@ class Sound(AudioStream):
     # don't override these
 
     def kill(self):
+        """
+        Mark this Sound as finished.
+        """
         self.isFinished = True
 
     def play(self, time=0):
+        """
+        Start the Sound at a specific time in seconds, or the beginning if no
+        time is specified. If the sound is already playing, jump to the time.
+        """
         self.playing = True
         self._play(time)
 
     def stop(self):
+        """
+        Stop playing the Sound.
+        """
         self.playing = False
         self._stop()
 
     def isPlaying(self):
+        """
+        Return True if this Sound is playing.
+        """
         return self.playing
 
     def time(self):
+        """
+        Get the current time in seconds being played.
+        """
         if self.playing:
             return self._time()
         return None
 
     def setCompleteAction(self, function=None):
+        """
+        Set a function (that accepts no arguments) to be called when the sound
+        is complete. None for no action.
+
+        You could use this to make the sound loop:
+        ``sound.setCompleteAction(sound.play)``
+
+        or to make it mark itself as finished when it completes:
+        ``sound.setCompleteAction(sound.kill)``
+        """
         self.completeAction = function
 
     def finished(self):
