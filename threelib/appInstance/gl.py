@@ -44,7 +44,7 @@ class GLAppInstance(AppInstance):
         self.mouseLockX = 0
         self.mouseLockY = 0
 
-        self.mouseLockMargin = 128
+        self.mouseLockMargin = 192
 
         # Sometimes GLUT ignores the glutIgnoreKeyRepeat setting.
         # This keeps track of keys that are currently pressed, so multiple
@@ -233,38 +233,52 @@ class GLAppInstance(AppInstance):
             self.appInterface.mouseReleased(button, args[2], args[3])
 
     def mouseMovement(self, mouseX, mouseY):
-        # ignore mouse movements created by locking
-        if (abs(mouseX - self.pmouseX) > self.width / 2
-            or abs(mouseY - self.pmouseY) > self.height / 2):
-            self.pmouseX = mouseX
-            self.pmouseY = mouseY
-            return
+        global mouseMovementLock
 
-        self.appInterface.mouseMoved(mouseX, mouseY, self.pmouseX, self.pmouseY)
+        # ignore mouse movements created by locking
+        if abs(mouseX - self.pmouseX) > self.width / 2 \
+                or abs(mouseY - self.pmouseY) > self.height / 2:
+            pass
+        else:
+            self.appInterface.mouseMoved(mouseX, mouseY, self.pmouseX, self.pmouseY)
         self.pmouseX = mouseX
         self.pmouseY = mouseY
 
+        if self.mouseLocked and \
+                (mouseX < self.mouseLockMargin / 2
+                or mouseX > self.width - self.mouseLockMargin / 2
+                or mouseY < self.mouseLockMargin / 2
+                or mouseY > self.height - self.mouseLockMargin / 2):
+            self._wrapMouse()
+
     def mouseEntryEvent(self, state):
         if state == 0 and self.mouseLocked:
-            def moveMouse():
-                global mouseMovementLock
-                mouseMovementLock.acquire()
+            self._wrapMouse()
 
-                relX = 0
-                relY = 0
-                if self.pmouseX > self.width // 2:
-                    relX += -self.pmouseX + self.mouseLockMargin
-                if self.pmouseX < self.width // 2:
-                    relX += self.width - self.pmouseX - self.mouseLockMargin
-                if self.pmouseY > self.height // 2:
-                    relY += -self.pmouseY + self.mouseLockMargin
-                if self.pmouseY < self.height // 2:
-                    relY += self.height - self.pmouseY - self.mouseLockMargin
+    def _wrapMouse(self):
+        windowX = glutGet(GLUT_WINDOW_X)
+        windowY = glutGet(GLUT_WINDOW_Y)
 
-                pyautogui.moveRel(relX, relY)
-                mouseMovementLock.release()
-            # run in a separate thread to prevent frames being dropped
-            threading.Thread(target=moveMouse).start()
+        def moveMouse():
+            global mouseMovementLock
+            mouseMovementLock.acquire()
+
+            newX = windowX + self.width / 2
+            newY = windowY + self.height / 2
+            if self.pmouseX > self.width // 2:
+                newX = windowX + self.mouseLockMargin
+            if self.pmouseX < self.width // 2:
+                newX = windowX + self.width - self.mouseLockMargin
+            if self.pmouseY > self.height // 2:
+                newY = windowY + self.mouseLockMargin
+            if self.pmouseY < self.height // 2:
+                newY = windowY + self.height - self.mouseLockMargin
+
+            pyautogui.moveTo(newX, newY)
+            mouseMovementLock.release()
+
+        # run in a separate thread to prevent frames being dropped
+        threading.Thread(target=moveMouse).start()
 
     def keyPressedEvent(self, key, mouseX, mouseY):
         if key in self.keysPressed:
