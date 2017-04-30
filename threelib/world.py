@@ -212,8 +212,7 @@ class World:
                     else:
                         entity.addChild(childEntity)
 
-        if len(self.directionalLights) > 0 or \
-                len(self.positionalLights) > 0 or \
+        if len(self.positionalLights) > 0 or \
                 len(self.spotLights) > 0:
             # subdivide renderMesh faces
             print("Subdividing faces...")
