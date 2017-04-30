@@ -30,6 +30,7 @@ class FirstPersonPlayer(Entity):
         self.currentVolumes = [ ]
         self.wallCollisions = [ ] # walls the player is currently colliding with
         self.previousWallCollisions = [ ]
+        self.sliding = False
 
         self.cameraHeight = cameraHeight
         self.playerHeight = playerHeight
@@ -60,6 +61,9 @@ class FirstPersonPlayer(Entity):
             # gravity
             self.newZVelocity += FirstPersonPlayer.GRAVITY * timeElapsed
 
+        # before applying input or deceleration
+        prevNewXYVelocity = self.newXYVelocity
+
         # orient walking direction to look direction
         inputTranslation = inputTranslation.rotate2(self.rotation.z)
         if self.newCurrentFloor is None:
@@ -75,7 +79,7 @@ class FirstPersonPlayer(Entity):
                 self.newXYVelocity *= (self.walkDeceleration ** timeElapsed)
 
         movement = self.newXYVelocity * timeElapsed
-        sliding = False
+        self.newSliding = False
 
         # uphill slopes should slow down movement
         # downhill slopes should speed up movement
@@ -86,16 +90,30 @@ class FirstPersonPlayer(Entity):
             if point is not None:
                 # if slope is too steep, slide down it
                 if point.normal.z < self.minWalkNormalZ:
-                    movement = point.normal.setZ(0).setMagnitude(1.0)
-                    sliding = True
+                    self.newSliding = True
 
-                # this uses vector projection and magic
-                slopeFactor = 1.0 + movement.project(point.normal)
+                    movementDirection = point.normal.setZ(0).setMagnitude(1.0)
+                    # slope of surface in movement direction (always positive)
+                    slope = point.normal.setZ(0).magnitude() / point.normal.z
+                    if not self.sliding:
+                        self.newXYVelocity = self.newXYVelocity / slope
+                    else:
+                        self.newXYVelocity = prevNewXYVelocity
+                    self.newXYVelocity += movementDirection \
+                        * -FirstPersonPlayer.GRAVITY * timeElapsed / slope \
+                        * (point.normal.setZ(0).magnitude())
+                    movement = self.newXYVelocity * timeElapsed
+                else:
+                    slopeFactorOffset = \
+                        movement.setMagnitude(1.0).project(point.normal)
+                    if slopeFactorOffset > 0:
+                        slopeFactorOffset = 0
+                    slopeFactor = 1.0 + slopeFactorOffset
 
         jumpEvent = self.jumpButton.getEvent()
         if self.newCurrentFloor is not None \
                 and jumpEvent == ButtonInput.PRESSED_EVENT \
-                and sliding == False:
+                and self.newSliding == False:
             self.newZVelocity = self.jumpVelocity
             self.newCurrentFloor.doFloorEndTouchAction()
             self.newCurrentFloor = None
@@ -157,6 +175,7 @@ class FirstPersonPlayer(Entity):
             self.zVelocity = self.newZVelocity
             self.xyVelocity = self.newXYVelocity
             self.currentFloor = self.newCurrentFloor
+            self.sliding = self.newSliding
 
             # prevent from looking too far up or down
             yRot = self.rotation.y
