@@ -345,11 +345,12 @@ class AmplitudeModifier(AudioStream):
 
 class AudioMixer(AudioStream):
 
-    def __init__(self, properties=None):
+    def __init__(self, keepOpen=False, properties=None):
         if properties is None:
             properties = DEFAULT_PROPERTIES
         self.streams = [ ]
         self.properties = properties
+        self.keepOpen = keepOpen
 
     def addStream(self, stream):
         self.streams.append(stream)
@@ -385,14 +386,14 @@ class AudioMixer(AudioStream):
                 mixedValue += value
             if self.properties.unsigned:
                 if mixedValue >= maxValue * 2:
-                    value = maxValue * 2 - 1
-                if value <= 0:
-                    value = 0
+                    mixedValue = maxValue * 2 - 1
+                if mixedValue <= 0:
+                    mixedValue = 0
             else:
                 if mixedValue >= maxValue:
-                    value = maxValue - 1
-                if value <= -maxValue:
-                    value = -maxValue + 1
+                    mixedValue = maxValue - 1
+                if mixedValue <= -maxValue:
+                    mixedValue = -maxValue + 1
             mixedDataValue = struct.pack(structFormat, mixedValue)
             mixedData += mixedDataValue
 
@@ -405,4 +406,4 @@ class AudioMixer(AudioStream):
         for stream in self.streams:
             if not stream.finished():
                 return False
-        return True
+        return not self.keepOpen
