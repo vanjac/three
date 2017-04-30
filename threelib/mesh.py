@@ -342,6 +342,43 @@ class MeshFace:
         """
         self.vertices.reverse()
 
+    def getCentroid(self):
+        """
+        Calculate the centroid of the face polygon.
+        """
+
+        normal = self.getNormal()
+        normalRot = normal.rotation()
+
+        # http://stackoverflow.com/a/2792459
+        centroid = Vector(0, 0)
+        signedArea = 0.0
+
+        i = 0
+        for i in range(0, len(self.vertices)):
+            v0 = self.vertices[i - 1].vertex.getPosition() \
+                .inverseRotate(-normalRot)
+            v1 = self.vertices[i].vertex.getPosition() \
+                .inverseRotate(-normalRot)
+            x0 = v0.y
+            y0 = v0.z
+            x1 = v1.y
+            y1 = v1.z
+            a = x0 * y1 - x1 * y0
+            signedArea += a
+            centroid += Vector((x0 + x1) * a, 0)
+            centroid += Vector(0, (y0 + y1) * a)
+
+        signedArea *= 0.5
+        centroid /= 6.0 * signedArea
+
+        # move centroid back into position
+        centroid += Vector(
+            self.vertices[0].vertex.getPosition().inverseRotate(-normalRot).x,0)
+        centroid = centroid.rotate(normalRot)
+
+        return centroid
+
 
 class Mesh:
 

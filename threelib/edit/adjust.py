@@ -404,6 +404,7 @@ class ExtrudeAdjustor(Adjustor):
     def __init__(self, face, meshObject, state):
         self.extrudeAmount = 0
         self.state = state
+        self.centroid = face.getCentroid()
 
         newMesh = Mesh()
         self.newEditorObject = meshObject.clone()
@@ -469,8 +470,13 @@ class ExtrudeAdjustor(Adjustor):
         self.state.objects.remove(self.newEditorObject)
 
     def complete(self):
-        # TODO: center origin of new object?
-        pass
+        # center origin of new object on the centroid of the base face
+        self.newEditorObject.setPosition(
+            self.newEditorObject.getPosition() + self.centroid)
+
+        if self.newEditorObject.getMesh() is not None:
+            for vertex in self.newEditorObject.getMesh().getVertices():
+                vertex.setPosition(vertex.getPosition() - self.centroid)
 
     def gridType(self):
         return Adjustor.TRANSLATE
