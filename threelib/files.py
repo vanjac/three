@@ -88,8 +88,10 @@ def getResourcePath(directoryPath, name):
         dirs = name.split('/')
         parentDir = directoryPath
         for d in dirs[:-1]:
-            parentDir = parentDir / d
-        parentDir = parentDir.resolve()
+            parentDir = (parentDir / d).resolve()
+            if parentDir.name.lower() == d.lower() and parentDir.name != d:
+                print("Please use correct case in file paths!")
+                return None
 
         name = dirs[-1]
         for child in parentDir.iterdir():
