@@ -29,6 +29,8 @@ def _structFormatForSampleProperties(props):
 def _frameSize(props):
     return props.width * props.channels
 
+def _secondSize(props):
+    return _frameSize(props) * props.rate
 
 class AudioStream:
 
@@ -51,29 +53,104 @@ class AudioStream:
         return False
 
 
-class AudioDataStream:
+class Sound(AudioStream):
+
+    def __init__(self):
+        self.completeAction = None
+        self.playing = False
+        self.isFinished = False
+
+    # utilities for subclasses
+
+    def _complete(self):
+        self.playing = False
+        if self.completeAction is not None:
+            self.completeAction()
+
+    # implement these:
+
+    def _time(self):
+        return 0
+
+    def length(self):
+        pass
+
+    def _play(self, time):
+        pass
+
+    def _stop(self):
+        pass
+
+    def _read(self, frames):
+        return bytes()
+
+    # don't override these
+
+    def kill(self):
+        self.isFinished = True
+
+    def play(self, time=0):
+        self.playing = True
+        self._play(time)
+
+    def stop(self):
+        self.playing = False
+        self._stop()
+
+    def isPlaying(self):
+        return self.playing
+
+    def time(self):
+        if self.playing:
+            return self._time()
+        return None
+
+    def setCompleteAction(self, function=None):
+        self.completeAction = function
+
+    def finished(self):
+        return self.isFinished
+
+    def read(self, frames):
+        if not self.playing:
+            return bytes([0 for i in range(0,
+                frames * _frameSize(self.getSampleProperties()))])
+        return self._read(frames)
+
+
+class AudioDataStream(Sound):
 
     def __init__(self, data, properties=None):
+        super().__init__()
         if properties is None:
             properties = DEFAULT_PROPERTIES
         self.data = data
         self.properties = properties
         self.i = 0
 
-    def read(self, frames):
-        if self.i >= len(self.data):
-            return bytes()
+    def _play(self, time):
+        self.i = _secondSize(self.properties) * time
+
+    def _time(self):
+        return float(self.i) / _secondSize(self.properties)
+
+    def length(self):
+        return float(len(self.data) / _secondSize(self.properties))
+
+    def _read(self, frames):
         frameSize = _frameSize(self.properties)
+        if self.i >= len(self.data):
+            self._complete()
+            return bytes([0 for i in range(0, frames * frameSize)])
         dataSize = frames * frameSize
         data = self.data[self.i : self.i + dataSize]
-        self.i += dataSize
+        self.i += len(data)
+        if len(data) < dataSize:
+            data += bytes([0 for i in range(0, dataSize - len(data))])
         return data
 
     def getSampleProperties(self):
         return self.properties
-
-    def finished(self):
-        return self.i >= len(self.data)
 
 
 class AudioStreamSequence(AudioStream):
@@ -164,7 +241,8 @@ class NoteStream(AudioStream):
 
     def read(self, frames):
         if self.finished():
-            return bytes([0 for i in range(0, frames)])
+            return bytes([0 for i in range(0,
+                                           frames*_frameSize(self.properties))])
         data = bytes()
         props = self.getSampleProperties()
         structFormat = _structFormatForSampleProperties(props)
