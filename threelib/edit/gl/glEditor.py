@@ -39,12 +39,17 @@ stipplePattern = [
 class GLEditor(EditorInterface):
 
     def __init__(self, mapPath, state=None):
+        print("OpenGL 1 Editor")
         super().__init__(mapPath, state)
         self.graphicsTools = GLGraphicsTools()
-        print("OpenGL 1 Editor")
+
+        self.fov = 60 # field of view
+        self.nearClip = 0.1
+        self.farClip = 2048.0
 
     def init(self):
         self._fullscreenMessage("Loading...")
+        self._resetProjection()
 
         glPolygonStipple(stipplePattern)
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1) # for getting select pixels
@@ -83,8 +88,21 @@ class GLEditor(EditorInterface):
             glNewList(l, GL_COMPILE)
             return l
 
+    def resized(self):
+        self._resetProjection()
+
+    # should be called if any settings like aspect
+    # ratio, fov, near/far clip planes, have changed.
+    def _resetProjection(self):
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(self.fov, self.editorMain.aspect, self.nearClip, self.farClip)
+        glMatrixMode(GL_MODELVIEW)
+
     def draw(self):
         self.editorMain.updateMaterials(self.state.world)
+
+        glLoadIdentity() # reset the view
 
         # clear screen and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -414,7 +432,7 @@ class GLEditor(EditorInterface):
         glLoadIdentity()
         glTranslate(0.7, -0.85, 0)
         glScale(1/self.editorMain.getAspect(), 1, 1)
-        gluPerspective(self.editorMain.getFOV(), 1, 4, 16)
+        gluPerspective(self.fov, 1, 4, 16)
         glMatrixMode(GL_MODELVIEW)
 
         glTranslate(0, 0, -5)

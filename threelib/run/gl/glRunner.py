@@ -21,14 +21,20 @@ class GLRunner(GameInterface):
     MAX_LIGHTS = 8
 
     def __init__(self, state):
-        super().__init__(state)
         print("OpenGL 1 Game Runner")
+        super().__init__(state)
+
         self.lightingEnabled = False
 
+        self.fov = 60 # field of view
+        self.nearClip = 0.1
+        self.farClip = 2048.0
+
     def init(self):
+        self._fullscreenMessage("Loading...")
         super().init()
 
-        self._fullscreenMessage("Loading...")
+        self._resetProjection()
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1) # for getting select pixels
                                              # and storing textures
@@ -51,6 +57,17 @@ class GLRunner(GameInterface):
         glFlush()
         glFinish()
         glutSwapBuffers()
+
+    def resized(self):
+        self._resetProjection()
+
+    # should be called if any settings like aspect
+    # ratio, fov, near/far clip planes, have changed.
+    def _resetProjection(self):
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(self.fov, self.instance.aspect, self.nearClip, self.farClip)
+        glMatrixMode(GL_MODELVIEW)
 
     def setState(self, state):
         self._fullscreenMessage("Building world...")
@@ -84,6 +101,8 @@ class GLRunner(GameInterface):
 
     def draw(self):
         super().draw()
+
+        glLoadIdentity() # reset the view
 
         # AUDIO
 
@@ -135,10 +154,10 @@ class GLRunner(GameInterface):
 
             nearClip = request.nearClip
             if nearClip is None:
-                nearClip = self.instance.getNearClip()
+                nearClip = self.nearClip
             farClip = request.farClip
             if farClip is None:
-                farClip = self.instance.getFarClip()
+                farClip = self.farClip
 
             glMatrixMode(GL_PROJECTION)
             glPushMatrix()
@@ -239,7 +258,7 @@ class GLRunner(GameInterface):
             glOrtho(-64 * self.instance.getAspect(),
                     64 * self.instance.getAspect(),
                     -64, 64,
-                    self.instance.getNearClip(), self.instance.getFarClip())
+                    self.nearClip, self.farClip)
 
             glMatrixMode(GL_MODELVIEW)
             glPushMatrix()

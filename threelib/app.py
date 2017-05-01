@@ -32,24 +32,6 @@ class AppInstance:
         """
         return None
 
-    def getFOV(self):
-        """
-        Get the field of view of the perspective projection.
-        """
-        return None
-
-    def getNearClip(self):
-        """
-        Get the near clipping plane of the perspective projection.
-        """
-        return None
-
-    def getFarClip(self):
-        """
-        Get the far clipping plane of the perspective projection.
-        """
-        return None
-
     def buttonPressed(self, button=0):
         """
         Check if the specified mouse button is pressed. 0 is left, 1 is middle,
@@ -125,6 +107,11 @@ class AppInterface:
         Called by the AppInstance every frame before the screen is refreshed.
         """
         pass
+
+    def resized(self):
+        """
+        Called by the AppInstance when the window is resized.
+        """
 
     def keyPressed(self, key):
         """

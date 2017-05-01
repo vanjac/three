@@ -26,14 +26,9 @@ mouseMovementLock = threading.Lock()
 class GLAppInstance(AppInstance):
 
     def __init__(self, appInterface, flags):
-        # Global projection settings
-        # Call resetProjection() if any of these are changed
         self.aspect = 1 # aspect ratio of the window (width / height)
         self.width = 1024
         self.height = 736
-        self.fov = 60 # field of view
-        self.nearClip = 0.1
-        self.farClip = 2048.0
 
         # Mouse info
         self.mouseButtonPressed = [ False for i in range(0, 7) ]
@@ -114,15 +109,6 @@ class GLAppInstance(AppInstance):
     def getAspect(self):
         return self.aspect
 
-    def getFOV(self):
-        return self.fov
-
-    def getNearClip(self):
-        return self.nearClip
-
-    def getFarClip(self):
-        return self.farClip
-
     def buttonPressed(self, button=0):
         return self.mouseButtonPressed[button]
 
@@ -166,11 +152,9 @@ class GLAppInstance(AppInstance):
         glEnable(GL_CULL_FACE)
         glCullFace(GL_BACK)
 
-        self.width = width
-        self.height = height
-        self.resetProjection()
-
         self.appInterface.init()
+
+        self.resizeGL(width, height)
 
     # Called when window is resized
     def resizeGL(self, width, height):
@@ -179,18 +163,11 @@ class GLAppInstance(AppInstance):
 
         self.width = width
         self.height = height
+        self.aspect = float(self.width) / float(self.height)
         # reset the current viewport and perspective transformation
         glViewport(0, 0, width, height)
-        self.resetProjection()
 
-    # should be called if any settings like aspect
-    # ratio, fov, near/far clip planes, have changed.
-    def resetProjection(self):
-        self.aspect = float(self.width) / float(self.height)
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        gluPerspective(self.fov, self.aspect, self.nearClip, self.farClip)
-        glMatrixMode(GL_MODELVIEW)
+        self.appInterface.resized()
 
     # Draw loop
     def drawGL(self):
@@ -201,8 +178,6 @@ class GLAppInstance(AppInstance):
             self.lastFpsTime = seconds
             self.fps = self.fpsCount
             self.fpsCount = 0
-
-        glLoadIdentity() # reset the view
 
         self.appInterface.draw()
 
