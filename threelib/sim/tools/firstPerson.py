@@ -171,6 +171,7 @@ class FirstPersonPlayer(Entity):
 
         def do(toUpdateList):
             self.translate(self.positionChange)
+            prevRotation = self.rotation
             self.rotation += self.rotationChange
             self.zVelocity = self.newZVelocity
             self.xyVelocity = self.newXYVelocity
@@ -183,6 +184,16 @@ class FirstPersonPlayer(Entity):
                 self.rotation = self.rotation.setY(math.pi/2)
             if math.pi < yRot < math.pi*3/2:
                 self.rotation = self.rotation.setY(math.pi*3/2)
+
+            # rotate children
+            rotate = Rotate(0, 0, (self.rotation - prevRotation).z)
+            for child in self.children:
+                child.rotate(rotate, True)
+                startPosition = child.getPosition()
+                endPosition = startPosition.rotateAround(rotate,
+                                                         self.getPosition())
+                child.translate(endPosition - startPosition)
+                toUpdateList.append(child)
 
             toUpdateList.append(self)
         self.actions.addAction(do)
