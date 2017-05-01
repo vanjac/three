@@ -350,6 +350,7 @@ class FirstPersonPlayer(Entity):
                     if self.currentFloor is not None:
                         # just jumped
                         self.newCurrentFloor = self.currentFloor
+                        self.newCurrentFloor.doFloorStartTouchAction()
                         self.newZVelocity = 0
                         self.newXYVelocity = Vector(0, 0)
                         self.positionChange = Vector(0, 0, 0)
