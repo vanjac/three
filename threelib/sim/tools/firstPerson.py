@@ -30,6 +30,8 @@ class FirstPersonPlayer(Entity):
         self.currentVolumes = [ ]
         self.wallCollisions = [ ] # walls the player is currently colliding with
         self.previousWallCollisions = [ ]
+        self.ceilingCollisions = [ ]
+        self.previousCeilingCollisions = [ ]
         self.sliding = False
 
         self.cameraHeight = cameraHeight
@@ -126,6 +128,8 @@ class FirstPersonPlayer(Entity):
 
         self.previousWallCollisions = self.wallCollisions
         self.wallCollisions = list()
+        self.previousCeilingCollisions = self.ceilingCollisions
+        self.ceilingCollisions = list()
 
         for collision in self.world.collisionMeshes:
             if collision.isEnabled() and collision != self.newCurrentFloor:
@@ -316,28 +320,41 @@ class FirstPersonPlayer(Entity):
 
         # check ceiling collision
         if bottomPoint is not None:
-            if self.newCurrentFloor is None:
-                # TODO: cleanup!
-                currentZ = self._playerTop(
-                    self.position + self.positionChange).z
-                previousZ = self._playerTop(self.position).z
+            currentZ = self._playerTop(
+                self.position + self.positionChange).z
+            previousZ = self._playerTop(self.position).z
+            ceilingCollision = False
+            # if player just hit this ceiling
+            if currentZ >= bottomPoint.height > previousZ:
+                ceilingCollision = True
+            else:
+                # what if the ceiling height has changed as the
+                # player moves?
+                ceilingPreviousPoint = self._bottomPoint(
+                    collision, self.position)
 
-                # if player just hit this ceiling
-                if currentZ >= bottomPoint.height > previousZ:
-                    self.newZVelocity = 0.0
-                    collision.doCeilingCollideAction()
+                if ceilingPreviousPoint is not None:
+                    if currentZ >= bottomPoint.height \
+                            and previousZ < ceilingPreviousPoint.height:
+                        ceilingCollision = True
+            if ceilingCollision:
+                if self.newCurrentFloor is None:
+                    if self.currentFloor is not None:
+                        # just jumped
+                        self.newCurrentFloor = self.currentFloor
+                        self.newZVelocity = 0
+                        self.newXYVelocity = Vector(0, 0)
+                        self.positionChange = Vector(0, 0, 0)
+                    else:
+                        self.newZVelocity = -abs(self.newZVelocity)
+                        self.positionChange = Vector(0, 0, bottomPoint.height - previousZ)
                 else:
-                    # what if the ceiling height has changed as the
-                    # player moves?
-                    ceilingPreviousPoint = self._bottomPoint(
-                        collision, self.position)
-
-                    if ceilingPreviousPoint is not None:
-                        if currentZ >= bottomPoint.height \
-                                and previousZ < ceilingPreviousPoint.height:
-                            self.newZVelocity = 0.0
-                            collision.doCeilingCollideAction()
-        # end check ceiling collision
+                    self.newXYVelocity = Vector(0, 0)
+                    self.positionChange = Vector(0, 0, 0)
+                if not collision in self.previousCeilingCollisions:
+                    collision.doCeilingCollideAction()
+                self.ceilingCollisions.append(collision)
+            # end check ceiling collision
     # end def _checkSolidMeshCollision
 
 
