@@ -640,7 +640,10 @@ class Rotate:
         Return a copy of this Rotate, rotated by a specified rotation.
         """
         vector = BASE_ROTATION_V.rotate(self).rotate(amount)
-        roll = self.x + amount.x
+
+        rollVector = Vector(0, 1, 0).rotate(self).rotate(amount)
+        roll = rollVector.rotation().y
+
         return vector.rotation().setX(roll)
 
     def inverseRotate(self, amount):
@@ -648,7 +651,10 @@ class Rotate:
         See Vector.inverseRotate.
         """
         vector = BASE_ROTATION_V.rotate(self).inverseRotate(amount)
-        roll = self.x + amount.x
+
+        rollVector = Vector(0, 1, 0).rotate(self).inverseRotate(amount)
+        roll = rollVector.rotation().y
+
         return vector.rotation().setX(roll)
 
 ZERO_V = Vector(0, 0, 0)
