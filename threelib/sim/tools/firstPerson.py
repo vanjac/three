@@ -356,7 +356,8 @@ class FirstPersonPlayer(Entity):
                         self.positionChange = Vector(0, 0, 0)
                     else:
                         self.newZVelocity = -abs(self.newZVelocity)
-                        self.positionChange = Vector(0, 0, bottomPoint.height - previousZ)
+                        self.positionChange = \
+                            Vector(0, 0, bottomPoint.height - previousZ)
                 else:
                     self.newXYVelocity = Vector(0, 0)
                     self.positionChange = Vector(0, 0, 0)
