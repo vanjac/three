@@ -186,13 +186,29 @@ class FirstPersonPlayer(Entity):
                 self.rotation = self.rotation.setY(math.pi*3/2)
 
             # rotate children
-            rotate = Rotate(0, 0, (self.rotation - prevRotation).z)
+            prevRotateZ = Rotate(0, 0, prevRotation.z)
+            rotateZ = Rotate(0, 0, (self.rotation - prevRotation).z)
+            rotateY = Rotate(0, (self.rotation - prevRotation).y, 0)
             for child in self.children:
-                child.rotate(rotate, True)
+                child.rotate(-prevRotateZ, True)
+                child.rotate(rotateY, True)
+                child.rotate(prevRotateZ, True)
+                child.rotate(rotateZ, True)
+
                 startPosition = child.getPosition()
-                endPosition = startPosition.rotateAround(rotate,
-                                                         self.getPosition())
+                endPosition = startPosition
+
+                endPosition = endPosition.rotateAround(-prevRotateZ,
+                                                       self.getPosition())
+                endPosition = endPosition.rotateAround(rotateY,
+                                                       self.getPosition())
+                endPosition = endPosition.rotateAround(prevRotateZ,
+                                                       self.getPosition())
+                endPosition = endPosition.rotateAround(rotateZ,
+                                                       self.getPosition())
+
                 child.translate(endPosition - startPosition)
+
                 toUpdateList.append(child)
 
             toUpdateList.append(self)
