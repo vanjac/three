@@ -283,10 +283,18 @@ class FirstPersonPlayer(Entity):
                     nextFloorPreviousZ = nextFloorPreviousPoint.height
                     nextFloorCurrentZ = topPoint.height
                     # allow walking from one floor onto another
-                    if vectorMath.greaterOrClose(
-                                currentFloorPreviousZ, nextFloorPreviousZ) \
+                    if (vectorMath.greaterOrClose(
+                                currentFloorPreviousZ, nextFloorPreviousZ)
                             and vectorMath.lessOrClose(
-                                currentFloorCurrentZ, nextFloorCurrentZ):
+                                currentFloorCurrentZ, nextFloorCurrentZ)
+                            # prevent alternating between floors
+                            # and getting stuck between a steep floor and a flat
+                            # one
+                            and not (
+                                vectorMath.isclose(
+                                    currentFloorPreviousZ, nextFloorPreviousZ)
+                                and vectorMath.isclose(
+                                    currentFloorCurrentZ, nextFloorCurrentZ))):
                         # if the new floor's slope is too steep,
                         # don't walk onto it
                         if topPoint.normal.z < self.minWalkNormalZ:
