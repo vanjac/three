@@ -542,6 +542,15 @@ class Rotate:
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def isClose(self, other):
+        """
+        Return True if the Rotates are close enough that any differences are
+        probably a floating point math error.
+        """
+        return isclose(self.x, other.x) \
+            and isclose(self.y, other.y) \
+            and isclose(self.z, other.z)
+
     def getTuple(self):
         """
         Return a tuple of 3 numbers for the Rotate - the rotations around the
@@ -562,6 +571,13 @@ class Rotate:
         Check if this is a zero rotation.
         """
         return self.x == 0 and self.y == 0 and self.z == 0
+
+    def isCloseToZero(self):
+        """
+        Check if the rotate is close to (0, 0, 0). Same as:
+        ``rotate.isClose( Rotate(0, 0, 0) )``.
+        """
+        return self.isClose(ZERO_V)
 
     def setX(self, newX):
         """
@@ -627,6 +643,13 @@ class Rotate:
         roll = self.x + amount.x
         return vector.rotation().setX(roll)
 
+    def inverseRotate(self, amount):
+        """
+        See Vector.inverseRotate.
+        """
+        vector = BASE_ROTATION_V.rotate(self).inverseRotate(amount)
+        roll = self.x + amount.x
+        return vector.rotation().setX(roll)
 
 ZERO_V = Vector(0, 0, 0)
 
