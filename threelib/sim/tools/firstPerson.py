@@ -114,9 +114,12 @@ class FirstPersonPlayer(Entity):
 
         jumpEvent = self.jumpButton.getEvent()
         if self.newCurrentFloor is not None \
-                and jumpEvent == ButtonInput.PRESSED_EVENT \
-                and self.newSliding == False:
-            self.newZVelocity = self.jumpVelocity
+                and jumpEvent == ButtonInput.PRESSED_EVENT:
+            # jump direction is floor normal
+            floorNormal = self._topPoint(self.newCurrentFloor,
+                self.position + self.positionChange).normal
+            self.newZVelocity = self.jumpVelocity * floorNormal.z
+            self.newXYVelocity += self.jumpVelocity * floorNormal.setZ(0)
             self.newCurrentFloor.doFloorEndTouchAction()
             self.newCurrentFloor = None
 
