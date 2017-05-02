@@ -260,8 +260,14 @@ class FirstPersonPlayer(Entity):
                         collision, self.position)
 
                     if nextFloorPreviousPoint is not None:
-                        if currentZ <= topPoint.height \
-                          and previousZ > nextFloorPreviousPoint.height:
+                        if vectorMath.lessOrClose(currentZ, topPoint.height) \
+                                and vectorMath.greaterOrClose(
+                                    previousZ, nextFloorPreviousPoint.height) \
+                                and not (
+                                    vectorMath.isclose(
+                                        currentZ, topPoint.height)
+                                    and vectorMath.isclose(previousZ,
+                                        nextFloorPreviousPoint.height)):
                             self.newZVelocity = 0.0
                             self.newCurrentFloor = collision
                             collision.doFloorStartTouchAction()
