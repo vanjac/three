@@ -125,9 +125,8 @@ class SolidMeshObject(MeshObject):
             world.collisionMeshes.append(collisionMesh)
             entity.addChild(collisionMesh)
 
-
-        entity.translate(self.getPosition())
         entity.rotate(self.getRotation())
+        entity.translate(self.getPosition())
 
         return entity
 
