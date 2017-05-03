@@ -1,5 +1,6 @@
 __author__ = "jacobvanthoog"
 
+import math
 from threelib.vectorMath import Vector
 from threelib import vectorMath
 import threelib.sim.base
@@ -208,6 +209,46 @@ class CollisionMesh(threelib.sim.base.Entity):
             return self._translateConvexHullPointToAbsolute(minDistancePoint)
         else:
             return None
+
+    def nearestBoundsNormal(self, point):
+        """
+        Return the 2d normal of the nearest point on the convex 2d boundary of
+        this mesh to the given point.
+        """
+        point = self._translatePointForConvexHull(point).setZ(0)
+
+        # copied / modified from nearestBoundsPoint
+        minDistance = -1
+        minDistancePointNormal = None
+        for i in range(0, len(self.convexHullPoints)):
+            p1 = self.convexHullPoints[i - 1]
+            p2 = self.convexHullPoints[i]
+
+            l2 = (p1 - p2).magnitudeSquare()
+            if l2 == 0.0:
+                nearestPoint = p1
+            else:
+                t = max(0, min(1, (point - p1).dot(p2 - p1) / l2))
+                nearestPoint = p1 + t * (p2 - p1)
+
+            distance = (point - nearestPoint).magnitude()
+            if minDistance == -1 or distance < minDistance:
+                minDistance = distance
+                if nearestPoint.isClose(p1):
+                    dir1 = (p2 - p1).normalize()
+                    dir2 = (self.convexHullPoints[i - 2] - p1).normalize()
+                    angle = dir2.direction2() - dir1.direction2()
+                    minDistancePointNormal = dir2.rotate2((math.pi * 2 - angle) / 2)
+                elif nearestPoint.isClose(p2):
+                    dir1 = (p1 - p2).normalize()
+                    dir2 = (self.convexHullPoints[(i + 1) % len(self.convexHullPoints)] - p2).normalize()
+                    angle = dir2.direction2() - dir1.direction2()
+                    minDistancePointNormal = dir2.rotate2((math.pi * 2 - angle) / 2)
+                else:
+                    minDistancePointNormal = \
+                        (p2 - p1).normalize().rotate2(-math.pi/2)
+
+        return minDistancePointNormal
 
 
     def topPointAt(self, point):

@@ -248,8 +248,22 @@ class FirstPersonPlayer(Entity):
                 self._playerBottom(self.position + self.positionChange).z,
                 self._playerTop(self.position + self.positionChange).z,
                 bottomPoint.height, topPoint.height):
-            self.positionChange = Vector(0, 0, self.positionChange.z)
-            self.newXYVelocity = Vector(0, 0)
+            # slide along wall
+            wallNormal = collision.nearestBoundsNormal(
+                self.position + self.positionChange)
+            slideDirection = wallNormal.setZ(0).rotate2(math.pi / 2).normalize()
+
+            self.positionChange = (slideDirection *
+                self.positionChange.setZ(0).project(slideDirection)) \
+                .setZ(self.positionChange.z)
+            self.newXYVelocity = slideDirection \
+                                 * self.newXYVelocity.project(slideDirection)
+
+            if self._inBounds(collision,
+                              self.position + self.positionChange):
+                self.positionChange = Vector(0, 0, self.positionChange.z)
+                self.newXYVelocity = Vector(0, 0)
+
             if not collision in self.previousWallCollisions:
                 collision.doWallCollideAction()
             self.wallCollisions.append(collision)
