@@ -57,6 +57,7 @@ class CollisionMesh(threelib.sim.base.Entity):
 
     def __init__(self, mesh):
         super().__init__()
+        self.unrotatedMesh = mesh
         self.mesh = mesh
         self.enabled = True
         self.solid = True
@@ -82,10 +83,24 @@ class CollisionMesh(threelib.sim.base.Entity):
 
         self._generateHull()
 
+    def rotate(self, rotate, moveChildren=True):
+        super().rotate(rotate, moveChildren)
+
+        if not rotate.setZ(0).isCloseToZero():
+            def do(toUpdateList):
+                self._generateHull()
+            self.actions.addAction(do)
+
     def _generateHull(self):
-        # TODO: These algorithms ignore the X and Y rotation of the object!
+        # rotate mesh with X/Y rotation only
+        self.mesh = self.unrotatedMesh.clone()
+        meshRotation = self.getRotation().setZ(0)
+        for vertex in self.mesh.getVertices():
+            vertex.setPosition(vertex.getPosition().rotate(meshRotation))
 
         # split mesh faces into "top" and "bottom" based on normal
+        self.topFaces = [ ]
+        self.bottomFaces = [ ]
         for face in self.mesh.getFaces():
             normal = face.getNormal()
             if normal is not None:
@@ -103,7 +118,13 @@ class CollisionMesh(threelib.sim.base.Entity):
         self.convexHullPoints = [ ]
         if len(self.mesh.getVertices()) > 0:
             vertices = list(self.mesh.getVertices())
-            nextVertex = vertices[0]
+
+            # set nextVertex to the leftmost vertex
+            firstVertex = vertices[0]
+            for vertex in vertices:
+                if vertex.getPosition().x < firstVertex.getPosition().x:
+                    firstVertex = vertex
+            nextVertex = firstVertex
 
             while len(vertices) != 0:
                 vertices.remove(nextVertex)
@@ -112,12 +133,13 @@ class CollisionMesh(threelib.sim.base.Entity):
                 if len(vertices) == 0:
                     break
 
-                verticesToRemove = [ ]
-                if nextVertex != self.mesh.getVertices()[0]:
+                if nextVertex != firstVertex:
                     # to potentially complete the polygon
-                    nextVertexCandidate = self.mesh.getVertices()[0]
+                    nextVertexCandidate = firstVertex
                 else:
                     nextVertexCandidate = None
+
+                verticesToRemove = [ ]
                 for vertex in vertices:
                     pos = vertex.getPosition().setZ(0)
 
@@ -136,7 +158,7 @@ class CollisionMesh(threelib.sim.base.Entity):
                 for vertex in verticesToRemove:
                     vertices.remove(vertex)
 
-                if nextVertexCandidate == self.mesh.getVertices()[0]:
+                if nextVertexCandidate == firstVertex:
                     # reached beginning again
                     break
                 nextVertex = nextVertexCandidate
