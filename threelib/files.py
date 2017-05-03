@@ -6,6 +6,7 @@ import os.path
 import pickle
 import webbrowser
 import platform
+import configparser
 from threelib.edit.state import EditorState
 
 
@@ -288,3 +289,10 @@ def readProperties():
     with path.open() as f:
         return f.read()
 
+def readGameConfig():
+    """
+    Read the game configuration file. Return a ConfigParser.
+    """
+    config = configparser.ConfigParser()
+    config.read(str(getGameDir() / "config.ini"))
+    return config

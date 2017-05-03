@@ -6,6 +6,7 @@ import threelib.world
 from threelib.sim.input import SimpleAxisInput
 from threelib.sim.input import SimpleButtonInput
 from threelib.run.controller import GameController
+from threelib import files
 
 import time
 
@@ -32,6 +33,8 @@ class GameInterface(AppInterface, GameController):
         self.initialState = state
 
         self.mouseLocked = False
+
+        self.gameConfig = files.readGameConfig()
 
     def init(self):
         self.mouseXInput = SimpleAxisInput()
