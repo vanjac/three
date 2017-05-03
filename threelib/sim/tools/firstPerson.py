@@ -134,6 +134,18 @@ class FirstPersonPlayer(Entity):
         self.previousCeilingCollisions = self.ceilingCollisions
         self.ceilingCollisions = list()
 
+        if self.newCurrentFloor is not None:
+            # A more complete check of the current floor height is below.
+            # This just exists so the ceiling collision check will have the
+            # correct current Z position - so collision with a ceiling while
+            # walking up a slope works
+            point = self._topPoint(self.newCurrentFloor,
+                                   self.position + self.positionChange)
+            if point is not None:
+                z = point.height + self.cameraHeight
+                self.positionChange = \
+                    self.positionChange.setZ(z - self.position.z)
+
         for collision in self.world.collisionMeshes:
             if collision.isEnabled() and collision != self.newCurrentFloor:
 
