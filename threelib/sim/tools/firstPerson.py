@@ -319,9 +319,15 @@ class FirstPersonPlayer(Entity):
                         # if the new floor's slope is too steep,
                         # don't walk onto it
                         if topPoint.normal.z < self.minWalkNormalZ:
-                            self.positionChange = \
-                                Vector(0, 0, self.positionChange.z)
-                            self.newXYVelocity = Vector(0, 0)
+                            # slide along the edge
+                            slopeAxis = topPoint.normal.setZ(0) \
+                                .rotate2(math.pi/2).normalize()
+
+                            self.positionChange = (slopeAxis *
+                                self.positionChange.setZ(0).project(slopeAxis))\
+                                .setZ(self.positionChange.z)
+                            self.newXYVelocity = slopeAxis \
+                                * self.newXYVelocity.project(slopeAxis)
                         else:
                             self.newZVelocity = 0.0
                             self.newCurrentFloor.doFloorEndTouchAction()
