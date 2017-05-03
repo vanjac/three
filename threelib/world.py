@@ -260,6 +260,8 @@ class RayCollisionRequest:
 
 
 def buildWorld(editorState):
+    threelib.script.resetScriptVariables(["controller"])
+
     threelib.script.runScript("import math")
     threelib.script.runScript("from threelib.vectorMath import *")
     threelib.script.runScript("from threelib.mesh import *")

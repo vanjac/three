@@ -2,6 +2,12 @@ __author__ = "jacobvanthoog"
 
 localDict = dict(globals())
 
+def resetScriptVariables(exclude):
+    global localDict
+    newLocalDict = dict(globals())
+    for key in exclude:
+        newLocalDict[key] = localDict[key]
+    localDict = newLocalDict
 
 def runScript(script):
     """
