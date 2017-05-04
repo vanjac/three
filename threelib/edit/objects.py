@@ -26,6 +26,7 @@ class SolidMeshObject(MeshObject):
 
         self.generateVisibleMesh = True
         self.visible = True
+        self.staticVisibleMesh = True
 
         self.generateRayCollision = True
         self.rayCollisionEnabled = True
@@ -73,6 +74,7 @@ class SolidMeshObject(MeshObject):
         if self.generateVisibleMesh:
             renderMesh = RenderMesh(self.getMesh())
             renderMesh.setVisible(self.visible)
+            renderMesh.setMeshIsStatic(self.staticVisibleMesh)
 
             world.simulator.addObject(renderMesh)
             if inSky:
@@ -136,6 +138,7 @@ class SolidMeshObject(MeshObject):
                        "script" : self.script,
                        "generateVisibleMesh" : str(self.generateVisibleMesh),
                        "visible" : str(self.visible),
+                       "staticVisibleMesh": str(self.staticVisibleMesh),
 
                        "generateRayCollision" : str(self.generateRayCollision),
                        "rayCollisionEnabled" : str(self.rayCollisionEnabled),
@@ -163,6 +166,8 @@ class SolidMeshObject(MeshObject):
                 self.generateVisibleMesh = stringToBoolean(value)
             if key == "visible":
                 self.visible = stringToBoolean(value)
+            if key == "staticVisibleMesh":
+                self.staticVisibleMesh = stringToBoolean(value)
 
             if key == "generateRayCollision":
                 self.generateRayCollision = stringToBoolean(value)
@@ -199,6 +204,7 @@ class SolidMeshObject(MeshObject):
 
         clone.generateVisibleMesh = self.generateVisibleMesh
         clone.visible = self.visible
+        clone.staticVisibleMesh = self.staticVisibleMesh
 
         clone.generateRayCollision = self.generateRayCollision
         clone.rayCollisionEnabled = self.rayCollisionEnabled

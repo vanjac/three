@@ -11,6 +11,7 @@ class RenderMesh(threelib.sim.base.Entity):
         super().__init__()
         self.mesh = mesh
         self.visible = True
+        self.staticMesh = True
 
     def getMesh(self):
         """
@@ -40,3 +41,16 @@ class RenderMesh(threelib.sim.base.Entity):
             self.visible = visible
         self.actions.addAction(do)
 
+    def meshIsStatic(self):
+        """
+        If True, the mesh should never change.
+        """
+        return self.staticMesh
+
+    def setMeshIsStatic(self, static):
+        """
+        Set whether the mesh will never change. No effect until update().
+        """
+        def do(toUpdateList):
+            self.staticMesh = static
+        self.actions.addAction(do)

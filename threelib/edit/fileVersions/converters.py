@@ -94,3 +94,15 @@ def convert_1_7_to_1_8(state):
     state.MAJOR_VERSION = 1
     state.MINOR_VERSION = 8
     return state
+
+@editorStateConverter(1, 8)
+def convert_1_8_to_1_9(state):
+    from threelib.edit.objects import SolidMeshObject
+
+    for o in state.objects:
+        if isinstance(o, SolidMeshObject):
+            o.staticVisibleMesh = True
+
+    state.MAJOR_VERSION = 1
+    state.MINOR_VERSION = 9
+    return state

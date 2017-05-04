@@ -297,9 +297,6 @@ class GLRunner(GameInterface):
 
 
     def drawRenderMeshes(self, renderMeshes):
-        currentMat = None
-        glDisable(GL_TEXTURE_2D)
-        glColor(0.8, 0.8, 0.8)
         for renderMesh in renderMeshes:
             if not renderMesh.isVisible():
                 continue
@@ -307,6 +304,26 @@ class GLRunner(GameInterface):
             glPushMatrix()
             self.transformEntity(renderMesh)
 
+            displayList = False
+            if renderMesh.meshIsStatic():
+                if hasattr(renderMesh, 'displayList'):
+                    if renderMesh.displayList is not None:
+                        glCallList(renderMesh.displayList)
+                        glPopMatrix()
+                        continue
+
+                renderMesh.displayList = glGenLists(1)
+                if not glIsList(renderMesh.displayList):
+                    # TODO: better handling of errors
+                    print("Display list error!")
+                    displayList = False
+                else:
+                    displayList = True
+                    glNewList(renderMesh.displayList, GL_COMPILE_AND_EXECUTE)
+
+            currentMat = None
+            glDisable(GL_TEXTURE_2D)
+            glColor(0.8, 0.8, 0.8)
             for f in renderMesh.getMesh().getFaces():
                 faceMat = f.getMaterial()
                 if faceMat is not currentMat:
@@ -326,6 +343,9 @@ class GLRunner(GameInterface):
                     glTexCoord(texPos.x, texPos.y)
                     glVertex(pos.y, pos.z, pos.x)
                 glEnd()
+
+            if displayList:
+                glEndList()
 
             glPopMatrix()
         glDisable(GL_TEXTURE_2D)
