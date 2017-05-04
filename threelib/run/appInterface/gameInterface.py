@@ -69,16 +69,16 @@ class GameInterface(AppInterface, GameController):
         exec('from threelib.sim.input import *',
              controlLocalDict, controlLocalDict)
 
-        for axisName in self.gameConfig['axes']:
-            script = self.gameConfig['axes'][axisName]
-            axis = eval(script, controlLocalDict, controlLocalDict)
-            self.world.axisInputs[axisName] = axis
-            controlLocalDict[axisName] = axis
         for buttonName in self.gameConfig['buttons']:
             script = self.gameConfig['buttons'][buttonName]
             button = eval(script, controlLocalDict, controlLocalDict)
             self.world.buttonInputs[buttonName] = button
             controlLocalDict[buttonName] = button
+        for axisName in self.gameConfig['axes']:
+            script = self.gameConfig['axes'][axisName]
+            axis = eval(script, controlLocalDict, controlLocalDict)
+            self.world.axisInputs[axisName] = axis
+            controlLocalDict[axisName] = axis
 
         print("Building world...")
         threelib.world.buildWorld(state)
