@@ -576,7 +576,7 @@ class EditorInterface(EditorActions, AppInterface):
 
         if self.currentCommand == "":
             if self.movingCamera:
-                text += "WASDQE: fly, click: exit, scroll: change speed"
+                text += "WASDQE: fly; click: exit; scroll or -/=: change speed"
             elif self.inAdjustMode:
                 text += "Click: complete"
         else:
