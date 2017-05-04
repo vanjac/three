@@ -132,7 +132,7 @@ class SimpleAxisInput(AxisInput):
 
 class ButtonAxis(AxisInput):
 
-    def __init__(self, button, offValue, onValue):
+    def __init__(self, button, offValue=0.0, onValue=1.0):
         self.button = button
         self.offValue = float(offValue)
         self.onValue = float(onValue)
