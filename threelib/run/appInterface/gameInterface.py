@@ -58,17 +58,27 @@ class GameInterface(AppInterface, GameController):
 
         self.keyInputs = { }
 
-        # TODO: remove these once input customization has been added!
-        self.world.axisInputs['mouse-x'] = self.mouseXInput
-        self.world.axisInputs['mouse-y'] = self.mouseYInput
-        self.world.buttonInputs['mouse-left'] = self.mouseLeftInput
-        self.world.buttonInputs['mouse-middle'] = self.mouseMiddleInput
-        self.world.buttonInputs['mouse-right'] = self.mouseRightInput
-        self.world.buttonInputs['w'] = self._getKeyInput('w')
-        self.world.buttonInputs['a'] = self._getKeyInput('a')
-        self.world.buttonInputs['s'] = self._getKeyInput('s')
-        self.world.buttonInputs['d'] = self._getKeyInput('d')
-        self.world.buttonInputs['space'] = self._getKeyInput(' ')
+        controlLocalDict = dict(locals())
+        controlLocalDict['key'] = self._getKeyInput
+        controlLocalDict['mouse_x'] = self.mouseXInput
+        controlLocalDict['mouse_y'] = self.mouseYInput
+        controlLocalDict['mouse_left'] = self.mouseLeftInput
+        controlLocalDict['mouse_middle'] = self.mouseMiddleInput
+        controlLocalDict['mouse_right'] = self.mouseRightInput
+
+        exec('from threelib.sim.input import *',
+             controlLocalDict, controlLocalDict)
+
+        for axisName in self.gameConfig['axes']:
+            script = self.gameConfig['axes'][axisName]
+            axis = eval(script, controlLocalDict, controlLocalDict)
+            self.world.axisInputs[axisName] = axis
+            controlLocalDict[axisName] = axis
+        for buttonName in self.gameConfig['buttons']:
+            script = self.gameConfig['buttons'][buttonName]
+            button = eval(script, controlLocalDict, controlLocalDict)
+            self.world.buttonInputs[buttonName] = button
+            controlLocalDict[buttonName] = button
 
         print("Building world...")
         threelib.world.buildWorld(state)
