@@ -1,5 +1,7 @@
 __author__ = "jacobvanthoog"
 
+import numbers
+
 class ButtonInput:
 
     NO_EVENT = "none"
@@ -53,6 +55,51 @@ class AxisInput:
         change = newValue - self._lastValue
         self._lastValue = newValue
         return change
+
+    def __neg__(self):
+        return AxisOpposite(self)
+
+    def __add__(self, other):
+        if isinstance(other, numbers.Number):
+            return AxisOffset(self, other)
+        else:
+            return AxisSum(self, other)
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __sub__(self, other):
+        if isinstance(other, numbers.Number):
+            return AxisOffset(self, -other)
+        else:
+            return AxisSum(self, -other)
+
+    def __rsub__(self, other):
+        if isinstance(other, numbers.Number):
+            return AxisOffset(-self, other)
+        else:
+            return AxisSum(-self, other)
+
+    def __mul__(self, other):
+        if isinstance(other, numbers.Number):
+            return AxisScale(self, other)
+        else:
+            return AxisProduct(self, other)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __truediv__(self, other):
+        if isinstance(other, numbers.Number):
+            return AxisScale(self, 1.0 / other)
+        else:
+            return AxisProduct(self, AxisReciprocal(other))
+
+    def __rtruediv__(self, other):
+        if isinstance(other, numbers.Number):
+            return AxisScale(AxisReciprocal(self), other)
+        else:
+            return AxisProduct(AxisReciprocal(self), other)
 
 
 class SimpleButtonInput(ButtonInput):
