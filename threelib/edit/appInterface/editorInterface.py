@@ -41,6 +41,10 @@ class EditorInterface(EditorActions, AppInterface):
                 self.fly = self.fly.setZ(-1)
             if key == b'e':
                 self.fly = self.fly.setZ(1)
+            if key == b'=':
+                self.flySpeed *= 1.5
+            if key == b'-':
+                self.flySpeed /= 1.5
         else:
             character = chr(key[0])
             if character == '\x7f': # backspace on some platforms, delete on others
