@@ -59,25 +59,28 @@ class GameInterface(AppInterface, GameController):
         self.keyInputs = { }
 
         controlLocalDict = dict(locals())
-        controlLocalDict['key'] = self._getKeyInput
-        controlLocalDict['mouse_x'] = self.mouseXInput
-        controlLocalDict['mouse_y'] = self.mouseYInput
-
-        controlLocalDict['mouse_left'] = self.mouseLeftInput
-        controlLocalDict['mouse_middle'] = self.mouseMiddleInput
-        controlLocalDict['mouse_right'] = self.mouseRightInput
-
-        for specialKey in ['left', 'right', 'down', 'up']:
-            controlLocalDict[specialKey] = self._getKeyInput(specialKey)
 
         exec('from threelib.sim.input import *',
              controlLocalDict, controlLocalDict)
+
+        controlLocalDict['key'] = self._getKeyInput
+        controlLocalDict['none'] = SimpleButtonInput()
+        controlLocalDict['mouse_left'] = self.mouseLeftInput
+        controlLocalDict['mouse_middle'] = self.mouseMiddleInput
+        controlLocalDict['mouse_right'] = self.mouseRightInput
+        for specialKey in ['left', 'right', 'down', 'up']:
+            controlLocalDict[specialKey] = self._getKeyInput(specialKey)
 
         for buttonName in self.gameConfig['buttons']:
             script = self.gameConfig['buttons'][buttonName]
             button = eval(script, controlLocalDict, controlLocalDict)
             self.world.buttonInputs[buttonName] = button
             controlLocalDict[buttonName] = button
+
+        controlLocalDict['none'] = SimpleAxisInput()
+        controlLocalDict['mouse_x'] = self.mouseXInput
+        controlLocalDict['mouse_y'] = self.mouseYInput
+
         for axisName in self.gameConfig['axes']:
             script = self.gameConfig['axes'][axisName]
             axis = eval(script, controlLocalDict, controlLocalDict)
