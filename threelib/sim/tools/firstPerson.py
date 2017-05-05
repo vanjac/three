@@ -63,17 +63,18 @@ class FirstPersonPlayer(Entity):
             # gravity
             self.newZVelocity += FirstPersonPlayer.GRAVITY * timeElapsed
 
-        # before applying input or deceleration
-        prevNewXYVelocity = self.newXYVelocity
-
         # orient walking direction to look direction
         inputTranslation = inputTranslation.rotate2(self.rotation.z)
         if self.newCurrentFloor is None:
             # slower movement while in the air
             inputTranslation *= float(self.fallMoveSpeed) / self.walkSpeed
-        if self.newXYVelocity.magnitude() < inputTranslation.magnitude():
+        if self.newXYVelocity.magnitude() < inputTranslation.magnitude() \
+                and not self.sliding:
+            walking = True
             self.newXYVelocity = inputTranslation
         else:
+            walking = False
+        if ((not walking) and (not self.sliding)):
             # when not moving, gradually slow down x-y velocity
             if self.newCurrentFloor is None:
                 self.newXYVelocity *= (self.fallDeceleration ** timeElapsed)
@@ -95,16 +96,13 @@ class FirstPersonPlayer(Entity):
                     self.newSliding = True
 
                     movementDirection = point.normal.setZ(0).setMagnitude(1.0)
-                    # slope of surface in movement direction (always positive)
-                    slope = point.normal.setZ(0).magnitude() / point.normal.z
-                    if not self.sliding:
-                        self.newXYVelocity = self.newXYVelocity / slope
-                    else:
-                        self.newXYVelocity = prevNewXYVelocity
+                    if walking or not self.sliding:
+                        self.newXYVelocity *= \
+                            point.normal.project(Vector(0,0,1))
                     self.newXYVelocity += movementDirection \
-                        * -FirstPersonPlayer.GRAVITY * timeElapsed / slope \
+                        * -FirstPersonPlayer.GRAVITY \
+                        * point.normal.project(Vector(0,0,1)) * timeElapsed \
                         * (point.normal.setZ(0).magnitude())
-                    movement = self.newXYVelocity * timeElapsed
                 else:
                     slopeFactorOffset = \
                         movement.setMagnitude(1.0).project(point.normal)
