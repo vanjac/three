@@ -6,9 +6,9 @@ from pathlib import Path
 from threelib import files
 import threelib.edit.fileVersions.converters
 
-THREE_VERSION = 0
+THREE_VERSION = "1.0.-1"
 
-print("three version " + str(THREE_VERSION))
+print("three version " + THREE_VERSION)
 
 # interpret command-line args
 gameDirPathString = None
