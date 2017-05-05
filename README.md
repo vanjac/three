@@ -1,6 +1,6 @@
 # three
 
-Three is a 3d game engine with a map editor, written in Python and with Python scripting. It still has a lot of bugs and missing features - see the [issues](https://github.com/vanjac/three/issues) page.
+three is a 3d game engine with a map editor, written in Python and with Python scripting. There are still a lot of missing features - see the [issues](https://github.com/vanjac/three/issues) page.
 
 See the [wiki](https://github.com/vanjac/three/wiki) for installation instructions and documentation.
 
