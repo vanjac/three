@@ -81,6 +81,8 @@ class GLAppInstance(AppInstance):
         glutReshapeFunc(self.resizeGL)
         glutKeyboardFunc(self.keyPressedEvent)
         glutKeyboardUpFunc(self.keyReleasedEvent)
+        glutSpecialFunc(self.specialPressedEvent)
+        glutSpecialUpFunc(self.specialReleasedEvent)
         glutMouseFunc(self.mouseEvent)
         # called while no mouse buttons are pressed
         glutPassiveMotionFunc(self.mouseMovement)
@@ -267,6 +269,30 @@ class GLAppInstance(AppInstance):
         if key in self.keysPressed:
             self.keysPressed.remove(key)
         self.appInterface.keyReleased(key)
+
+    def _nameForSpecialKey(self, key):
+        return {GLUT_KEY_LEFT : "left",
+                GLUT_KEY_RIGHT : "right",
+                GLUT_KEY_DOWN : "down",
+                GLUT_KEY_UP : "up",
+                GLUT_KEY_PAGE_UP : "page_up",
+                GLUT_KEY_PAGE_DOWN : "page_down",
+                GLUT_KEY_HOME : "home",
+                GLUT_KEY_END : "end",
+                GLUT_KEY_INSERT : "insert"}[key]
+
+    def specialPressedEvent(self, key, mouseX, mouseY):
+        if key in self.keysPressed:
+            # ignore key repeat
+            pass
+        else:
+            self.keysPressed.append(key)
+            self.appInterface.specialKeyPressed(self._nameForSpecialKey(key))
+
+    def specialReleasedEvent(self, key, mouseX, mouseY):
+        if key in self.keysPressed:
+            self.keysPressed.remove(key)
+        self.appInterface.specialKeyReleased(self._nameForSpecialKey(key))
 
     def drawText(self, text, font, x, y):
         depthEnabled = glIsEnabled(GL_DEPTH_TEST)

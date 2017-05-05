@@ -62,9 +62,13 @@ class GameInterface(AppInterface, GameController):
         controlLocalDict['key'] = self._getKeyInput
         controlLocalDict['mouse_x'] = self.mouseXInput
         controlLocalDict['mouse_y'] = self.mouseYInput
+
         controlLocalDict['mouse_left'] = self.mouseLeftInput
         controlLocalDict['mouse_middle'] = self.mouseMiddleInput
         controlLocalDict['mouse_right'] = self.mouseRightInput
+
+        for specialKey in ['left', 'right', 'down', 'up']:
+            controlLocalDict[specialKey] = self._getKeyInput(specialKey)
 
         exec('from threelib.sim.input import *',
              controlLocalDict, controlLocalDict)
@@ -151,6 +155,14 @@ class GameInterface(AppInterface, GameController):
             return
         if char in self.keyInputs:
             self.keyInputs[char].setPressed(False)
+
+    def specialKeyPressed(self, key):
+        if key in self.keyInputs:
+            self.keyInputs[key].setPressed(True)
+
+    def specialKeyReleased(self, key):
+        if key in self.keyInputs:
+            self.keyInputs[key].setPressed(False)
 
     def mousePressed(self, button, mouseX, mouseY):
         self.instance.lockMouse()

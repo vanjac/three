@@ -125,6 +125,19 @@ class AppInterface:
         """
         pass
 
+    def specialKeyPressed(self, key):
+        """
+        Called by the AppInstance when a "special" key is pressed. ``key`` is
+        the name of the key.
+        """
+        pass
+
+    def specialKeyReleased(self, key):
+        """
+        Called by the AppInstance when a "special" key is released.
+        """
+        pass
+
     def mousePressed(self, button, mouseX, mouseY):
         """
         Called by the AppInstance when a mouse button is pressed. 0 is left,
