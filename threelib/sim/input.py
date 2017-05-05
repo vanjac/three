@@ -35,6 +35,9 @@ class ButtonInput:
         self._lastPressed = pressed
         return event
 
+    def __or__(self, other):
+        return OrButton(self, other)
+
 class AxisInput:
 
     def __init__(self):
@@ -128,6 +131,17 @@ class SimpleAxisInput(AxisInput):
 
     def changeValue(self, amount):
         self.value += amount
+
+
+class OrButton(ButtonInput):
+
+    def __init__(self, button1, button2):
+        self.button1 = button1
+        self.button2 = button2
+        super().__init__()
+
+    def isPressed(self):
+        return self.button1.isPressed() or self.button2.isPressed()
 
 
 class ButtonAxis(AxisInput):
