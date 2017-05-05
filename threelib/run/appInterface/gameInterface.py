@@ -9,6 +9,7 @@ from threelib.run.controller import GameController
 from threelib import files
 
 import time
+import numbers
 
 unshiftedChars = { '~': '`', '!': '1', '@': '2', '#': '3', '$': '4', '%': '5',
          '^': '6', '&': '7', '*': '8', '(': '9', ')': '0', '_': '-', '+': '=',
@@ -84,6 +85,10 @@ class GameInterface(AppInterface, GameController):
         for axisName in self.gameConfig['axes']:
             script = self.gameConfig['axes'][axisName]
             axis = eval(script, controlLocalDict, controlLocalDict)
+            if isinstance(axis, numbers.Number):
+                n = axis
+                axis = SimpleAxisInput()
+                axis.setValue(n)
             self.world.axisInputs[axisName] = axis
             controlLocalDict[axisName] = axis
 
