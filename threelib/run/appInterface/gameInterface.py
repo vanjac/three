@@ -127,6 +127,8 @@ class GameInterface(AppInterface, GameController):
 
 
     def _getKeyInput(self, char):
+        if char == '\n':
+            char = '\r'
         if char in self.keyInputs:
             return self.keyInputs[char]
         else:
@@ -144,6 +146,8 @@ class GameInterface(AppInterface, GameController):
         except UnicodeDecodeError:
             # happens when fn + volume change keys are used, for example
             return
+        if char == '\x7f':  # backspace on some platforms, delete on others
+            char = '\b'
         if char in self.keyInputs:
             self.keyInputs[char].setPressed(True)
 
@@ -153,6 +157,8 @@ class GameInterface(AppInterface, GameController):
         except UnicodeDecodeError:
             # happens when fn + volume change keys are used, for example
             return
+        if char == '\x7f':  # backspace on some platforms, delete on others
+            char = '\b'
         if char in self.keyInputs:
             self.keyInputs[char].setPressed(False)
 
