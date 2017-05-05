@@ -182,7 +182,13 @@ class FirstPersonPlayer(Entity):
             point = self._topPoint(self.newCurrentFloor,
                                    self.position + self.positionChange)
             if point is None:
-                self.newZVelocity = 0.0
+                if self.sliding:
+                    point = self._topPoint(self.newCurrentFloor,
+                                           self.position)
+                    slope = -(point.normal.setZ(0).magnitude() / point.normal.z)
+                    self.newZVelocity = self.xyVelocity.project(point.normal.setZ(0)) * slope
+                else:
+                    self.newZVelocity = 0.0
                 self.newCurrentFloor.doFloorEndTouchAction()
                 self.newCurrentFloor = None
             else:
