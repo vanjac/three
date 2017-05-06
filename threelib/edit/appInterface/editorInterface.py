@@ -406,6 +406,8 @@ class EditorInterface(EditorActions, AppInterface):
                 if self.toolbarHoverButton is not None:
                     self.toolbarSelectButton = self.toolbarHoverButton
                     self.editorMain.lockMouse()
+                    if self.toolbarSelectButton.mousePressedAction is not None:
+                        self.toolbarSelectButton.mousePressedAction()
             else: # select
                 multiple = self.editorMain.shiftPressed()
                 self.selectAtCursor(multiple)
@@ -426,6 +428,8 @@ class EditorInterface(EditorActions, AppInterface):
     def mouseReleased(self, button, mouseX, mouseY):
         if self.toolbarSelectButton is not None:
             self.editorMain.unlockMouse()
+            if self.toolbarSelectButton.mouseReleasedAction is not None:
+                self.toolbarSelectButton.mouseReleasedAction()
             self.toolbarSelectButton = None
 
     def mouseMoved(self, mouseX, mouseY, pmouseX, pmouseY):
@@ -444,6 +448,10 @@ class EditorInterface(EditorActions, AppInterface):
                     math.pi*3/2)
         elif self.inAdjustMode:
             self.mouseMovedAdjustMode(mouseX, mouseY, pmouseX, pmouseY)
+        elif self.toolbarSelectButton is not None:
+            if self.toolbarSelectButton.mouseDraggedAction is not None:
+                self.toolbarSelectButton.mouseDraggedAction(
+                    mouseX - pmouseX, mouseY - pmouseY)
         else:
             self.toolbarMouseX = mouseX - self.editorMain.windowWidth() \
                                  + self.toolbarWidth
