@@ -86,6 +86,8 @@ class GLEditor(EditorInterface):
         self._resetProjection()
 
     def _getViewportAspect(self):
+        if self.editorMain.windowWidth() == self.toolbarWidth:
+            return 1.0
         return (self.editorMain.windowWidth() - self.toolbarWidth) \
                / self.editorMain.windowHeight()
 
