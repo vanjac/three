@@ -12,9 +12,6 @@ class Button:
 
     def __init__(self, text="", x=0.0, width=1.0, style=None,
                  keyboardShortcut=None):
-        # change colors when mouse hovers/clicks
-        self.interactionEffects = True
-
         self.mousePressedAction = None # function()
         self.mouseDraggedAction = None # function(x, y)
         self.mouseReleasedAction = None # function()
