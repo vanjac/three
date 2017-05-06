@@ -138,9 +138,9 @@ class GLAppInstance(AppInstance):
 
     def unlockMouse(self):
         if self.mouseLocked:
-            pyautogui.moveRel(self.mouseLockX - self.pmouseX,
-                              self.mouseLockY - self.pmouseY)
-        self.mouseLocked = False
+            self.mouseLocked = False
+            pyautogui.moveTo(glutGet(GLUT_WINDOW_X) + self.mouseLockX,
+                             glutGet(GLUT_WINDOW_Y) + self.mouseLockY)
         glutSetCursor(GLUT_CURSOR_INHERIT)
 
 
@@ -239,6 +239,9 @@ class GLAppInstance(AppInstance):
         def moveMouse():
             global mouseMovementLock
             mouseMovementLock.acquire()
+
+            if not self.mouseLocked:
+                return
 
             newX = windowX + self.width / 2
             newY = windowY + self.height / 2
