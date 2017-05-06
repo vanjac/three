@@ -29,29 +29,18 @@ class EditorInterface(EditorActions, AppInterface):
         self.toolbarHoverButton = None
         self.toolbarSelectButton = None
 
-        testStyle = toolbar.Style(background=(255, 0, 0),
-                                  foreground=(255, 255, 255))
+        self._setupToolbar()
 
-        testGroup = toolbar.Group("testGroup")
-        testRow1 = toolbar.Row()
-        testGroup.addRow(testRow1)
-        testButton1 = toolbar.Button(text="abcde", x=0, width=0.5,
-                                    style=testStyle)
+    def _setupToolbar(self):
+        generalGroup = toolbar.Group("General")
+        self.toolbarGroups.append(generalGroup)
 
-        testButton2 = toolbar.Button(text="fghij", x=0.5, width=0.5,
-                                    style=testStyle)
-        testRow1.addButton(testButton1)
-        testRow1.addButton(testButton2)
-        testRow2 = toolbar.Row()
-        testGroup.addRow(testRow2)
-        testButton3 = toolbar.Button(text="klmno", x=0, width=0.5,
-                                    style=testStyle)
+        fileRow = toolbar.Row()
+        generalGroup.addRow(fileRow)
 
-        testButton4 = toolbar.Button(text="pqrst", x=0.5, width=0.5,
-                                    style=testStyle)
-        testRow2.addButton(testButton3)
-        testRow2.addButton(testButton4)
-        self.toolbarGroups.append(testGroup)
+        saveButton = toolbar.Button(text="Save", x=0, width=1)
+        fileRow.addButton(saveButton)
+        saveButton.mousePressedAction = self.saveFile
 
 
     def setAppInstance(self, instance):
