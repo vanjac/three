@@ -96,13 +96,14 @@ class GLEditor(EditorInterface):
     def _resetProjection(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(self.fov, self.editorMain.aspect, self.nearClip, self.farClip)
+        gluPerspective(self.fov, (self.editorMain.windowWidth() - self.toolbarWidth) / self.editorMain.windowHeight(), self.nearClip, self.farClip)
         glMatrixMode(GL_MODELVIEW)
 
     def draw(self):
         self.editorMain.updateMaterials(self.state.world)
 
         glLoadIdentity() # reset the view
+        glViewport(0,0,self.editorMain.windowWidth()-self.toolbarWidth,self.editorMain.windowHeight())
 
         # clear screen and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)

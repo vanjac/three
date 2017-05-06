@@ -18,6 +18,8 @@ class EditorInterface(EditorActions, AppInterface):
         super().__init__(mapPath, state)
         self.currentCommand = ""
 
+        self.toolbarWidth = 256
+
     def setAppInstance(self, instance):
         self.editorMain = instance
 
