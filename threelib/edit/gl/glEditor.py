@@ -73,8 +73,8 @@ class GLEditor(EditorInterface):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glColor(1, 1, 1)
         self.editorMain.drawText(message, GLUT_BITMAP_9_BY_15,
-                                 self.editorMain.width / 2,
-                                 self.editorMain.height / 2)
+                                 self.editorMain.windowWidth() / 2,
+                                 self.editorMain.windowWidth() / 2)
         glFlush()
         glFinish()
         glutSwapBuffers()
