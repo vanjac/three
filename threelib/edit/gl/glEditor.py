@@ -540,7 +540,7 @@ class GLEditor(EditorInterface):
             if button == self.toolbarSelectButton:
                 bg = tuple([max(0, c - 128) for c in bg])
             elif hover and self.toolbarSelectButton is None:
-                bg = tuple([min(255, c + 128) for c in bg])
+                bg = tuple([min(255.0, 255 - (255 - c) / 2) for c in bg])
 
 
             glColor(bg[0] / 255, bg[1] / 255, bg[2] / 255)

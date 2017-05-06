@@ -3,14 +3,14 @@ __author__ = "jacobvanthoog"
 
 class Style:
 
-    def __init__(self, background, foreground):
+    def __init__(self, background, foreground=(255,255,255)):
         self.background = background
         self.foreground = foreground
 
 
 class Button:
 
-    def __init__(self, text="", x=0.0, width=1.0, style=None,
+    def __init__(self, text="", x=0.0, width=1.0, style=Style((127,127,127)),
                  keyboardShortcut=None):
         self.mousePressedAction = None # function()
         self.mouseDraggedAction = None # function(x, y)
