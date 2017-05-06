@@ -60,8 +60,8 @@ class GLRunner(GameInterface):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glColor(1, 1, 1)
         self.instance.drawText(message, GLUT_BITMAP_9_BY_15,
-                               self.instance.width / 2,
-                               self.instance.height / 2)
+                               self.instance.windowWidth() / 2,
+                               self.instance.windowHeight() / 2)
         glFlush()
         glFinish()
         glutSwapBuffers()
@@ -74,7 +74,8 @@ class GLRunner(GameInterface):
     def _resetProjection(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(self.fov, self.instance.aspect, self.nearClip, self.farClip)
+        gluPerspective(self.fov, self.instance.getAspect(),
+                       self.nearClip, self.farClip)
         glMatrixMode(GL_MODELVIEW)
 
     def setState(self, state):
