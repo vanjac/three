@@ -33,7 +33,7 @@ class Button:
 
 class Row:
 
-    def __init__(self, height=64):
+    def __init__(self, height=32):
         self.height = height
         self.buttons = [ ]
 

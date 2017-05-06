@@ -11,8 +11,6 @@ from threelib.edit.adjust import *
 
 from threelib.edit.gl.glGraphics import GLGraphicsTools
 
-from threelib.edit import toolbar
-
 import OpenGL
 OpenGL.ERROR_CHECKING = False
 from OpenGL.GL import *
@@ -497,9 +495,19 @@ class GLEditor(EditorInterface):
         glLoadIdentity()
         gluOrtho2D(0, self.toolbarWidth, 0, self.editorMain.windowHeight())
 
-        testStyle = toolbar.Style(background=(255,0,0), foreground=(255,255,255))
-        testButton = toolbar.Button(text="abcde", x=0.25, width=0.5, style=testStyle)
-        self._drawButton(testButton, 30, 30)
+        y = self.editorMain.windowHeight()
+
+        for group in self.toolbarGroups:
+            glColor(255,255,255)
+            glRasterPos(4, y - 20)
+            for c in group.name:
+                glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ctypes.c_int(ord(c)))
+            y -= 28
+
+            for row in group.rows:
+                for button in row.buttons:
+                    self._drawButton(button, y, row.height)
+                y -= row.height
 
         glMatrixMode(GL_PROJECTION)
         glPopMatrix()
@@ -517,25 +525,26 @@ class GLEditor(EditorInterface):
         width = float(button.width) * self.toolbarWidth
         x2 = x1 + width
 
-        y2 = y + height
+        y1 = y - height
+        y2 = y
 
         glColor(bg[0], bg[1], bg[2])
         glBegin(GL_QUADS)
-        glVertex(x1, y)
+        glVertex(x1, y1)
         glVertex(x1, y2)
         glVertex(x2, y2)
-        glVertex(x2, y)
+        glVertex(x2, y1)
         glEnd()
 
         glColor(fg[0], fg[1], fg[2])
         glBegin(GL_LINE_LOOP)
-        glVertex(x1, y)
+        glVertex(x1, y1)
         glVertex(x1, y2)
         glVertex(x2, y2)
-        glVertex(x2, y)
+        glVertex(x2, y1)
         glEnd()
 
         textWidth = 9 * (len(button.text) + 1)
-        glRasterPos(x1 + width/2 - textWidth/2, y + height/2 - 4)
+        glRasterPos(x1 + width/2 - textWidth/2, y1 + height/2 - 4)
         for c in button.text:
             glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ctypes.c_int(ord(c)))

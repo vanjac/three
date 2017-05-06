@@ -9,6 +9,7 @@ from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 import threelib.vectorMath as vectorMath
 from threelib.app import AppInterface
+from threelib.edit import toolbar
 
 MATH_SYMBOLS = ['.', '+', '-', '*', '/', '(', ')']
 
@@ -22,6 +23,21 @@ class EditorInterface(EditorActions, AppInterface):
 
         self.toolbarWidth = 256
         self.toolbarGroups = [ ]
+
+
+        testStyle = toolbar.Style(background=(255, 0, 0),
+                                  foreground=(255, 255, 255))
+
+        testGroup = toolbar.Group("testGroup")
+        testRow = toolbar.Row()
+        testGroup.addRow(testRow)
+        testGroup.addRow(testRow)
+        testButton = toolbar.Button(text="abcde", x=0.25, width=0.5,
+                                    style=testStyle)
+        testRow.addButton(testButton)
+        self.toolbarGroups.append(testGroup)
+        self.toolbarGroups.append(testGroup)
+
 
     def setAppInstance(self, instance):
         self.editorMain = instance
