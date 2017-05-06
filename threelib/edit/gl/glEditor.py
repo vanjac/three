@@ -482,6 +482,8 @@ class GLEditor(EditorInterface):
 
 
     def _drawToolbar(self):
+        self.toolbarHoverButton = None
+
         glViewport(self.editorMain.windowWidth() - self.toolbarWidth, 0,
                    self.toolbarWidth, self.editorMain.windowHeight())
         glScissor(self.editorMain.windowWidth() - self.toolbarWidth, 0,
@@ -528,7 +530,19 @@ class GLEditor(EditorInterface):
         y1 = y - height
         y2 = y
 
-        glColor(bg[0], bg[1], bg[2])
+        hover = False
+        if self.toolbarMouseX > x1 and self.toolbarMouseX < x2 and \
+                self.toolbarMouseY > y1 and self.toolbarMouseY < y2:
+            hover = True
+            self.toolbarHoverButton = button
+
+        if button == self.toolbarSelectButton:
+            bg = tuple([max(0, c - 128) for c in bg])
+        elif hover and self.toolbarSelectButton is None:
+            bg = tuple([min(255, c + 128) for c in bg])
+
+
+        glColor(bg[0] / 255, bg[1] / 255, bg[2] / 255)
         glBegin(GL_QUADS)
         glVertex(x1, y1)
         glVertex(x1, y2)
@@ -536,7 +550,7 @@ class GLEditor(EditorInterface):
         glVertex(x2, y1)
         glEnd()
 
-        glColor(fg[0], fg[1], fg[2])
+        glColor(fg[0] / 255, fg[1] / 255, fg[2] / 255)
         glBegin(GL_LINE_LOOP)
         glVertex(x1, y1)
         glVertex(x1, y2)

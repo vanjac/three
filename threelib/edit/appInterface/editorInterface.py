@@ -24,18 +24,33 @@ class EditorInterface(EditorActions, AppInterface):
         self.toolbarWidth = 256
         self.toolbarGroups = [ ]
 
+        self.toolbarMouseX = -1
+        self.toolbarMouseY = -1
+        self.toolbarHoverButton = None
+        self.toolbarSelectButton = None
 
         testStyle = toolbar.Style(background=(255, 0, 0),
                                   foreground=(255, 255, 255))
 
         testGroup = toolbar.Group("testGroup")
-        testRow = toolbar.Row()
-        testGroup.addRow(testRow)
-        testGroup.addRow(testRow)
-        testButton = toolbar.Button(text="abcde", x=0.25, width=0.5,
+        testRow1 = toolbar.Row()
+        testGroup.addRow(testRow1)
+        testButton1 = toolbar.Button(text="abcde", x=0, width=0.5,
                                     style=testStyle)
-        testRow.addButton(testButton)
-        self.toolbarGroups.append(testGroup)
+
+        testButton2 = toolbar.Button(text="fghij", x=0.5, width=0.5,
+                                    style=testStyle)
+        testRow1.addButton(testButton1)
+        testRow1.addButton(testButton2)
+        testRow2 = toolbar.Row()
+        testGroup.addRow(testRow2)
+        testButton3 = toolbar.Button(text="klmno", x=0, width=0.5,
+                                    style=testStyle)
+
+        testButton4 = toolbar.Button(text="pqrst", x=0.5, width=0.5,
+                                    style=testStyle)
+        testRow2.addButton(testButton3)
+        testRow2.addButton(testButton4)
         self.toolbarGroups.append(testGroup)
 
 
@@ -385,7 +400,13 @@ class EditorInterface(EditorActions, AppInterface):
         if button == 0:
             if self.inAdjustMode:
                 self.completeAdjust()
-            elif not self.movingCamera: # select
+            elif self.movingCamera:
+                pass
+            elif self.toolbarMouseX > 0:
+                if self.toolbarHoverButton is not None:
+                    self.toolbarSelectButton = self.toolbarHoverButton
+                    self.editorMain.lockMouse()
+            else: # select
                 multiple = self.editorMain.shiftPressed()
                 self.selectAtCursor(multiple)
         if button == 0 or button == 2:
@@ -403,7 +424,9 @@ class EditorInterface(EditorActions, AppInterface):
             self.flySpeed /= 1.1
 
     def mouseReleased(self, button, mouseX, mouseY):
-        pass
+        if self.toolbarSelectButton is not None:
+            self.editorMain.unlockMouse()
+            self.toolbarSelectButton = None
 
     def mouseMoved(self, mouseX, mouseY, pmouseX, pmouseY):
         if self.movingCamera:
@@ -421,6 +444,10 @@ class EditorInterface(EditorActions, AppInterface):
                     math.pi*3/2)
         elif self.inAdjustMode:
             self.mouseMovedAdjustMode(mouseX, mouseY, pmouseX, pmouseY)
+        else:
+            self.toolbarMouseX = mouseX - self.editorMain.windowWidth() \
+                                 + self.toolbarWidth
+            self.toolbarMouseY = self.editorMain.windowHeight() - mouseY
 
     def mouseMovedAdjustMode(self, mouseX, mouseY, pmouseX, pmouseY):
         grid = float(self.state.getGridSize(self.adjustor.gridType()))
