@@ -11,6 +11,8 @@ from threelib.edit.adjust import *
 
 from threelib.edit.gl.glGraphics import GLGraphicsTools
 
+from threelib.edit import toolbar
+
 import OpenGL
 OpenGL.ERROR_CHECKING = False
 from OpenGL.GL import *
@@ -495,19 +497,45 @@ class GLEditor(EditorInterface):
         glLoadIdentity()
         gluOrtho2D(0, self.toolbarWidth, 0, self.editorMain.windowHeight())
 
-        glColor(255, 0, 0)
+        testStyle = toolbar.Style(background=(255,0,0), foreground=(255,255,255))
+        testButton = toolbar.Button(text="abcde", x=0.25, width=0.5, style=testStyle)
+        self._drawButton(testButton, 30, 30)
 
-        glBegin(GL_QUADS)
-
-        glVertex(10, 10)
-        glVertex(10, 30)
-        glVertex(30, 30)
-        glVertex(30, 10)
-
-        glEnd()
-
+        glMatrixMode(GL_PROJECTION)
         glPopMatrix()
         glMatrixMode(GL_MODELVIEW)
 
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_CULL_FACE)
+
+    def _drawButton(self, button, y, height):
+
+        bg = button.style.background
+        fg = button.style.foreground
+
+        x1 = float(button.x) * self.toolbarWidth
+        width = float(button.width) * self.toolbarWidth
+        x2 = x1 + width
+
+        y2 = y + height
+
+        glColor(bg[0], bg[1], bg[2])
+        glBegin(GL_QUADS)
+        glVertex(x1, y)
+        glVertex(x1, y2)
+        glVertex(x2, y2)
+        glVertex(x2, y)
+        glEnd()
+
+        glColor(fg[0], fg[1], fg[2])
+        glBegin(GL_LINE_LOOP)
+        glVertex(x1, y)
+        glVertex(x1, y2)
+        glVertex(x2, y2)
+        glVertex(x2, y)
+        glEnd()
+
+        textWidth = 9 * (len(button.text) + 1)
+        glRasterPos(x1 + width/2 - textWidth/2, y + height/2 - 4)
+        for c in button.text:
+            glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ctypes.c_int(ord(c)))
