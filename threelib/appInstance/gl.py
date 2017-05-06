@@ -271,7 +271,7 @@ class GLAppInstance(AppInstance):
         self.appInterface.keyReleased(key)
 
     def _nameForSpecialKey(self, key):
-        return {GLUT_KEY_LEFT : "left",
+        keyNames = {GLUT_KEY_LEFT : "left",
                 GLUT_KEY_RIGHT : "right",
                 GLUT_KEY_DOWN : "down",
                 GLUT_KEY_UP : "up",
@@ -279,7 +279,10 @@ class GLAppInstance(AppInstance):
                 GLUT_KEY_PAGE_DOWN : "page_down",
                 GLUT_KEY_HOME : "home",
                 GLUT_KEY_END : "end",
-                GLUT_KEY_INSERT : "insert"}[key]
+                GLUT_KEY_INSERT : "insert"}
+        if key in keyNames:
+            return keyNames[key]
+        return None
 
     def specialPressedEvent(self, key, mouseX, mouseY):
         if key in self.keysPressed:
