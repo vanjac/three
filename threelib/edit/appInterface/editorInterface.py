@@ -18,7 +18,10 @@ class EditorInterface(EditorActions, AppInterface):
         super().__init__(mapPath, state)
         self.currentCommand = ""
 
+        self.statusBarHeight = 16
+
         self.toolbarWidth = 256
+        self.toolbarGroups = [ ]
 
     def setAppInstance(self, instance):
         self.editorMain = instance

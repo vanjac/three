@@ -61,13 +61,7 @@ class GLEditor(EditorInterface):
         self.drawAxes()
         glEndList()
 
-        self.drawMiniAxesList1 = self.makeDisplayList()
-        self.drawMiniAxes1()
-        glEndList()
-
-        self.drawMiniAxesList2 = self.makeDisplayList()
-        self.drawMiniAxes2()
-        glEndList()
+        glEnable(GL_SCISSOR_TEST)
 
     def _fullscreenMessage(self, message):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -91,19 +85,29 @@ class GLEditor(EditorInterface):
     def resized(self):
         self._resetProjection()
 
+    def _getViewportAspect(self):
+        return (self.editorMain.windowWidth() - self.toolbarWidth) \
+               / self.editorMain.windowHeight()
+
     # should be called if any settings like aspect
     # ratio, fov, near/far clip planes, have changed.
     def _resetProjection(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(self.fov, (self.editorMain.windowWidth() - self.toolbarWidth) / self.editorMain.windowHeight(), self.nearClip, self.farClip)
+        gluPerspective(self.fov, self._getViewportAspect(),
+                       self.nearClip, self.farClip)
         glMatrixMode(GL_MODELVIEW)
 
     def draw(self):
         self.editorMain.updateMaterials(self.state.world)
 
         glLoadIdentity() # reset the view
-        glViewport(0,0,self.editorMain.windowWidth()-self.toolbarWidth,self.editorMain.windowHeight())
+        glViewport(0, 0,
+                   self.editorMain.windowWidth() - self.toolbarWidth,
+                   self.editorMain.windowHeight())
+        glScissor(0, 0,
+                   self.editorMain.windowWidth() - self.toolbarWidth,
+                   self.editorMain.windowHeight())
 
         # clear screen and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -255,26 +259,48 @@ class GLEditor(EditorInterface):
 
         glPopMatrix()
 
-        # status bar
 
-        # background
         glDisable(GL_DEPTH_TEST)
         glDisable(GL_CULL_FACE)
+
+        self._drawMiniAxes(rotate)
+        self._drawToolbar()
+        self._drawStatusBar()
+
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_CULL_FACE)
+
+
+    def _drawMiniAxes(self, rotate):
+        glPushMatrix()
+
         glMatrixMode(GL_PROJECTION)
         glPushMatrix()
         glLoadIdentity()
-        gluOrtho2D(0.0, self.editorMain.windowWidth(), 0.0, self.editorMain.windowHeight())
+        glTranslate(0.7, -0.85, 0)
+        glScale(1.0 / self._getViewportAspect(), 1, 1)
+        gluPerspective(self.fov, 1, 4, 16)
+        glMatrixMode(GL_MODELVIEW)
 
-        glColor(0,0,0)
-        glBegin(GL_QUADS)
-        glVertex(0, 0)
-        glVertex(self.editorMain.windowWidth(), 0)
-        glVertex(self.editorMain.windowWidth(), 16)
-        glVertex(0, 16)
-        glEnd()
+        glTranslate(0, 0, -5)
+        glRotate(math.degrees(rotate.x), 0, 0, 1)
+        glRotate(math.degrees(rotate.y), -1, 0, 0)
+        glRotate(math.degrees(rotate.z), 0, 1, 0)
+        glScale(0.5, 0.5, 0.5)
 
+        glCallList(self.drawAxesList)
+
+        glMatrixMode(GL_PROJECTION)
         glPopMatrix()
         glMatrixMode(GL_MODELVIEW)
+        glPopMatrix()
+
+
+    def _drawStatusBar(self):
+        glViewport(0, 0,
+                   self.editorMain.windowWidth(), self.editorMain.windowHeight())
+        glScissor(0, 0, self.editorMain.windowWidth(), self.statusBarHeight)
+        glClear(GL_COLOR_BUFFER_BIT)
 
         # text
         glColor(1,1,1)
@@ -283,15 +309,6 @@ class GLEditor(EditorInterface):
         self.editorMain.drawText(str(self.editorMain.getFps()) + " FPS",
                                  GLUT_BITMAP_9_BY_15,
                                  4, self.editorMain.windowHeight() - 19) # 4+15
-
-        glCallList(self.drawMiniAxesList1)
-        glRotate(math.degrees(rotate.x), 0, 0, 1)
-        glRotate(math.degrees(rotate.y), -1, 0, 0)
-        glRotate(math.degrees(rotate.z), 0, 1, 0)
-        glCallList(self.drawMiniAxesList2)
-
-        glEnable(GL_DEPTH_TEST)
-        glEnable(GL_CULL_FACE)
 
 
     def cursorSelect(self):
@@ -423,33 +440,6 @@ class GLEditor(EditorInterface):
         glEnd()
         glLineWidth(1)
 
-    # display list
-    def drawMiniAxes1(self):
-        glDisable(GL_DEPTH_TEST)
-        glPushMatrix()
-
-        glMatrixMode(GL_PROJECTION)
-        glPushMatrix()
-        glLoadIdentity()
-        glTranslate(0.7, -0.85, 0)
-        glScale(1/self.editorMain.getAspect(), 1, 1)
-        gluPerspective(self.fov, 1, 4, 16)
-        glMatrixMode(GL_MODELVIEW)
-
-        glTranslate(0, 0, -5)
-
-    # display list
-    def drawMiniAxes2(self):
-        glScale(0.5, 0.5, 0.5)
-
-        glCallList(self.drawAxesList)
-
-        glMatrixMode(GL_PROJECTION)
-        glPopMatrix()
-        glMatrixMode(GL_MODELVIEW)
-        glPopMatrix()
-        glEnable(GL_DEPTH_TEST)
-
 
     def transformObject(self, editorObject):
         oTranslate = editorObject.getPosition()
@@ -488,3 +478,34 @@ class GLEditor(EditorInterface):
         b = int(color[2])
         return b*256 + g - 1, r
 
+
+    def _drawToolbar(self):
+        glViewport(self.editorMain.windowWidth() - self.toolbarWidth, 0,
+                   self.toolbarWidth, self.editorMain.windowHeight())
+        glScissor(self.editorMain.windowWidth() - self.toolbarWidth, 0,
+                   self.toolbarWidth, self.editorMain.windowHeight())
+
+        glDisable(GL_DEPTH_TEST)
+        glDisable(GL_CULL_FACE)
+
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        gluOrtho2D(0, self.toolbarWidth, 0, self.editorMain.windowHeight())
+
+        glColor(255, 0, 0)
+
+        glBegin(GL_QUADS)
+
+        glVertex(10, 10)
+        glVertex(10, 30)
+        glVertex(30, 30)
+        glVertex(30, 10)
+
+        glEnd()
+
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
+
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_CULL_FACE)
