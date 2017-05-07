@@ -11,12 +11,14 @@ class Style:
 class Button:
 
     def __init__(self, text="", x=0.0, width=1.0, style=Style((127,127,127)),
-                 keyboardShortcut=None, action=None):
-        self.mousePressedAction = action # function()
+                 keyboardShortcut=None, action=None, requireKeyboard=False):
+        # function()
+        self.mousePressedAction = None if requireKeyboard else action
         self.mouseDraggedAction = None # function(x, y)
         self.mouseReleasedAction = None # function()
         # if None, same as mousePressedAction:
-        self.keyboardAction = None # boolean function(command)
+        # boolean function(command)
+        self.keyboardAction = action if requireKeyboard else None
 
         self.keyboardShortcut = keyboardShortcut
 

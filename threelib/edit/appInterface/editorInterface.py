@@ -114,6 +114,18 @@ class EditorInterface(EditorActions, AppInterface):
             Button(text="Spot", x=2/3, width=1/3,
                    keyboardShortcut="nls", action=self.createSpotLight))
 
+        importRow = Row()
+        group.addRow(importRow)
+
+        def importMesh(command):
+            if command[-1] != '\r':
+                return False
+            self.importMesh(command[2:-1])
+            return True
+        importRow.addButton(
+            Button(text="Import Mesh", x=0, width=1, keyboardShortcut="im",
+                   action=importMesh, requireKeyboard=True))
+
 
     def setAppInstance(self, instance):
         self.editorMain = instance
@@ -167,7 +179,7 @@ class EditorInterface(EditorActions, AppInterface):
                                 self.currentCommand.startswith(buttonCommand):
                             foundMatch = True
                             if button.keyboardAction is not None:
-                                if button.keyboardAction():
+                                if button.keyboardAction(self.currentCommand):
                                     self.currentCommand = ""
                             elif button.mousePressedAction is not None:
                                 button.mousePressedAction()
@@ -483,6 +495,13 @@ class EditorInterface(EditorActions, AppInterface):
                     self.editorMain.lockMouse()
                     if self.toolbarSelectButton.mousePressedAction is not None:
                         self.toolbarSelectButton.mousePressedAction()
+                    elif self.toolbarSelectButton.keyboardAction is not None:
+                        self.currentCommand = \
+                            self.toolbarSelectButton.keyboardShortcut
+                        if self.toolbarSelectButton.keyboardAction(
+                                self.currentCommand):
+                            self.currentCommand = ""
+                            self.toolbarSelectButton = None
             else: # select
                 multiple = self.editorMain.shiftPressed()
                 self.selectAtCursor(multiple)
