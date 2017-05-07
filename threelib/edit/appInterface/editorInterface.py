@@ -44,6 +44,10 @@ class EditorInterface(EditorActions, AppInterface):
         self.toolbarGroups.append(objectsGroup)
         self._setupToolbarObjects(objectsGroup)
 
+        adjustGroup = Group("Adjust")
+        self.toolbarGroups.append(adjustGroup)
+        self._setupToolbarAdjust(adjustGroup)
+
     def _setupToolbarGeneral(self, group):
         fileRow = Row()
         group.addRow(fileRow)
@@ -88,16 +92,6 @@ class EditorInterface(EditorActions, AppInterface):
         propertiesRow.addButton(
             Button(text="Update", x=0.5, width=0.5, keyboardShortcut="u",
                    action=self.updateSelected))
-
-        adjustRow = Row()
-        group.addRow(adjustRow)
-
-        adjustRow.addButton(
-            Button(text="Translate", x=0, width=0.5, keyboardShortcut="g",
-                   action=self.translateSelected))
-        adjustRow.addButton(
-            Button(text="Rotate", x=0.5, width=0.5, keyboardShortcut="r",
-                   action=self.rotateSelected))
 
     def _setupToolbarObjects(self, group):
         generalRow = Row()
@@ -180,6 +174,20 @@ class EditorInterface(EditorActions, AppInterface):
         importRow.addButton(
             Button(text="Import Mesh", x=0, width=1, keyboardShortcut="im",
                    action=importMesh, requireKeyboard=True))
+
+    def _setupToolbarAdjust(self, group):
+        adjustRow = Row()
+        group.addRow(adjustRow)
+
+        adjustRow.addButton(
+            Button(text="Translate", x=0, width=1/3, keyboardShortcut="g",
+                   action=self.translateSelected))
+        adjustRow.addButton(
+            Button(text="Origin", x=1/3, width=1/3, keyboardShortcut="o",
+                   action=self.adjustOriginOfSelected))
+        adjustRow.addButton(
+            Button(text="Rotate", x=2/3, width=1/3, keyboardShortcut="r",
+                   action=self.rotateSelected))
 
 
     def setAppInstance(self, instance):
