@@ -89,6 +89,16 @@ class EditorInterface(EditorActions, AppInterface):
             Button(text="Update", x=0.5, width=0.5, keyboardShortcut="u",
                    action=self.updateSelected))
 
+        adjustRow = Row()
+        group.addRow(adjustRow)
+
+        adjustRow.addButton(
+            Button(text="Translate", x=0, width=0.5, keyboardShortcut="g",
+                   action=self.translateSelected))
+        adjustRow.addButton(
+            Button(text="Rotate", x=0.5, width=0.5, keyboardShortcut="r",
+                   action=self.rotateSelected))
+
     def _setupToolbarObjects(self, group):
         generalRow = Row()
         group.addRow(generalRow)
