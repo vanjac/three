@@ -36,6 +36,10 @@ class EditorInterface(EditorActions, AppInterface):
         self.toolbarGroups.append(generalGroup)
         self._setupToolbarGeneral(generalGroup)
 
+        newGroup = Group("New")
+        self.toolbarGroups.append(newGroup)
+        self._setupToolbarNew(newGroup)
+
         objectsGroup = Group("Objects")
         self.toolbarGroups.append(objectsGroup)
         self._setupToolbarObjects(objectsGroup)
@@ -47,6 +51,25 @@ class EditorInterface(EditorActions, AppInterface):
         fileRow.addButton(
             Button(text="Save", x=0, width=1, keyboardShortcut="`",
                    action=self.saveFile))
+
+        modeRow = Row()
+        group.addRow(modeRow)
+
+        def objectMode():
+            self.selectMode(EditorState.SELECT_OBJECTS)
+        modeRow.addButton(
+            Button(text="Objects", x=0, width=1/3, keyboardShortcut="mo",
+                   action=objectMode))
+        def faceMode():
+            self.selectMode(EditorState.SELECT_FACES)
+        modeRow.addButton(
+            Button(text="Faces", x=1/3, width=1/3, keyboardShortcut="mf",
+                   action=faceMode))
+        def vertexMode():
+            self.selectMode(EditorState.SELECT_VERTICES)
+        modeRow.addButton(
+            Button(text="Vertices", x=2/3, width=1/3, keyboardShortcut="mv",
+                   action=vertexMode))
 
         propertiesRow = Row()
         group.addRow(propertiesRow)
@@ -66,6 +89,30 @@ class EditorInterface(EditorActions, AppInterface):
         generalRow.addButton(
             Button(text="Delete", x=0, width=0.5, keyboardShortcut="\b",
                    action=self.deleteSelected))
+
+    def _setupToolbarNew(self, group):
+        newRow = Row()
+        group.addRow(newRow)
+
+        newRow.addButton(
+            Button(text="Box", x=0, width=0.5, keyboardShortcut="nb",
+                   action=self.createBox))
+        newRow.addButton(
+            Button(text="Point", x=0.5, width=0.5, keyboardShortcut="np",
+                   action=self.createPoint))
+
+        newLightRow = Row()
+        group.addRow(newLightRow)
+
+        newLightRow.addButton(
+            Button(text="Light", x=0, width=1/3,
+                   keyboardShortcut="nlp", action=self.createPositionalLight))
+        newLightRow.addButton(
+            Button(text="Direction", x=1/3, width=1/3,
+                   keyboardShortcut="nld", action=self.createDirectionalLight))
+        newLightRow.addButton(
+            Button(text="Spot", x=2/3, width=1/3,
+                   keyboardShortcut="nls", action=self.createSpotLight))
 
 
     def setAppInstance(self, instance):
@@ -455,7 +502,8 @@ class EditorInterface(EditorActions, AppInterface):
 
     def mouseReleased(self, button, mouseX, mouseY):
         if self.toolbarSelectButton is not None:
-            self.editorMain.unlockMouse()
+            if not self.inAdjustMode:
+                self.editorMain.unlockMouse()
             if self.toolbarSelectButton.mouseReleasedAction is not None:
                 self.toolbarSelectButton.mouseReleasedAction()
             self.toolbarSelectButton = None
