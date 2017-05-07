@@ -110,6 +110,31 @@ class EditorInterface(EditorActions, AppInterface):
             Button(text="Clear Parent", x=0.5, width=0.5, keyboardShortcut="T",
                    action=self.clearParent))
 
+        selectTieRow1 = Row()
+        group.addRow(selectTieRow1)
+
+        selectTieRow1.addButton(
+            Button(text="Parent", x=0, width=0.5, keyboardShortcut=",",
+                   action=self.selectParent))
+        selectTieRow1.addButton(
+            Button(text="Children", x=0.5, width=0.5,
+                   keyboardShortcut=".", action=self.selectChildren))
+
+        selectTieRow2 = Row()
+        group.addRow(selectTieRow2)
+
+        def addParent():
+            self.selectParent(addToSelection=True)
+        selectTieRow2.addButton(
+            Button(text="+ Parent", x=0, width=0.5, keyboardShortcut="<",
+                   action=addParent))
+        def addChildren():
+            self.selectChildren(addToSelection=True)
+        selectTieRow2.addButton(
+            Button(text="+ Children", x=0.5, width=0.5,
+                   keyboardShortcut=">", action=addChildren))
+
+
     def _setupToolbarNew(self, group):
         newRow = Row()
         group.addRow(newRow)
