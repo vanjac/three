@@ -565,7 +565,7 @@ class GLEditor(EditorInterface):
         glVertex(x2, y1)
         glEnd()
 
-        textWidth = 9 * (len(button.text) + 1)
+        textWidth = 9 * len(button.text)
         glRasterPos(x1 + width/2 - textWidth/2, y1 + height/2 - 4)
         for c in button.text:
             glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ctypes.c_int(ord(c)))
