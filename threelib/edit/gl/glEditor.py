@@ -531,14 +531,20 @@ class GLEditor(EditorInterface):
         y2 = y
 
         hover = False
-        if self.toolbarMouseX > x1 and self.toolbarMouseX < x2 and \
-                self.toolbarMouseY > y1 and self.toolbarMouseY < y2:
+        if x1 < self.toolbarMouseX < x2 and y1 < self.toolbarMouseY < y2:
             hover = True
             self.toolbarHoverButton = button
 
         if bg is not None:
             if button == self.toolbarSelectButton:
                 bg = tuple([max(0, c - 128) for c in bg])
+            elif self.currentCommand != "":
+                buttonCommand = button.keyboardShortcut
+                if not (buttonCommand == self.currentCommand
+                        or buttonCommand.startswith(self.currentCommand)
+                        or self.currentCommand.startswith(buttonCommand)):
+                    bg = (63,63,63)
+                    fg = (0,0,0)
             elif hover and self.toolbarSelectButton is None:
                 bg = tuple([min(255.0, 255 - (255 - c) / 2) for c in bg])
 

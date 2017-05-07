@@ -9,7 +9,7 @@ from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 import threelib.vectorMath as vectorMath
 from threelib.app import AppInterface
-from threelib.edit import toolbar
+from threelib.edit.toolbar import *
 
 MATH_SYMBOLS = ['.', '+', '-', '*', '/', '(', ')']
 
@@ -32,15 +32,40 @@ class EditorInterface(EditorActions, AppInterface):
         self._setupToolbar()
 
     def _setupToolbar(self):
-        generalGroup = toolbar.Group("General")
+        generalGroup = Group("General")
         self.toolbarGroups.append(generalGroup)
+        self._setupToolbarGeneral(generalGroup)
 
-        fileRow = toolbar.Row()
-        generalGroup.addRow(fileRow)
+        objectsGroup = Group("Objects")
+        self.toolbarGroups.append(objectsGroup)
+        self._setupToolbarObjects(objectsGroup)
 
-        saveButton = toolbar.Button(text="Save", x=0, width=1)
-        fileRow.addButton(saveButton)
-        saveButton.mousePressedAction = self.saveFile
+    def _setupToolbarGeneral(self, group):
+        fileRow = Row()
+        group.addRow(fileRow)
+
+        fileRow.addButton(
+            Button(text="Save", x=0, width=1, keyboardShortcut="`",
+                   action=self.saveFile))
+
+        propertiesRow = Row()
+        group.addRow(propertiesRow)
+
+        propertiesRow.addButton(
+            Button(text="Properties", x=0, width=0.5, keyboardShortcut="\r",
+                   action=self.editPropertiesOfSelected))
+
+        propertiesRow.addButton(
+            Button(text="Update", x=0.5, width=0.5, keyboardShortcut="u",
+                   action=self.updateSelected))
+
+    def _setupToolbarObjects(self, group):
+        generalRow = Row()
+        group.addRow(generalRow)
+
+        generalRow.addButton(
+            Button(text="Delete", x=0, width=0.5, keyboardShortcut="\b",
+                   action=self.deleteSelected))
 
 
     def setAppInstance(self, instance):
@@ -84,12 +109,26 @@ class EditorInterface(EditorActions, AppInterface):
             if len(self.currentCommand) == 0:
                 return
 
-            clearCommand = False
-            if self.inAdjustMode:
-                clearCommand = self.evaluateAdjustCommand(self.currentCommand)
-            else:
-                clearCommand = self.evaluateCommand(self.currentCommand)
-            if clearCommand:
+            foundMatch = False
+            for group in self.toolbarGroups:
+                for row in group.rows:
+                    for button in row.buttons:
+                        buttonCommand = button.keyboardShortcut
+                        if buttonCommand == "":
+                            continue
+                        if buttonCommand == self.currentCommand or \
+                                self.currentCommand.startswith(buttonCommand):
+                            foundMatch = True
+                            if button.keyboardAction is not None:
+                                if button.keyboardAction():
+                                    self.currentCommand = ""
+                            elif button.mousePressedAction is not None:
+                                button.mousePressedAction()
+                                self.currentCommand = ""
+                        elif buttonCommand.startswith(self.currentCommand):
+                            foundMatch = True
+            if not foundMatch:
+                print("Unrecognized command " + self.currentCommand)
                 self.currentCommand = ""
 
     def keyReleased(self, key):
