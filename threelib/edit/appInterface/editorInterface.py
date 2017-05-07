@@ -71,6 +71,13 @@ class EditorInterface(EditorActions, AppInterface):
             Button(text="Vertices", x=2/3, width=1/3, keyboardShortcut="mv",
                    action=vertexMode))
 
+        selectRow = Row()
+        group.addRow(selectRow)
+
+        selectRow.addButton(
+            Button(text="Select All/None", x=0, width=1, keyboardShortcut="a",
+                   action=self.selectAll))
+
         propertiesRow = Row()
         group.addRow(propertiesRow)
 
@@ -89,6 +96,19 @@ class EditorInterface(EditorActions, AppInterface):
         generalRow.addButton(
             Button(text="Delete", x=0, width=0.5, keyboardShortcut="\b",
                    action=self.deleteSelected))
+        generalRow.addButton(
+            Button(text="Duplicate", x=0.5, width=0.5, keyboardShortcut="c",
+                   action=self.duplicateSelected))
+
+        tieRow = Row()
+        group.addRow(tieRow)
+
+        tieRow.addButton(
+            Button(text="Set Parent", x=0, width=0.5, keyboardShortcut="t",
+                   action=self.setParent))
+        tieRow.addButton(
+            Button(text="Clear Parent", x=0.5, width=0.5, keyboardShortcut="T",
+                   action=self.clearParent))
 
     def _setupToolbarNew(self, group):
         newRow = Row()
