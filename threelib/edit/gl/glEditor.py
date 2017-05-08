@@ -266,6 +266,7 @@ class GLEditor(EditorInterface):
         glDisable(GL_CULL_FACE)
 
         self._drawMiniAxes(rotate)
+        self._updateToolbar()
         self._drawToolbar()
         self._drawStatusBar()
 
@@ -489,6 +490,8 @@ class GLEditor(EditorInterface):
         glScissor(self.editorMain.windowWidth() - self.toolbarWidth, 0,
                    self.toolbarWidth, self.editorMain.windowHeight())
 
+        glClear(GL_COLOR_BUFFER_BIT)
+
         glDisable(GL_DEPTH_TEST)
         glDisable(GL_CULL_FACE)
 
@@ -500,6 +503,8 @@ class GLEditor(EditorInterface):
         y = self.editorMain.windowHeight()
 
         for group in self.toolbarGroups:
+            if not group.shown:
+                continue
             glColor(255,255,255)
             glRasterPos(4, y - 20)
             for c in group.name:

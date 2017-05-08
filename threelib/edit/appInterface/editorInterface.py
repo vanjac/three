@@ -32,29 +32,51 @@ class EditorInterface(EditorActions, AppInterface):
         self._setupToolbar()
 
     def _setupToolbar(self):
-        generalGroup = Group("General")
-        self.toolbarGroups.append(generalGroup)
-        self._setupToolbarGeneral(generalGroup)
+        self.generalGroup = Group("General")
+        self.toolbarGroups.append(self.generalGroup)
+        self._setupToolbarGeneral(self.generalGroup)
 
-        newGroup = Group("New")
-        self.toolbarGroups.append(newGroup)
-        self._setupToolbarNew(newGroup)
+        self.newGroup = Group("New")
+        self.toolbarGroups.append(self.newGroup)
+        self._setupToolbarNew(self.newGroup)
 
-        objectsGroup = Group("Objects")
-        self.toolbarGroups.append(objectsGroup)
-        self._setupToolbarObjects(objectsGroup)
+        self.adjustGroup = Group("Adjust")
+        self.toolbarGroups.append(self.adjustGroup)
+        self._setupToolbarAdjust(self.adjustGroup)
 
-        facesGroup = Group("Faces")
-        self.toolbarGroups.append(facesGroup)
-        self._setupToolbarFaces(facesGroup)
+        self.objectsGroup = Group("Objects")
+        self.toolbarGroups.append(self.objectsGroup)
+        self._setupToolbarObjects(self.objectsGroup)
 
-        verticesGroup = Group("Vertices")
-        self.toolbarGroups.append(verticesGroup)
-        self._setupToolbarVertices(verticesGroup)
+        self.facesGroup = Group("Faces")
+        self.toolbarGroups.append(self.facesGroup)
+        self._setupToolbarFaces(self.facesGroup)
 
-        adjustGroup = Group("Adjust")
-        self.toolbarGroups.append(adjustGroup)
-        self._setupToolbarAdjust(adjustGroup)
+        self.verticesGroup = Group("Vertices")
+        self.toolbarGroups.append(self.verticesGroup)
+        self._setupToolbarVertices(self.verticesGroup)
+
+    def _updateToolbar(self):
+        if self.inAdjustMode:
+            for group in self.toolbarGroups:
+                group.shown = False
+        else:
+            self.generalGroup.shown = True
+            self.newGroup.shown = True
+            self.adjustGroup.shown = True
+
+            if self.state.selectMode == EditorState.SELECT_OBJECTS:
+                self.objectsGroup.shown = True
+                self.facesGroup.shown = True
+                self.verticesGroup.shown = False
+            elif self.state.selectMode == EditorState.SELECT_FACES:
+                self.objectsGroup.shown = False
+                self.facesGroup.shown = True
+                self.verticesGroup.shown = False
+            elif self.state.selectMode == EditorState.SELECT_VERTICES:
+                self.objectsGroup.shown = False
+                self.facesGroup.shown = False
+                self.verticesGroup.shown = True
 
     def _setupToolbarGeneral(self, group):
         fileRow = Row()
