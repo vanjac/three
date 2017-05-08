@@ -542,7 +542,7 @@ class GLEditor(EditorInterface):
 
         if bg is not None:
             if button == self.toolbarSelectButton:
-                bg = tuple([max(0, c - 128) for c in bg])
+                bg = tuple([max(0, c - 63) for c in bg])
             elif self.currentCommand != "":
                 buttonCommand = button.keyboardShortcut
                 if not (buttonCommand == self.currentCommand
