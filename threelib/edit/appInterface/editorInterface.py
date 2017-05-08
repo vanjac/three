@@ -48,6 +48,10 @@ class EditorInterface(EditorActions, AppInterface):
         self.toolbarGroups.append(self.objectsGroup)
         self._setupToolbarObjects(self.objectsGroup)
 
+        self.solidGroup = Group("Solid")
+        self.toolbarGroups.append(self.solidGroup)
+        self._setupToolbarSolid(self.solidGroup)
+
         self.facesGroup = Group("Faces")
         self.toolbarGroups.append(self.facesGroup)
         self._setupToolbarFaces(self.facesGroup)
@@ -65,6 +69,7 @@ class EditorInterface(EditorActions, AppInterface):
         disabledStyle = Style((127, 127, 127))
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
             self.objectsGroup.shown = True
+            self.solidGroup.shown = True
             self.facesGroup.shown = True
             self.verticesGroup.shown = False
             self.objectModeButton.style = enabledStyle
@@ -72,6 +77,7 @@ class EditorInterface(EditorActions, AppInterface):
             self.vertexModeButton.style = disabledStyle
         elif self.state.selectMode == EditorState.SELECT_FACES:
             self.objectsGroup.shown = False
+            self.solidGroup.shown = False
             self.facesGroup.shown = True
             self.verticesGroup.shown = False
             self.objectModeButton.style = disabledStyle
@@ -79,6 +85,7 @@ class EditorInterface(EditorActions, AppInterface):
             self.vertexModeButton.style = disabledStyle
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
             self.objectsGroup.shown = False
+            self.solidGroup.shown = False
             self.facesGroup.shown = False
             self.verticesGroup.shown = True
             self.objectModeButton.style = disabledStyle
@@ -187,17 +194,6 @@ class EditorInterface(EditorActions, AppInterface):
         selectTieRow2.addButton(
             Button(text="+ Children", x=0.5, width=0.5,
                    keyboardShortcut=">", action=addChildren))
-
-        meshRow = Row()
-        group.addRow(meshRow)
-
-        meshRow.addButton(
-            Button(text="Clip", x=0, width=0.5, keyboardShortcut="k",
-                   action=self.clip))
-
-        meshRow.addButton(
-            Button(text="Carve", x=0.5, width=0.5, keyboardShortcut="K",
-                   action=self.carve))
 
     def _setupToolbarNew(self, group):
         newRow = Row()
@@ -352,6 +348,18 @@ class EditorInterface(EditorActions, AppInterface):
         materialTransformRow.addButton(
             Button(text="Scale", x=2/3, width=1/3, keyboardShortcut="fs",
                    action=self.scaleMaterials))
+
+    def _setupToolbarSolid(self, group):
+        solidRow = Row()
+        group.addRow(solidRow)
+
+        solidRow.addButton(
+            Button(text="Clip", x=0, width=0.5, keyboardShortcut="k",
+                   action=self.clip))
+
+        solidRow.addButton(
+            Button(text="Carve", x=0.5, width=0.5, keyboardShortcut="K",
+                   action=self.carve))
 
 
     def setAppInstance(self, instance):
