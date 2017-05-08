@@ -375,6 +375,11 @@ class EditorInterface(EditorActions, AppInterface):
             if len(self.currentCommand) == 0:
                 return
 
+            if self.inAdjustMode:
+                if self.evaluateAdjustCommand(self.currentCommand):
+                    self.currentCommand = ""
+                return
+
             foundMatch = False
             for group in self.toolbarGroups:
                 for row in group.rows:
