@@ -726,9 +726,9 @@ class EditorInterface(EditorActions, AppInterface):
                 text += "No lock | "
         else: # not in adjust mode
             if self.movingCamera:
-                text += "Fly | "
+                text += "Fly: " \
+                    "WASDQE: fly; click: exit; scroll or -/=: change speed | "
             else:
-
                 if self.state.selectMode == EditorState.SELECT_OBJECTS:
                     num = len(self.state.selectedObjects)
                     if num == 1:
@@ -765,15 +765,12 @@ class EditorInterface(EditorActions, AppInterface):
                     elif num != 0:
                         text += str(num) + " vertices | "
 
-        if self.currentCommand == "":
-            if self.movingCamera:
-                text += "WASDQE: fly; click: exit; scroll or -/=: change speed"
-            elif self.inAdjustMode:
-                text += "Click: complete"
-            elif self.toolbarHoverButton != None:
-                text += self.toolbarHoverButton.keyboardShortcut
-        else:
+        if self.currentCommand != "":
             text += self.currentCommand
+        elif self.inAdjustMode:
+            text += "Click: complete"
+        elif self.toolbarHoverButton != None:
+            text += self.toolbarHoverButton.keyboardShortcut
 
         return text
 
