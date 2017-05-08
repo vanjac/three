@@ -549,6 +549,7 @@ class EditorInterface(EditorActions, AppInterface):
                     self.editorMain.lockMouse()
                     if self.toolbarSelectButton.mousePressedAction is not None:
                         self.toolbarSelectButton.mousePressedAction()
+                        self.currentCommand = ""
                     elif self.toolbarSelectButton.keyboardAction is not None:
                         self.currentCommand = \
                             self.toolbarSelectButton.keyboardShortcut

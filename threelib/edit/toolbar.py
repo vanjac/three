@@ -29,6 +29,8 @@ class Button:
 
         self.style = style
 
+        self.enabled = True
+
 
 class Row:
 

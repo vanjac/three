@@ -535,26 +535,33 @@ class GLEditor(EditorInterface):
         y1 = y - height
         y2 = y
 
+        enabled = button.enabled
+        if self.currentCommand != "":
+            buttonCommand = button.keyboardShortcut
+            if not (buttonCommand == self.currentCommand
+                    or buttonCommand.startswith(self.currentCommand)
+                    or self.currentCommand.startswith(buttonCommand)):
+                enabled = False
+        if button == self.toolbarSelectButton:
+            enabled = True
+
         hover = False
-        if self.toolbarSelectButton is None and self.currentCommand == "" \
+        if self.toolbarSelectButton is None and enabled and \
+                (not (self.currentCommand != ""
+                     and self.currentCommand.startswith(buttonCommand))) \
                 and x1 < self.toolbarMouseX < x2 \
                 and y1 < self.toolbarMouseY < y2:
             hover = True
             self.toolbarHoverButton = button
 
         if bg is not None:
-            if button == self.toolbarSelectButton:
+            if not enabled:
+                bg = (63, 63, 63)
+                fg = (0, 0, 0)
+            elif button == self.toolbarSelectButton:
                 bg = tuple([max(0, c - 63) for c in bg])
-            elif self.currentCommand != "":
-                buttonCommand = button.keyboardShortcut
-                if not (buttonCommand == self.currentCommand
-                        or buttonCommand.startswith(self.currentCommand)
-                        or self.currentCommand.startswith(buttonCommand)):
-                    bg = (63,63,63)
-                    fg = (0,0,0)
             elif hover:
                 bg = tuple([min(255.0, 255 - (255 - c) / 2) for c in bg])
-
 
             glColor(bg[0] / 255, bg[1] / 255, bg[2] / 255)
             glBegin(GL_QUADS)
