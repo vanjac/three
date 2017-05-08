@@ -65,6 +65,8 @@ class EditorInterface(EditorActions, AppInterface):
         self.newGroup.shown = True
         self.adjustGroup.shown = True
 
+        self.newGroup.name = "New at " + str(self.state.createPosition)
+
         enabledStyle = Style((255, 159, 63))
         disabledStyle = Style((127, 127, 127))
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
@@ -723,22 +725,18 @@ class EditorInterface(EditorActions, AppInterface):
 
                 if self.state.selectMode == EditorState.SELECT_OBJECTS:
                     num = len(self.state.selectedObjects)
-                    if num == 0:
-                        text += "Object select | "
-                    elif num == 1:
+                    if num == 1:
                         text += "1 object  | "
                         o = self.state.selectedObjects[0]
                         text += o.getType() + ": \"" + o.getName() + "\" | "
                         text += "Pos: " + str(o.getPosition()) + " "
                         text += "Rot: " + str(o.getRotation()) + " "
                         text += "Dim: " + str(o.getDimensions()) + " | "
-                    else:
+                    elif num != 0:
                         text += str(num) + " objects | "
                 elif self.state.selectMode == EditorState.SELECT_FACES:
                     num = len(self.state.selectedFaces)
-                    if num == 0:
-                        text += "Face select | "
-                    elif num == 1:
+                    if num == 1:
                         text += "1 face  | "
                         f = self.state.selectedFaces[0].face
                         text += "Mat: " + self.getMaterialName(f.getMaterial())\
@@ -748,24 +746,21 @@ class EditorInterface(EditorActions, AppInterface):
                         text += "Rot: " + str(f.textureRotate) + " "
                         text += "Scale: " + vectorMath.doubleTupleToString(
                             f.textureScale.getTuple()) + " | "
-                    else:
+                    elif num != 0:
                         text += str(num) + " faces | "
                 elif self.state.selectMode == EditorState.SELECT_VERTICES:
                     num = len(self.state.selectedVertices)
-                    if num == 0:
-                        text += "Vertex select | "
-                    elif num == 1:
+                    if num == 1:
                         text += "1 vertex   | "
                         selectedVertex = self.state.selectedVertices[0]
                         position = selectedVertex.vertex.getPosition() + \
                                    selectedVertex.editorObject.getPosition()
                         text += "Pos: " + str(position) + " | "
-                    else:
+                    elif num != 0:
                         text += str(num) + " vertices | "
 
                 text += "Paint: " + self.getMaterialName(
                     self.state.currentMaterial) + " | "
-                text += "Create: " + str(self.state.createPosition) + " | "
 
         if self.currentCommand == "":
             if self.movingCamera:
