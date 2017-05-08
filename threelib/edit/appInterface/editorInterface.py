@@ -189,6 +189,48 @@ class EditorInterface(EditorActions, AppInterface):
             Button(text="Rotate", x=2/3, width=1/3, keyboardShortcut="r",
                    action=self.rotateSelected))
 
+        scaleRow = Row()
+        group.addRow(scaleRow)
+
+        def scale(c):
+            if len(c) == 1:
+                return False
+            last = c[len(c) - 1]
+            if last == '\r':
+                edges = [0, 0, 0]
+                for command in c[1:-1]:
+                    # x axis:
+                    if command == 'e':  # east
+                        edges[0] = 1
+                    if command == 'w':  # west
+                        edges[0] = -1
+                    # y axis:
+                    if command == 'n':  # north
+                        edges[1] = 1
+                    if command == 's':  # south
+                        edges[1] = -1
+                    # z axis:
+                    if command == 't':  # top
+                        edges[2] = 1
+                    if command == 'b':  # bottom
+                        edges[2] = -1
+
+                resize = c[0] == 's'
+                self.scaleSelected(tuple(edges), resize)
+                return True
+            elif last != 'e' and last != 'w' and last != 'n' and last != 's' \
+                    and last != 't' and last != 'b':
+                print("Invalid command", c)
+                return True
+            else:
+                return False
+        scaleRow.addButton(
+            Button(text="Resize", x=0, width=0.5, keyboardShortcut="s",
+                   action=scale, requireKeyboard=True))
+        scaleRow.addButton(
+            Button(text="Scale", x=0.5, width=0.5, keyboardShortcut="S",
+                   action=scale, requireKeyboard=True))
+
 
     def setAppInstance(self, instance):
         self.editorMain = instance
