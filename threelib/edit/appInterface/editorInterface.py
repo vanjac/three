@@ -44,13 +44,17 @@ class EditorInterface(EditorActions, AppInterface):
         self.toolbarGroups.append(objectsGroup)
         self._setupToolbarObjects(objectsGroup)
 
-        adjustGroup = Group("Adjust")
-        self.toolbarGroups.append(adjustGroup)
-        self._setupToolbarAdjust(adjustGroup)
+        facesGroup = Group("Faces")
+        self.toolbarGroups.append(facesGroup)
+        self._setupToolbarFaces(facesGroup)
 
         verticesGroup = Group("Vertices")
         self.toolbarGroups.append(verticesGroup)
         self._setupToolbarVertices(verticesGroup)
+
+        adjustGroup = Group("Adjust")
+        self.toolbarGroups.append(adjustGroup)
+        self._setupToolbarAdjust(adjustGroup)
 
     def _setupToolbarGeneral(self, group):
         fileRow = Row()
@@ -142,6 +146,16 @@ class EditorInterface(EditorActions, AppInterface):
             Button(text="+ Children", x=0.5, width=0.5,
                    keyboardShortcut=">", action=addChildren))
 
+        meshRow = Row()
+        group.addRow(meshRow)
+
+        meshRow.addButton(
+            Button(text="Clip", x=0, width=0.5, keyboardShortcut="k",
+                   action=self.clip))
+
+        meshRow.addButton(
+            Button(text="Carve", x=0.5, width=0.5, keyboardShortcut="K",
+                   action=self.carve))
 
     def _setupToolbarNew(self, group):
         newRow = Row()
@@ -257,6 +271,14 @@ class EditorInterface(EditorActions, AppInterface):
         edgeRow.addButton(
             Button(text="Combine Faces", x=0.5, width=0.5, keyboardShortcut="E",
                    action=self.combineFaces))
+
+    def _setupToolbarFaces(self, group):
+        extrudeRow = Row()
+        group.addRow(extrudeRow)
+
+        extrudeRow.addButton(
+            Button(text="Extrude", x=0, width=1, keyboardShortcut='h',
+                   action=self.extrude))
 
 
     def setAppInstance(self, instance):
