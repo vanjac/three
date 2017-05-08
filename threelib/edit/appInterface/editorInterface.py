@@ -63,34 +63,62 @@ class EditorInterface(EditorActions, AppInterface):
     def _updateToolbar(self):
         self.generalGroup.shown = True
         self.newGroup.shown = True
-        self.adjustGroup.shown = True
 
         enabledStyle = Style((255, 159, 63))
         disabledStyle = Style((127, 127, 127))
-        if self.state.selectMode == EditorState.SELECT_OBJECTS:
-            self.objectsGroup.shown = True
-            self.solidGroup.shown = True
-            self.facesGroup.shown = True
+
+        numSelected = 0
+        selectMode = self.state.selectMode
+        if selectMode == EditorState.SELECT_OBJECTS:
+            numSelected = len(self.state.selectedObjects)
+            self.objectsGroup.shown = numSelected != 0
+            self.solidGroup.shown = numSelected != 0
+            self.facesGroup.shown = numSelected != 0
             self.verticesGroup.shown = False
             self.objectModeButton.style = enabledStyle
             self.faceModeButton.style = disabledStyle
             self.vertexModeButton.style = disabledStyle
-        elif self.state.selectMode == EditorState.SELECT_FACES:
+
+            if numSelected != 0:
+                parentsFound = False
+                childrenFound = False
+                meshFound = False
+                for object in self.state.selectedObjects:
+                    if object.getParent() is not None:
+                        parentsFound = True
+                    if len(object.getChildren()) != 0:
+                        childrenFound = True
+                    if object.getMesh() is not None:
+                        meshFound = True
+                self.clearParentButton.enabled = parentsFound
+                self.selectParentButton.enabled = parentsFound
+                self.addParentButton.enabled = parentsFound
+                self.selectChildrenButton.enabled = childrenFound
+                self.addChildrenButton.enabled = childrenFound
+
+                if not meshFound:
+                    self.solidGroup.shown = False
+                    self.facesGroup.shown = False
+        elif selectMode == EditorState.SELECT_FACES:
+            numSelected = len(self.state.selectedFaces)
             self.objectsGroup.shown = False
             self.solidGroup.shown = False
-            self.facesGroup.shown = True
+            self.facesGroup.shown = numSelected != 0
             self.verticesGroup.shown = False
             self.objectModeButton.style = disabledStyle
             self.faceModeButton.style = enabledStyle
             self.vertexModeButton.style = disabledStyle
-        elif self.state.selectMode == EditorState.SELECT_VERTICES:
+        elif selectMode == EditorState.SELECT_VERTICES:
+            numSelected = len(self.state.selectedVertices)
             self.objectsGroup.shown = False
             self.solidGroup.shown = False
             self.facesGroup.shown = False
-            self.verticesGroup.shown = True
+            self.verticesGroup.shown = numSelected == 2
             self.objectModeButton.style = disabledStyle
             self.faceModeButton.style = disabledStyle
             self.vertexModeButton.style = enabledStyle
+
+        self.adjustGroup.shown = numSelected != 0
 
         self.newGroup.name = "New at " + str(self.state.createPosition)
 
@@ -100,18 +128,19 @@ class EditorInterface(EditorActions, AppInterface):
             paintButtonText = paintButtonText[:22-3] + "..."
         self.paintButton.text = paintButtonText
 
-        selectAll = False
-        if self.state.selectMode == EditorState.SELECT_OBJECTS:
-            if len(self.state.selectedObjects) == 0:
-                selectAll = True
-        elif self.state.selectMode == EditorState.SELECT_FACES:
-            if len(self.state.selectedFaces) == 0:
-                selectAll = True
-        elif self.state.selectMode == EditorState.SELECT_VERTICES:
-            if len(self.state.selectedVertices) == 0:
-                selectAll = True
-        self.selectAllButton.text = "Select All" if selectAll \
+        self.selectAllButton.text = "Select All" if numSelected == 0 \
             else "Select None"
+
+        # enable / disable buttons
+
+        if selectMode == EditorState.SELECT_OBJECTS or numSelected == 0:
+            self.propertiesButton.enabled = True
+            self.updateButton.enabled = True
+        else:
+            self.propertiesButton.enabled = False
+            self.updateButton.enabled = False
+
+        self.originButton.enabled = selectMode == EditorState.SELECT_OBJECTS
 
     def _setupToolbarGeneral(self, group):
         fileRow = Row()
@@ -150,11 +179,11 @@ class EditorInterface(EditorActions, AppInterface):
         propertiesRow = Row()
         group.addRow(propertiesRow)
 
-        propertiesRow.addButton(
+        self.propertiesButton = propertiesRow.addButton(
             Button(text="Properties", x=0, width=0.5, keyboardShortcut="\r",
                    action=self.editPropertiesOfSelected))
 
-        propertiesRow.addButton(
+        self.updateButton = propertiesRow.addButton(
             Button(text="Update", x=0.5, width=0.5, keyboardShortcut="u",
                    action=self.updateSelected))
 
@@ -175,30 +204,30 @@ class EditorInterface(EditorActions, AppInterface):
         tieRow.addButton(
             Button(text="Set Parent", x=0, width=0.5, keyboardShortcut="t",
                    action=self.setParent))
-        tieRow.addButton(
+        self.clearParentButton = tieRow.addButton(
             Button(text="Clear Parent", x=0.5, width=0.5, keyboardShortcut="T",
                    action=self.clearParent))
 
         selectTieRow = Row()
         group.addRow(selectTieRow)
 
-        selectTieRow.addButton(
+        self.selectParentButton = selectTieRow.addButton(
             Button(text="Parent", x=0, width=0.4, keyboardShortcut=",",
                    action=self.selectParent))
 
         def addParent():
             self.selectParent(addToSelection=True)
-        selectTieRow.addButton(
+        self.addParentButton = selectTieRow.addButton(
             Button(text="+", x=0.4, width=0.1, keyboardShortcut="<",
                    action=addParent))
 
-        selectTieRow.addButton(
+        self.selectChildrenButton = selectTieRow.addButton(
             Button(text="Children", x=0.5, width=0.4,
                    keyboardShortcut=".", action=self.selectChildren))
 
         def addChildren():
             self.selectChildren(addToSelection=True)
-        selectTieRow.addButton(
+        self.addChildrenButton = selectTieRow.addButton(
             Button(text="+", x=0.9, width=0.1,
                    keyboardShortcut=">", action=addChildren))
 
@@ -245,7 +274,7 @@ class EditorInterface(EditorActions, AppInterface):
         adjustRow.addButton(
             Button(text="Translate", x=0, width=1/3, keyboardShortcut="g",
                    action=self.translateSelected))
-        adjustRow.addButton(
+        self.originButton = adjustRow.addButton(
             Button(text="Origin", x=1/3, width=1/3, keyboardShortcut="o",
                    action=self.adjustOriginOfSelected))
         adjustRow.addButton(
