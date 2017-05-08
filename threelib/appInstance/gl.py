@@ -138,9 +138,11 @@ class GLAppInstance(AppInstance):
 
     def unlockMouse(self):
         if self.mouseLocked:
+            global mouseMovementLock
             self.mouseLocked = False
             pyautogui.moveTo(glutGet(GLUT_WINDOW_X) + self.mouseLockX,
                              glutGet(GLUT_WINDOW_Y) + self.mouseLockY)
+            mouseMovementLock = threading.Lock()
         glutSetCursor(GLUT_CURSOR_INHERIT)
 
 
