@@ -280,6 +280,37 @@ class EditorInterface(EditorActions, AppInterface):
             Button(text="Extrude", x=0, width=1, keyboardShortcut='h',
                    action=self.extrude))
 
+        materialRow = Row()
+        group.addRow(materialRow)
+
+        def setMaterial(command):
+            if command[-1] != '\r':
+                return False
+            self.setCurrentMaterial(command[1:-1])
+            return True
+        materialRow.addButton(
+            Button(text="Set Paint", x=0, width=0.5, keyboardShortcut="P",
+                   action=setMaterial, requireKeyboard=True))
+
+        materialRow.addButton(
+            Button(text="Paint", x=0.5, width=0.5, keyboardShortcut="p",
+                   action=self.paint))
+
+        materialTransformRow = Row()
+        group.addRow(materialTransformRow)
+
+        materialTransformRow.addButton(
+            Button(text="Translate", x=0, width=1/3, keyboardShortcut="fg",
+                   action=self.translateMaterials))
+
+        materialTransformRow.addButton(
+            Button(text="Rotate", x=1/3, width=1/3, keyboardShortcut="fr",
+                   action=self.rotateMaterials))
+
+        materialTransformRow.addButton(
+            Button(text="Scale", x=2/3, width=1/3, keyboardShortcut="fs",
+                   action=self.scaleMaterials))
+
 
     def setAppInstance(self, instance):
         self.editorMain = instance
