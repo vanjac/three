@@ -57,50 +57,46 @@ class EditorInterface(EditorActions, AppInterface):
         self._setupToolbarVertices(self.verticesGroup)
 
     def _updateToolbar(self):
-        if self.inAdjustMode:
-            for group in self.toolbarGroups:
-                group.shown = False
-        else:
-            self.generalGroup.shown = True
-            self.newGroup.shown = True
-            self.adjustGroup.shown = True
+        self.generalGroup.shown = True
+        self.newGroup.shown = True
+        self.adjustGroup.shown = True
 
-            enabledStyle = Style((255, 159, 63))
-            disabledStyle = Style((127, 127, 127))
-            if self.state.selectMode == EditorState.SELECT_OBJECTS:
-                self.objectsGroup.shown = True
-                self.facesGroup.shown = True
-                self.verticesGroup.shown = False
-                self.objectModeButton.style = enabledStyle
-                self.faceModeButton.style = disabledStyle
-                self.vertexModeButton.style = disabledStyle
-            elif self.state.selectMode == EditorState.SELECT_FACES:
-                self.objectsGroup.shown = False
-                self.facesGroup.shown = True
-                self.verticesGroup.shown = False
-                self.objectModeButton.style = disabledStyle
-                self.faceModeButton.style = enabledStyle
-                self.vertexModeButton.style = disabledStyle
-            elif self.state.selectMode == EditorState.SELECT_VERTICES:
-                self.objectsGroup.shown = False
-                self.facesGroup.shown = False
-                self.verticesGroup.shown = True
-                self.objectModeButton.style = disabledStyle
-                self.faceModeButton.style = disabledStyle
-                self.vertexModeButton.style = enabledStyle
+        enabledStyle = Style((255, 159, 63))
+        disabledStyle = Style((127, 127, 127))
+        if self.state.selectMode == EditorState.SELECT_OBJECTS:
+            self.objectsGroup.shown = True
+            self.facesGroup.shown = True
+            self.verticesGroup.shown = False
+            self.objectModeButton.style = enabledStyle
+            self.faceModeButton.style = disabledStyle
+            self.vertexModeButton.style = disabledStyle
+        elif self.state.selectMode == EditorState.SELECT_FACES:
+            self.objectsGroup.shown = False
+            self.facesGroup.shown = True
+            self.verticesGroup.shown = False
+            self.objectModeButton.style = disabledStyle
+            self.faceModeButton.style = enabledStyle
+            self.vertexModeButton.style = disabledStyle
+        elif self.state.selectMode == EditorState.SELECT_VERTICES:
+            self.objectsGroup.shown = False
+            self.facesGroup.shown = False
+            self.verticesGroup.shown = True
+            self.objectModeButton.style = disabledStyle
+            self.faceModeButton.style = disabledStyle
+            self.vertexModeButton.style = enabledStyle
 
-            selectAll = False
-            if self.state.selectMode == EditorState.SELECT_OBJECTS:
-                if len(self.state.selectedObjects) == 0:
-                    selectAll = True
-            elif self.state.selectMode == EditorState.SELECT_FACES:
-                if len(self.state.selectedFaces) == 0:
-                    selectAll = True
-            elif self.state.selectMode == EditorState.SELECT_VERTICES:
-                if len(self.state.selectedVertices) == 0:
-                    selectAll = True
-            self.selectAllButton.text = "Select All" if selectAll \
-                else "Select None"
+        selectAll = False
+        if self.state.selectMode == EditorState.SELECT_OBJECTS:
+            if len(self.state.selectedObjects) == 0:
+                selectAll = True
+        elif self.state.selectMode == EditorState.SELECT_FACES:
+            if len(self.state.selectedFaces) == 0:
+                selectAll = True
+        elif self.state.selectMode == EditorState.SELECT_VERTICES:
+            if len(self.state.selectedVertices) == 0:
+                selectAll = True
+        self.selectAllButton.text = "Select All" if selectAll \
+            else "Select None"
 
     def _setupToolbarGeneral(self, group):
         fileRow = Row()
