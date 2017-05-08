@@ -375,6 +375,7 @@ class EditorInterface(EditorActions, AppInterface):
     def escape(self):
         super().escape()
         self.currentCommand = ""
+        self.toolbarSelectButton = None
 
     def keyPressed(self, key):
         if key[0] == 27: # escape
@@ -431,6 +432,9 @@ class EditorInterface(EditorActions, AppInterface):
                             elif button.mousePressedAction is not None:
                                 button.mousePressedAction()
                                 self.currentCommand = ""
+                            if self.inAdjustMode:
+                                # highlight current adjust command
+                                self.toolbarSelectButton = button
                         elif buttonCommand.startswith(self.currentCommand):
                             foundMatch = True
             if not foundMatch:
@@ -570,7 +574,7 @@ class EditorInterface(EditorActions, AppInterface):
             self.flySpeed /= 1.1
 
     def mouseReleased(self, button, mouseX, mouseY):
-        if self.toolbarSelectButton is not None:
+        if button == 0 and self.toolbarSelectButton is not None:
             if not self.inAdjustMode:
                 self.editorMain.unlockMouse()
             if self.toolbarSelectButton.mouseReleasedAction is not None:
@@ -694,8 +698,6 @@ class EditorInterface(EditorActions, AppInterface):
         if self.inAdjustMode:
             if self.movingCamera:
                 text += "Fly | "
-            else:
-                text += self.adjustor.getDescription() + " | "
             value = self.adjustor.getAxes()
             if self.state.relativeCoordinatesEnabled:
                 origin = self.adjustorOriginalValue
