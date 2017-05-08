@@ -48,6 +48,10 @@ class EditorInterface(EditorActions, AppInterface):
         self.toolbarGroups.append(adjustGroup)
         self._setupToolbarAdjust(adjustGroup)
 
+        verticesGroup = Group("Vertices")
+        self.toolbarGroups.append(verticesGroup)
+        self._setupToolbarVertices(verticesGroup)
+
     def _setupToolbarGeneral(self, group):
         fileRow = Row()
         group.addRow(fileRow)
@@ -230,6 +234,29 @@ class EditorInterface(EditorActions, AppInterface):
         scaleRow.addButton(
             Button(text="Scale", x=0.5, width=0.5, keyboardShortcut="S",
                    action=scale, requireKeyboard=True))
+
+    def _setupToolbarVertices(self, group):
+        vertexRow = Row()
+        group.addRow(vertexRow)
+
+        vertexRow.addButton(
+            Button(text="Divide Edge", x=0, width=0.5, keyboardShortcut="d",
+                   action=self.divideEdge))
+
+        vertexRow.addButton(
+            Button(text="Join Vertices", x=0.5, width=0.5, keyboardShortcut="D",
+                   action=self.combineVertices))
+
+        edgeRow = Row()
+        group.addRow(edgeRow)
+
+        edgeRow.addButton(
+            Button(text="Make Edge", x=0, width=0.5, keyboardShortcut="e",
+                   action=self.makeEdge))
+
+        edgeRow.addButton(
+            Button(text="Combine Faces", x=0.5, width=0.5, keyboardShortcut="E",
+                   action=self.combineFaces))
 
 
     def setAppInstance(self, instance):
