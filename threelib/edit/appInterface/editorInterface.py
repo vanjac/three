@@ -765,6 +765,8 @@ class EditorInterface(EditorActions, AppInterface):
                 text += "WASDQE: fly; click: exit; scroll or -/=: change speed"
             elif self.inAdjustMode:
                 text += "Click: complete"
+            elif self.toolbarHoverButton != None:
+                text += self.toolbarHoverButton.keyboardShortcut
         else:
             text += self.currentCommand
 
