@@ -65,8 +65,6 @@ class EditorInterface(EditorActions, AppInterface):
         self.newGroup.shown = True
         self.adjustGroup.shown = True
 
-        self.newGroup.name = "New at " + str(self.state.createPosition)
-
         enabledStyle = Style((255, 159, 63))
         disabledStyle = Style((127, 127, 127))
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
@@ -93,6 +91,14 @@ class EditorInterface(EditorActions, AppInterface):
             self.objectModeButton.style = disabledStyle
             self.faceModeButton.style = disabledStyle
             self.vertexModeButton.style = enabledStyle
+
+        self.newGroup.name = "New at " + str(self.state.createPosition)
+
+        paintButtonText = "Paint " + self.getMaterialName(
+            self.state.currentMaterial)
+        if len(paintButtonText) > 22:
+            paintButtonText = paintButtonText[:22-3] + "..."
+        self.paintButton.text = paintButtonText
 
         selectAll = False
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
@@ -322,18 +328,18 @@ class EditorInterface(EditorActions, AppInterface):
         materialRow = Row()
         group.addRow(materialRow)
 
+        self.paintButton = materialRow.addButton(
+            Button(text="Paint", x=0, width=0.8, keyboardShortcut="p",
+                   action=self.paint))
+
         def setMaterial(command):
             if command[-1] != '\r':
                 return False
             self.setCurrentMaterial(command[1:-1])
             return True
         materialRow.addButton(
-            Button(text="Set Paint", x=0, width=0.5, keyboardShortcut="P",
+            Button(text="Set", x=0.8, width=0.2, keyboardShortcut="P",
                    action=setMaterial, requireKeyboard=True))
-
-        materialRow.addButton(
-            Button(text="Paint", x=0.5, width=0.5, keyboardShortcut="p",
-                   action=self.paint))
 
         materialTransformRow = Row()
         group.addRow(materialTransformRow)
@@ -758,9 +764,6 @@ class EditorInterface(EditorActions, AppInterface):
                         text += "Pos: " + str(position) + " | "
                     elif num != 0:
                         text += str(num) + " vertices | "
-
-                text += "Paint: " + self.getMaterialName(
-                    self.state.currentMaterial) + " | "
 
         if self.currentCommand == "":
             if self.movingCamera:
