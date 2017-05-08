@@ -65,18 +65,42 @@ class EditorInterface(EditorActions, AppInterface):
             self.newGroup.shown = True
             self.adjustGroup.shown = True
 
+            enabledStyle = Style((255, 159, 63))
+            disabledStyle = Style((127, 127, 127))
             if self.state.selectMode == EditorState.SELECT_OBJECTS:
                 self.objectsGroup.shown = True
                 self.facesGroup.shown = True
                 self.verticesGroup.shown = False
+                self.objectModeButton.style = enabledStyle
+                self.faceModeButton.style = disabledStyle
+                self.vertexModeButton.style = disabledStyle
             elif self.state.selectMode == EditorState.SELECT_FACES:
                 self.objectsGroup.shown = False
                 self.facesGroup.shown = True
                 self.verticesGroup.shown = False
+                self.objectModeButton.style = disabledStyle
+                self.faceModeButton.style = enabledStyle
+                self.vertexModeButton.style = disabledStyle
             elif self.state.selectMode == EditorState.SELECT_VERTICES:
                 self.objectsGroup.shown = False
                 self.facesGroup.shown = False
                 self.verticesGroup.shown = True
+                self.objectModeButton.style = disabledStyle
+                self.faceModeButton.style = disabledStyle
+                self.vertexModeButton.style = enabledStyle
+
+            selectAll = False
+            if self.state.selectMode == EditorState.SELECT_OBJECTS:
+                if len(self.state.selectedObjects) == 0:
+                    selectAll = True
+            elif self.state.selectMode == EditorState.SELECT_FACES:
+                if len(self.state.selectedFaces) == 0:
+                    selectAll = True
+            elif self.state.selectMode == EditorState.SELECT_VERTICES:
+                if len(self.state.selectedVertices) == 0:
+                    selectAll = True
+            self.selectAllButton.text = "Select All" if selectAll \
+                else "Select None"
 
     def _setupToolbarGeneral(self, group):
         fileRow = Row()
@@ -91,24 +115,24 @@ class EditorInterface(EditorActions, AppInterface):
 
         def objectMode():
             self.selectMode(EditorState.SELECT_OBJECTS)
-        modeRow.addButton(
+        self.objectModeButton = modeRow.addButton(
             Button(text="Objects", x=0, width=1/3, keyboardShortcut="mo",
                    action=objectMode))
         def faceMode():
             self.selectMode(EditorState.SELECT_FACES)
-        modeRow.addButton(
+        self.faceModeButton = modeRow.addButton(
             Button(text="Faces", x=1/3, width=1/3, keyboardShortcut="mf",
                    action=faceMode))
         def vertexMode():
             self.selectMode(EditorState.SELECT_VERTICES)
-        modeRow.addButton(
+        self.vertexModeButton = modeRow.addButton(
             Button(text="Vertices", x=2/3, width=1/3, keyboardShortcut="mv",
                    action=vertexMode))
 
         selectRow = Row()
         group.addRow(selectRow)
 
-        selectRow.addButton(
+        self.selectAllButton = selectRow.addButton(
             Button(text="Select All/None", x=0, width=1, keyboardShortcut="a",
                    action=self.selectAll))
 

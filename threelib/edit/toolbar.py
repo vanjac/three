@@ -38,6 +38,7 @@ class Row:
 
     def addButton(self, button):
         self.buttons.append(button)
+        return button
 
 
 class Group:
