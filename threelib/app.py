@@ -84,6 +84,12 @@ class AppInstance:
         """
         pass
 
+    def mouseIsLocked(self):
+        """
+        Return whether the mouse is locked.
+        """
+        return False
+
 
 class AppInterface:
     """

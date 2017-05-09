@@ -145,6 +145,9 @@ class GLAppInstance(AppInstance):
             mouseMovementLock = threading.Lock()
         glutSetCursor(GLUT_CURSOR_INHERIT)
 
+    def mouseIsLocked(self):
+        return self.mouseLocked
+
 
     def initGL(self, width, height):
         glClearColor(0.0, 0.0, 0.0, 0.0)
