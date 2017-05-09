@@ -88,6 +88,8 @@ class GLEditor(EditorInterface):
     def _getViewportAspect(self):
         if self.editorMain.windowWidth() == self.toolbarWidth:
             return 1.0
+        if self.editorMain.windowWidth() < self.toolbarWidth:
+            return self.editorMain.getAspect()
         return (self.editorMain.windowWidth() - self.toolbarWidth) \
                / self.editorMain.windowHeight()
 
@@ -104,12 +106,20 @@ class GLEditor(EditorInterface):
         self.editorMain.updateMaterials(self.state.world)
 
         glLoadIdentity() # reset the view
-        glViewport(0, 0,
-                   self.editorMain.windowWidth() - self.toolbarWidth,
-                   self.editorMain.windowHeight())
-        glScissor(0, 0,
-                   self.editorMain.windowWidth() - self.toolbarWidth,
-                   self.editorMain.windowHeight())
+        if self.editorMain.windowWidth() > self.toolbarWidth:
+            glViewport(0, 0,
+                       self.editorMain.windowWidth() - self.toolbarWidth,
+                       self.editorMain.windowHeight())
+            glScissor(0, 0,
+                       self.editorMain.windowWidth() - self.toolbarWidth,
+                       self.editorMain.windowHeight())
+        else:
+            glViewport(0, 0,
+                       self.editorMain.windowWidth(),
+                       self.editorMain.windowHeight())
+            glScissor(0, 0,
+                      self.editorMain.windowWidth(),
+                      self.editorMain.windowHeight())
 
         # clear screen and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -266,8 +276,9 @@ class GLEditor(EditorInterface):
         glDisable(GL_CULL_FACE)
 
         self._drawMiniAxes(rotate)
-        self._updateToolbar()
-        self._drawToolbar()
+        if self.editorMain.windowWidth() > self.toolbarWidth:
+            self._updateToolbar()
+            self._drawToolbar()
         self._drawStatusBar()
 
         glEnable(GL_DEPTH_TEST)
