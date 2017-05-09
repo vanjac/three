@@ -74,54 +74,63 @@ class EditorInterface(EditorActions, AppInterface):
         selectMode = self.state.selectMode
         if selectMode == EditorState.SELECT_OBJECTS:
             numSelected = len(self.state.selectedObjects)
-            self.objectsGroup.shown = numSelected != 0
-            self.solidGroup.shown = numSelected != 0
-            self.facesGroup.shown = numSelected != 0
-            self.verticesGroup.shown = False
-            self.objectModeButton.style = enabledStyle
-            self.faceModeButton.style = disabledStyle
-            self.vertexModeButton.style = disabledStyle
-
-            if numSelected != 0:
-                parentsFound = False
-                childrenFound = False
-                meshFound = False
-                for object in self.state.selectedObjects:
-                    if object.getParent() is not None:
-                        parentsFound = True
-                    if len(object.getChildren()) != 0:
-                        childrenFound = True
-                    if object.getMesh() is not None:
-                        meshFound = True
-                self.clearParentButton.enabled = parentsFound
-                self.selectParentButton.enabled = parentsFound
-                self.addParentButton.enabled = parentsFound
-                self.selectChildrenButton.enabled = childrenFound
-                self.addChildrenButton.enabled = childrenFound
-
-                if not meshFound:
-                    self.solidGroup.shown = False
-                    self.facesGroup.shown = False
         elif selectMode == EditorState.SELECT_FACES:
             numSelected = len(self.state.selectedFaces)
-            self.objectsGroup.shown = False
-            self.solidGroup.shown = False
-            self.facesGroup.shown = numSelected != 0
-            self.verticesGroup.shown = False
-            self.objectModeButton.style = disabledStyle
-            self.faceModeButton.style = enabledStyle
-            self.vertexModeButton.style = disabledStyle
         elif selectMode == EditorState.SELECT_VERTICES:
             numSelected = len(self.state.selectedVertices)
-            self.objectsGroup.shown = False
-            self.solidGroup.shown = False
-            self.facesGroup.shown = False
-            self.verticesGroup.shown = numSelected == 2
-            self.objectModeButton.style = disabledStyle
-            self.faceModeButton.style = disabledStyle
-            self.vertexModeButton.style = enabledStyle
 
+        parentsFound = False
+        childrenFound = False
+        meshFound = False
+        if selectMode == EditorState.SELECT_OBJECTS:
+            for object in self.state.selectedObjects:
+                if object.getParent() is not None:
+                    parentsFound = True
+                if len(object.getChildren()) != 0:
+                    childrenFound = True
+                if object.getMesh() is not None:
+                    meshFound = True
+
+        # SHOW/HIDE GROUPS
         self.adjustGroup.shown = numSelected != 0
+        self.objectsGroup.shown = selectMode == EditorState.SELECT_OBJECTS \
+            and numSelected != 0
+        self.solidGroup.shown = meshFound
+        self.facesGroup.shown = \
+            (selectMode == EditorState.SELECT_FACES and numSelected != 0) \
+            or (selectMode == EditorState.SELECT_OBJECTS and meshFound)
+        self.verticesGroup.shown = selectMode == EditorState.SELECT_VERTICES \
+            and numSelected == 2
+
+        # ENABLE/DISABLE BUTTONS
+
+        # general group
+        self.propertiesButton.enabled = \
+            selectMode == EditorState.SELECT_OBJECTS or numSelected == 0
+        self.updateButton.enabled = \
+            selectMode == EditorState.SELECT_OBJECTS or numSelected == 0
+
+        # adjust group
+        self.originButton.enabled = selectMode == EditorState.SELECT_OBJECTS
+
+        # objects group
+        self.clearParentButton.enabled = parentsFound
+        self.selectParentButton.enabled = parentsFound
+        self.addParentButton.enabled = parentsFound
+        self.selectChildrenButton.enabled = childrenFound
+        self.addChildrenButton.enabled = childrenFound
+
+        # CHANGE TEXT / STYLE
+
+        self.objectModeButton.style = enabledStyle \
+            if selectMode == EditorState.SELECT_OBJECTS else disabledStyle
+        self.faceModeButton.style = enabledStyle \
+            if selectMode == EditorState.SELECT_FACES else disabledStyle
+        self.vertexModeButton.style = enabledStyle \
+            if selectMode == EditorState.SELECT_VERTICES else disabledStyle
+
+        self.selectAllButton.text = "Select All" if numSelected == 0 \
+            else "Select None"
 
         self.newGroup.name = "New at " + str(self.state.createPosition)
 
@@ -131,19 +140,6 @@ class EditorInterface(EditorActions, AppInterface):
             paintButtonText = paintButtonText[:22-3] + "..."
         self.paintButton.text = paintButtonText
 
-        self.selectAllButton.text = "Select All" if numSelected == 0 \
-            else "Select None"
-
-        # enable / disable buttons
-
-        if selectMode == EditorState.SELECT_OBJECTS or numSelected == 0:
-            self.propertiesButton.enabled = True
-            self.updateButton.enabled = True
-        else:
-            self.propertiesButton.enabled = False
-            self.updateButton.enabled = False
-
-        self.originButton.enabled = selectMode == EditorState.SELECT_OBJECTS
 
     def _setupToolbarGeneral(self, group):
         fileRow = Row()
