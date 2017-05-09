@@ -68,7 +68,7 @@ class GLEditor(EditorInterface):
         glColor(1, 1, 1)
         self.editorMain.drawText(message, GLUT_BITMAP_9_BY_15,
                                  self.editorMain.windowWidth() / 2,
-                                 self.editorMain.windowWidth() / 2)
+                                 self.editorMain.windowHeight() / 2)
         glFlush()
         glFinish()
         glutSwapBuffers()
