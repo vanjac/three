@@ -500,7 +500,8 @@ class GLEditor(EditorInterface):
         glLoadIdentity()
         gluOrtho2D(0, self.toolbarWidth, 0, self.editorMain.windowHeight())
 
-        y = self.editorMain.windowHeight()
+        y = self.editorMain.windowHeight() + self.toolbarScroll
+        yStart = y
 
         for group in self.toolbarGroups:
             if not group.shown:
@@ -515,6 +516,12 @@ class GLEditor(EditorInterface):
                 for button in row.buttons:
                     self._drawButton(button, y, row.height)
                 y -= row.height
+
+        self.toolbarHeight = yStart - y
+        if y > self.statusBarHeight:
+            self.toolbarScroll -= y - self.statusBarHeight
+            if self.toolbarScroll < 0:
+                self.toolbarScroll = 0
 
         glMatrixMode(GL_PROJECTION)
         glPopMatrix()

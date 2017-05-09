@@ -28,6 +28,8 @@ class EditorInterface(EditorActions, AppInterface):
         self.toolbarMouseY = -1
         self.toolbarHoverButton = None
         self.toolbarSelectButton = None
+        self.toolbarScroll = 0
+        self.toolbarHeight = 0 # set every time toolbar is rendered
 
         self._setupToolbar()
 
@@ -599,9 +601,23 @@ class EditorInterface(EditorActions, AppInterface):
                 self.movingCamera = True
                 self.editorMain.lockMouse()
         if button == 3:
-            self.flySpeed *= 1.1
+            if mouseX > self.editorMain.windowWidth() - self.toolbarWidth \
+                    and not self.editorMain.mouseIsLocked():
+                self.toolbarScroll -= 16
+                if self.toolbarScroll < 0:
+                    self.toolbarScroll = 0
+            else:
+                self.flySpeed *= 1.1
         if button == 4:
-            self.flySpeed /= 1.1
+            if mouseX > self.editorMain.windowWidth() - self.toolbarWidth \
+                    and not self.editorMain.mouseIsLocked():
+                self.toolbarScroll += 16
+                maxScroll = max(0, self.toolbarHeight
+                    - self.editorMain.windowHeight() + self.statusBarHeight)
+                if self.toolbarScroll > maxScroll:
+                    self.toolbarScroll = maxScroll
+            else:
+                self.flySpeed /= 1.1
 
     def mouseReleased(self, button, mouseX, mouseY):
         if button == 0 and self.toolbarSelectButton is not None:
