@@ -114,6 +114,7 @@ class EditorInterface(EditorActions, AppInterface):
         self.originButton.enabled = selectMode == EditorState.SELECT_OBJECTS
 
         # objects group
+        self.setParentButton.enabled = numSelected > 1
         self.clearParentButton.enabled = parentsFound
         self.selectParentButton.enabled = parentsFound
         self.addParentButton.enabled = parentsFound
@@ -200,7 +201,7 @@ class EditorInterface(EditorActions, AppInterface):
         tieRow = Row()
         group.addRow(tieRow)
 
-        tieRow.addButton(
+        self.setParentButton = tieRow.addButton(
             Button(text="Set Parent", x=0, width=0.5, keyboardShortcut="t",
                    action=self.setParent))
         self.clearParentButton = tieRow.addButton(
