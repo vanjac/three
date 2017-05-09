@@ -32,6 +32,7 @@ class EditorInterface(EditorActions, AppInterface):
         self.toolbarHeight = 0 # set every time toolbar is rendered
 
         self._setupToolbar()
+        self._updateToolbar()
 
     def _setupToolbar(self):
         self.generalGroup = Group("General")
@@ -407,6 +408,7 @@ class EditorInterface(EditorActions, AppInterface):
         super().escape()
         self.currentCommand = ""
         self.toolbarSelectButton = None
+        self._updateToolbar()
 
     def keyPressed(self, key):
         if key[0] == 27: # escape
@@ -445,6 +447,7 @@ class EditorInterface(EditorActions, AppInterface):
             if self.inAdjustMode:
                 if self.evaluateAdjustCommand(self.currentCommand):
                     self.currentCommand = ""
+                self._updateToolbar()
                 return
 
             foundMatch = False
@@ -471,6 +474,7 @@ class EditorInterface(EditorActions, AppInterface):
             if not foundMatch:
                 print("Unrecognized command " + self.currentCommand)
                 self.currentCommand = ""
+            self._updateToolbar()
 
     def keyReleased(self, key):
         if self.movingCamera:
@@ -618,6 +622,7 @@ class EditorInterface(EditorActions, AppInterface):
                     self.toolbarScroll = maxScroll
             else:
                 self.flySpeed /= 1.1
+        self._updateToolbar()
 
     def mouseReleased(self, button, mouseX, mouseY):
         if button == 0 and self.toolbarSelectButton is not None:
@@ -626,6 +631,7 @@ class EditorInterface(EditorActions, AppInterface):
             if self.toolbarSelectButton.mouseReleasedAction is not None:
                 self.toolbarSelectButton.mouseReleasedAction()
             self.toolbarSelectButton = None
+        self._updateToolbar()
 
     def mouseMoved(self, mouseX, mouseY, pmouseX, pmouseY):
         if self.movingCamera:

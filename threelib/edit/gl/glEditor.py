@@ -277,7 +277,6 @@ class GLEditor(EditorInterface):
 
         self._drawMiniAxes(rotate)
         if self.editorMain.windowWidth() > self.toolbarWidth:
-            self._updateToolbar()
             self._drawToolbar()
         self._drawStatusBar()
 
