@@ -275,6 +275,7 @@ class GLEditor(EditorInterface):
         glDisable(GL_DEPTH_TEST)
         glDisable(GL_CULL_FACE)
 
+        self._drawFPS()
         self._drawMiniAxes(rotate)
         if self.editorMain.windowWidth() > self.toolbarWidth:
             self._drawToolbar()
@@ -308,6 +309,11 @@ class GLEditor(EditorInterface):
         glMatrixMode(GL_MODELVIEW)
         glPopMatrix()
 
+    def _drawFPS(self):
+        glColor(1,1,1)
+        self.editorMain.drawText(str(self.editorMain.getFps()) + " FPS",
+                                 GLUT_BITMAP_9_BY_15,
+                                 4, self.editorMain.windowHeight() - 19)  # 4+15
 
     def _drawStatusBar(self):
         glViewport(0, 0,
@@ -319,9 +325,6 @@ class GLEditor(EditorInterface):
         glColor(1,1,1)
         self.editorMain.drawText(self.getStatusBar(),
                                  GLUT_BITMAP_8_BY_13, 4, 4)
-        self.editorMain.drawText(str(self.editorMain.getFps()) + " FPS",
-                                 GLUT_BITMAP_9_BY_15,
-                                 4, self.editorMain.windowHeight() - 19) # 4+15
 
 
     def cursorSelect(self):
