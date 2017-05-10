@@ -1,5 +1,6 @@
 __author__ = "jacobvanthoog"
 
+import builtins
 import math
 import numbers
 
@@ -19,7 +20,7 @@ class EditorInterface(EditorActions, AppInterface):
         super().__init__(mapPath, state)
         self.currentCommand = ""
 
-        self.statusBarHeight = 16
+        self.statusBarHeight = 32
 
         self.toolbarWidth = 256
         self.toolbarGroups = [ ]
@@ -33,6 +34,15 @@ class EditorInterface(EditorActions, AppInterface):
 
         self._setupToolbar()
         self._updateToolbar()
+
+        self.oldPrint = builtins.print
+        self.printMessage = ""
+        builtins.print = self._printToStatusBar
+
+    def _printToStatusBar(self, *args, **kwargs):
+        self.printMessage = ' '.join([str(a) for a in args])
+
+        return self.oldPrint(*args, **kwargs)
 
     def _setupToolbar(self):
         self.generalGroup = Group("General")

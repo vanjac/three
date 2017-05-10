@@ -325,6 +325,8 @@ class GLEditor(EditorInterface):
         glColor(1,1,1)
         self.editorMain.drawText(self.getStatusBar(),
                                  GLUT_BITMAP_8_BY_13, 4, 4)
+        self.editorMain.drawText(self.printMessage,
+                                 GLUT_BITMAP_8_BY_13, 4, 20)
 
 
     def cursorSelect(self):
