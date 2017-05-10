@@ -6,7 +6,7 @@ from pathlib import Path
 from threelib import files
 import threelib.edit.fileVersions.converters
 
-THREE_VERSION = "1.1.-1"
+THREE_VERSION = "1.0.1"
 
 print("three version " + THREE_VERSION)
 
