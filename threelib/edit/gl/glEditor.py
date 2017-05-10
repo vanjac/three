@@ -546,6 +546,9 @@ class GLEditor(EditorInterface):
         glEnable(GL_CULL_FACE)
 
     def _drawButton(self, button, y, height):
+        command = self.currentCommand
+        if self.inAdjustMode:
+            command = ""
 
         bg = button.style.background
         fg = button.style.foreground
@@ -558,19 +561,19 @@ class GLEditor(EditorInterface):
         y2 = y
 
         enabled = button.enabled
-        if self.currentCommand != "":
-            buttonCommand = button.keyboardShortcut
-            if not (buttonCommand == self.currentCommand
-                    or buttonCommand.startswith(self.currentCommand)
-                    or self.currentCommand.startswith(buttonCommand)):
+        buttonCommand = button.keyboardShortcut
+        if command != "":
+            if not (buttonCommand == command
+                    or buttonCommand.startswith(command)
+                    or command.startswith(buttonCommand)):
                 enabled = False
         if button == self.toolbarSelectButton:
             enabled = True
 
         hover = False
         if self.toolbarSelectButton is None and enabled and \
-                (not (self.currentCommand != ""
-                     and self.currentCommand.startswith(buttonCommand))) \
+                (not (command != ""
+                     and command.startswith(buttonCommand))) \
                 and x1 < self.toolbarMouseX < x2 \
                 and y1 < self.toolbarMouseY < y2:
             hover = True
