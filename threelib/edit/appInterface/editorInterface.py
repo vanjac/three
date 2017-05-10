@@ -64,12 +64,6 @@ class EditorInterface(EditorActions, AppInterface):
         self._setupToolbarVertices(self.verticesGroup)
 
     def _updateToolbar(self):
-        self.generalGroup.shown = True
-        self.newGroup.shown = True
-
-        enabledStyle = Style((255, 159, 63))
-        disabledStyle = Style((127, 127, 127))
-
         numSelected = 0
         selectMode = self.state.selectMode
         if selectMode == EditorState.SELECT_OBJECTS:
@@ -92,6 +86,8 @@ class EditorInterface(EditorActions, AppInterface):
                     meshFound = True
 
         # SHOW/HIDE GROUPS
+        self.generalGroup.shown = True
+        self.newGroup.shown = True
         self.adjustGroup.shown = numSelected != 0
         self.objectsGroup.shown = selectMode == EditorState.SELECT_OBJECTS \
             and numSelected != 0
@@ -122,6 +118,9 @@ class EditorInterface(EditorActions, AppInterface):
         self.addChildrenButton.enabled = childrenFound
 
         # CHANGE TEXT / STYLE
+
+        enabledStyle = Style((255, 159, 63))
+        disabledStyle = Style((127, 127, 127))
 
         self.objectModeButton.style = enabledStyle \
             if selectMode == EditorState.SELECT_OBJECTS else disabledStyle
