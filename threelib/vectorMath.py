@@ -281,6 +281,14 @@ class Vector:
             return 0.0
         return self.dot(v / vMag)
 
+    def projectOnPlane(self, normal):
+        """
+        Project this vector onto the plane with the given normal.
+
+        Magnitude of normal MUST be 1!
+        """
+        return self - (self.project(normal) * normal)
+
     def orthogonal(self, v):
         """
         Return true if this vector is orthogonal (at a right angle) to another
