@@ -311,6 +311,7 @@ class FirstPersonPlayer(Entity):
 
             # already on a floor
             elif self._inBounds(collision, self.position):
+                floorCollision = False
                 # these checks are required
                 currentFloorPreviousPoint = self._topPoint(
                     self.newCurrentFloor, self.position)
@@ -338,23 +339,7 @@ class FirstPersonPlayer(Entity):
                                     currentFloorPreviousZ, nextFloorPreviousZ)
                                 and vectorMath.isclose(
                                     currentFloorCurrentZ, nextFloorCurrentZ))):
-                        # if the new floor's slope is too steep,
-                        # don't walk onto it
-                        if topPoint.normal.z < self.minWalkNormalZ:
-                            # slide along the edge
-                            slopeAxis = topPoint.normal.setZ(0) \
-                                .rotate2(math.pi/2).normalize()
-
-                            self.positionChange = (slopeAxis *
-                                self.positionChange.setZ(0).project(slopeAxis))\
-                                .setZ(self.positionChange.z)
-                            self.newXYVelocity = slopeAxis \
-                                * self.newXYVelocity.project(slopeAxis)
-                        else:
-                            self.newZVelocity = 0.0
-                            self.newCurrentFloor.doFloorEndTouchAction()
-                            self.newCurrentFloor = collision
-                            collision.doFloorStartTouchAction()
+                        floorCollision = True
                 # allow walking off the edge of one floor, immediately onto
                 # another
                 if currentFloorPreviousPoint is not None \
@@ -363,16 +348,27 @@ class FirstPersonPlayer(Entity):
                     nextFloorCurrentZ = topPoint.height
                     if vectorMath.isclose(currentFloorPreviousZ,
                                           nextFloorCurrentZ):
-                        # if the new floor's slope is too steep,
-                        # don't walk onto it
-                        if topPoint.normal.z < self.minWalkNormalZ:
-                            self.positionChange = \
-                                Vector(0, 0, self.positionChange.z)
-                        else:
-                            self.newZVelocity = 0.0
-                            self.newCurrentFloor.doFloorEndTouchAction()
-                            self.newCurrentFloor = collision
-                            collision.doFloorStartTouchAction()
+                        floorCollision = True
+                if floorCollision:
+                    # if the new floor's slope is too steep,
+                    # don't walk onto it
+                    if topPoint.normal.z < self.minWalkNormalZ:
+                        # slide along the edge
+                        slopeAxis = topPoint.normal.setZ(0) \
+                            .rotate2(math.pi / 2).normalize()
+
+                        self.positionChange = (slopeAxis *
+                                               self.positionChange.setZ(
+                                                   0).project(slopeAxis)) \
+                            .setZ(self.positionChange.z)
+                        self.newXYVelocity = slopeAxis \
+                                             * self.newXYVelocity.project(
+                            slopeAxis)
+                    else:
+                        self.newZVelocity = 0.0
+                        self.newCurrentFloor.doFloorEndTouchAction()
+                        self.newCurrentFloor = collision
+                        collision.doFloorStartTouchAction()
         # end check floor collision
 
         # check ceiling collision
