@@ -36,7 +36,7 @@ class FirstPersonPlayer(PhysicsObject):
         self.jumpVelocity = jumpVelocity
 
     def scan(self, timeElapsed, totalTime):
-        super().scanStart()
+        self.scanStart()
 
         # look
         self.rotationChange = Rotate(0, -float(self.yLookAxis.getChange()),
