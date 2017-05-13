@@ -108,6 +108,7 @@ class PhysicsObject(Entity):
             self.zVelocity = self.newZVelocity
             self.xyVelocity = self.newXYVelocity
             self.currentFloor = self.newCurrentFloor
+            toUpdateList.append(self)
         self.actions.addAction(do)
 
 
