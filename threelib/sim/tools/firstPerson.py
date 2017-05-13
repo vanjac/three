@@ -144,7 +144,8 @@ class FirstPersonPlayer(PhysicsObject):
                 # negative is going up the slope
                 slope1 = self.newXYVelocity.project(point.normal)
                 slope2 = self.newXYVelocity.project(newPoint.normal)
-                if slope1 < 0 and slope2 > 0:
+                if slope1 <= 0 and slope2 >= 0 \
+                        and not (slope1 == 0 and slope2 == 0):
                     # jump over a hill
                     self.newCurrentFloor = None
 
