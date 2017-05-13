@@ -130,15 +130,23 @@ class FirstPersonPlayer(PhysicsObject):
         prevNewXYVelocity = self.newXYVelocity
         self.scanEnd(timeElapsed, totalTime)
 
-        if (prevNewXYVelocity != self.newXYVelocity
-            or self.currentFloor is None) \
-                and self.newCurrentFloor is not None:
-            point = self._topPoint(self.newCurrentFloor,
-                                   self.position + self.positionChange)
-            velocity = self.newXYVelocity.setZ(self.newZVelocity)
-            velocity = velocity.projectOnPlane(point.normal)
+        if self.newCurrentFloor is not None:
+            newPoint = self._topPoint(self.newCurrentFloor,
+                                    self.position + self.positionChange)
+            if (prevNewXYVelocity != self.newXYVelocity
+                    or self.currentFloor is None):
+                velocity = self.newXYVelocity.setZ(self.newZVelocity)
+                velocity = velocity.projectOnPlane(newPoint.normal)
 
-            self.newFloorXYVelocity = velocity.setZ(0)
+                self.newFloorXYVelocity = velocity.setZ(0)
+            if point is not None:
+                # positive is going down the slope
+                # negative is going up the slope
+                slope1 = self.newXYVelocity.project(point.normal)
+                slope2 = self.newXYVelocity.project(newPoint.normal)
+                if slope1 < 0 and slope2 > 0:
+                    # jump over a hill
+                    self.newCurrentFloor = None
 
         def do(toUpdateList):
             self.floorXYVelocity = self.newFloorXYVelocity
