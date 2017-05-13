@@ -272,6 +272,7 @@ def buildWorld(editorState):
     threelib.script.runScript("from threelib.sim.input import *")
     threelib.script.runScript("from threelib.sim.lighting import *")
     threelib.script.runScript("from threelib.sim.playerPhysics import *")
+    threelib.script.runScript("from threelib.sim.tools.physicsObject import *")
     threelib.script.runScript("from threelib.sim.tools.firstPerson import *")
     threelib.script.runScript(
         "from threelib.sim.tools.firstPersonDebug import *")
