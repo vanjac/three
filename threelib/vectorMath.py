@@ -278,7 +278,7 @@ class Vector:
         """
         vMag = v.magnitude()
         if isclose(vMag, 0):
-            return 0
+            return 0.0
         return self.dot(v / vMag)
 
     def orthogonal(self, v):
