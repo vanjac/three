@@ -80,9 +80,7 @@ class FirstPersonPlayer(PhysicsObject):
                     movementDirection = point.normal.setZ(0).setMagnitude(1.0)
                     if walking or not self.sliding:
                         velocity = self.newXYVelocity.setZ(self.newZVelocity)
-                        # project onto plane
-                        velocity = velocity - \
-                            (velocity.project(point.normal) * point.normal)
+                        velocity = velocity.projectOnPlane(point.normal)
 
                         self.newXYVelocity = velocity.setZ(0)
                     self.newXYVelocity += movementDirection \
