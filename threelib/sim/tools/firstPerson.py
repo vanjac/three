@@ -90,7 +90,9 @@ class FirstPersonPlayer(PhysicsObject):
                     else:
                         slopeFactor = project.magnitude()
                     self.newFloorXYVelocity = inputTranslation * slopeFactor
-                else:
+                elif self.minWalkNormalZ == None:
+                    # only allow extra force while sliding if walking has been
+                    # disabled
                     self.newFloorXYVelocity += velocity
             else:
                 self.newXYVelocity += velocity
