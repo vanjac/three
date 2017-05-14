@@ -299,3 +299,14 @@ class PhysicsObject(Entity):
     def _objectBottom(self, objectPosition):
         return objectPosition - Vector(0, 0, self.originHeight)
 
+
+class BasicPhysics(PhysicsObject):
+
+    def scan(self, timeElapsed, totalTime):
+        self.scanStart()
+
+        self.positionChange += self.newXYVelocity * timeElapsed
+        if self.newCurrentFloor is None:
+            # z velocity
+            self.positionChange += Vector(0, 0, self.newZVelocity * timeElapsed)
+        self.scanEnd(timeElapsed, totalTime)
