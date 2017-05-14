@@ -116,10 +116,12 @@ class FirstPersonPlayer(PhysicsObject):
                                                .setMagnitude(
                     gravityVelocity.magnitude()) * timeElapsed
 
-            velocity = \
-                self.newFloorXYVelocity.setZ(0).projectOnPlane(point.normal)
-            velocity = velocity.setMagnitude(
-                self.newFloorXYVelocity.setZ(0).magnitude())
+            normalRot = point.normal.rotation()
+            # orient the floor velocity onto the floor plane
+            velocity = self.newFloorXYVelocity.setZ(0) \
+                .rotate2(-normalRot.z) \
+                .rotate(Rotate(0, normalRot.y - math.pi/2, 0)) \
+                .rotate2(normalRot.z)
             self.newXYVelocity = velocity.setZ(0)
 
         self.positionChange += self.newXYVelocity * timeElapsed
