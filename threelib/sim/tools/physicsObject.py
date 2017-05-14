@@ -93,8 +93,10 @@ class PhysicsObject(Entity):
                 # set z velocity to z movement up/down slope
                 point = self._topPoint(self.newCurrentFloor,
                                        self.position)
-                slope = -(point.normal.setZ(0).magnitude() / point.normal.z)
-                self.newZVelocity = self.xyVelocity.project(point.normal.setZ(0)) * slope
+                if point is not None:
+                    slope = -(point.normal.setZ(0).magnitude() / point.normal.z)
+                    self.newZVelocity = \
+                        self.xyVelocity.project(point.normal.setZ(0)) * slope
 
                 self.newCurrentFloor.doFloorEndTouchAction()
                 self.newCurrentFloor = None
