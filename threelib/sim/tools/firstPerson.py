@@ -137,9 +137,16 @@ class FirstPersonPlayer(PhysicsObject):
                                     self.position + self.positionChange)
             if (prevNewXYVelocity != self.newXYVelocity
                     or self.currentFloor is None):
-                velocity = self.newXYVelocity.setZ(self.newZVelocity)
+                # use old Z velocity because new velocity has been set to 0
+                velocity = self.newXYVelocity.setZ(self.zVelocity)
                 velocity = velocity.projectOnPlane(newPoint.normal)
-
+                normalRot = newPoint.normal.rotation()
+                # convert velocity to floor velocity
+                # opposite of floor orientation above
+                velocity = velocity \
+                    .rotate2(-normalRot.z) \
+                    .rotate(Rotate(0, -normalRot.y + math.pi / 2, 0)) \
+                    .rotate2(normalRot.z)
                 self.newFloorXYVelocity = velocity.setZ(0)
             if point is not None:
                 # positive is going down the slope
