@@ -150,6 +150,10 @@ class FirstPersonPlayer(PhysicsObject):
                         and not (slope1 == 0 and slope2 == 0):
                     # jump over a hill
                     self.newCurrentFloor = None
+                    # set z velocity to z movement up/down slope
+                    slope = -(point.normal.setZ(0).magnitude() / point.normal.z)
+                    self.newZVelocity = \
+                        self.newXYVelocity.project(point.normal.setZ(0)) * slope
 
         def do(toUpdateList):
             self.floorXYVelocity = self.newFloorXYVelocity
