@@ -11,9 +11,9 @@ class FirstPersonPlayer(PhysicsObject):
     def __init__(self, world, xLookAxis, yLookAxis, xWalkAxis, yWalkAxis,
                  jumpButton,
                  cameraHeight=17.0, playerHeight=18.0, playerWidth=8.0,
-                 walkSpeed = 14.0, fallMoveSpeed=7.0, maxWalkAngle=45.0,
+                 walkSpeed=14.0, fallMoveSpeed=7.0, maxWalkAngle=45.0,
                  jumpVelocity=30.0, walkDeceleration=0.001,
-                 fallDeceleration=0.7):
+                 fallDeceleration=0.7, slideDeceleration=0.6):
         super().__init__(world, width=playerWidth, height=playerHeight,
                          originHeight=cameraHeight)
         self.world = world
@@ -27,6 +27,7 @@ class FirstPersonPlayer(PhysicsObject):
         self.fallMoveSpeed = fallMoveSpeed
         self.walkDeceleration = walkDeceleration
         self.fallDeceleration = fallDeceleration
+        self.slideDeceleration = slideDeceleration
         self.maxWalkAngle = maxWalkAngle # in degrees
         if maxWalkAngle == None:
             self.minWalkNormalZ = None
@@ -103,10 +104,10 @@ class FirstPersonPlayer(PhysicsObject):
                 deceleration = (self.fallDeceleration ** timeElapsed)
                 self.newXYVelocity *= deceleration
             else:
-                if not sliding:
-                    deceleration = (self.walkDeceleration ** timeElapsed)
+                if sliding:
+                    deceleration = (self.slideDeceleration ** timeElapsed)
                 else:
-                    deceleration = (self.fallDeceleration ** timeElapsed)
+                    deceleration = (self.walkDeceleration ** timeElapsed)
                 self.newFloorXYVelocity *= deceleration
 
         if self.newCurrentFloor is not None:
