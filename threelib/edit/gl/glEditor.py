@@ -47,6 +47,14 @@ class GLEditor(EditorInterface):
         self.nearClip = 0.1
         self.farClip = 2048.0
 
+        if 'camera' in self.gameConfig:
+            if 'fov' in self.gameConfig['camera']:
+                self.fov = float(self.gameConfig['camera']['fov'])
+            if 'nearclip' in self.gameConfig['camera']:
+                self.nearClip = float(self.gameConfig['camera']['nearclip'])
+            if 'farclip' in self.gameConfig['camera']:
+                self.farClip = float(self.gameConfig['camera']['farclip'])
+
     def init(self):
         self._fullscreenMessage("Loading...")
         self._resetProjection()

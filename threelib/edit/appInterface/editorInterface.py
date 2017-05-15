@@ -11,6 +11,7 @@ from threelib.vectorMath import Rotate
 import threelib.vectorMath as vectorMath
 from threelib.app import AppInterface
 from threelib.edit.toolbar import *
+from threelib import files
 
 MATH_SYMBOLS = ['.', '+', '-', '*', '/', '(', ')']
 
@@ -38,6 +39,8 @@ class EditorInterface(EditorActions, AppInterface):
         self.oldPrint = builtins.print
         self.printMessage = ""
         builtins.print = self._printToStatusBar
+
+        self.gameConfig = files.readGameConfig()
 
     def _printToStatusBar(self, *args, **kwargs):
         self.printMessage = ' '.join([str(a) for a in args])
