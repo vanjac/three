@@ -326,6 +326,10 @@ class GLRunner(GameInterface):
             glDisable(GL_TEXTURE_2D)
             glColor(0.8, 0.8, 0.8)
             for f in renderMesh.getMesh().getFaces():
+                normal = f.getNormal()
+                if normal == None:
+                    continue
+
                 faceMat = f.getMaterial()
                 if faceMat is not currentMat:
                     if faceMat is None or not faceMat.isLoaded():
@@ -335,7 +339,6 @@ class GLRunner(GameInterface):
                         glBindTexture(GL_TEXTURE_2D, faceMat.getNumber())
                     currentMat = faceMat
 
-                normal = f.getNormal()
                 glNormal(normal.y, normal.z, normal.x)
                 glBegin(GL_POLYGON)
                 for v in f.getVertices():
