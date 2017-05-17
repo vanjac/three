@@ -2,6 +2,7 @@ __author__ = "jacobvanthoog"
 
 import math
 from threelib.sim.base import Entity
+from threelib.sim.playerPhysics import CollisionPoint
 from threelib.vectorMath import Vector
 from threelib.vectorMath import Rotate
 from threelib import vectorMath
@@ -278,12 +279,24 @@ class PhysicsObject(Entity):
             return collision.nearestBoundsPoint(point,
                                                 maxDistance=self.width / 2.0)
 
+    def _extrapolatePoint(self, point, oldPos, newPos):
+        if oldPos == newPos:
+            return point
+
+        diff = newPos - oldPos
+        xSlope = -point.normal.x / point.normal.z
+        ySlope = -point.normal.y / point.normal.z
+
+        newHeight = point.height + diff.x * xSlope + diff.y * ySlope
+
+        return CollisionPoint(newHeight, point.normal)
+
     def _topPoint(self, collision, point):
         pointInBounds = self._inBounds(collision, point)
         if pointInBounds is None:
             return None
         else:
-            return collision.topPointAt(pointInBounds)
+            return self._extrapolatePoint(collision.topPointAt(pointInBounds), pointInBounds, point)
 
     def _bottomPoint(self, collision, point):
         pointInBounds = self._inBounds(collision, point)
