@@ -129,6 +129,22 @@ class PhysicsObject(Entity):
                 self._objectBottom(self.position + self.positionChange).z,
                 self._objectTop(self.position + self.positionChange).z,
                 bottomPoint.height, topPoint.height):
+
+            if self.currentFloor is not None and vectorMath.isclose(
+                    self.currentFloor.topPointAt(
+                        self.currentFloor.nearestBoundsPoint(
+                            self.position + self.positionChange)).height,
+                    collision.topPointAt(
+                        collision.nearestBoundsPoint(
+                            self.position + self.positionChange)).height):
+                # walking from one floor onto another
+                self.newZVelocity = 0.0
+                if self.newCurrentFloor is not None:
+                    self.newCurrentFloor.doFloorEndTouchAction()
+                self.newCurrentFloor = collision
+                collision.doFloorStartTouchAction()
+                return
+
             # slide along wall
             wallNormal = collision.nearestBoundsNormal(
                 self.position + self.positionChange)
