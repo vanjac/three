@@ -38,6 +38,9 @@ stipplePattern = [
 
 class GLEditor(EditorInterface):
 
+    VERTEX_SIZE = 8
+    EDGE_WIDTH = 5
+
     def __init__(self, mapPath, state=None):
         print("OpenGL 1 Editor")
         super().__init__(mapPath, state)
@@ -229,7 +232,7 @@ class GLEditor(EditorInterface):
             if drawVertices and o.getMesh() is not None:
                 # red points are used for vertices
                 glColor(1.0, 0.0, 0.0)
-                glPointSize(8)
+                glPointSize(GLEditor.VERTEX_SIZE)
                 glBegin(GL_POINTS)
                 for v in o.getMesh().getVertices():
                     pos = v.getPosition()
@@ -238,7 +241,7 @@ class GLEditor(EditorInterface):
 
                 # red lines are used for edges
                 for f in o.getMesh().getFaces():
-                    glLineWidth(5)
+                    glLineWidth(GLEditor.EDGE_WIDTH)
                     glBegin(GL_LINE_LOOP)
                     for v in f.getVertices():
                         pos = v.vertex.getPosition()
@@ -251,7 +254,7 @@ class GLEditor(EditorInterface):
 
         if drawVertices:
             glColor(1.0, 1.0, 1.0)
-            glPointSize(10)
+            glPointSize(GLEditor.VERTEX_SIZE + 2)
             for vSelect in self.state.selectedVertices:
                 glPushMatrix()
                 self.transformObject(vSelect.editorObject)
@@ -413,7 +416,7 @@ class GLEditor(EditorInterface):
                 selectedVertices = [ ]
                 for v in self.state.selectedVertices:
                     selectedVertices.append(v.vertex)
-            glPointSize(8)
+            glPointSize(GLEditor.VERTEX_SIZE)
             i = 0
             for o in self.state.objects:
                 glPushMatrix()
