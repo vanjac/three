@@ -238,11 +238,13 @@ class GLEditor(EditorInterface):
 
                 # red lines are used for edges
                 for f in o.getMesh().getFaces():
+                    glLineWidth(5)
                     glBegin(GL_LINE_LOOP)
                     for v in f.getVertices():
                         pos = v.vertex.getPosition()
                         glVertex(pos.y, pos.z, pos.x)
                     glEnd()
+                    glLineWidth(1)
 
             glPopMatrix()
         # end for each object
