@@ -339,7 +339,7 @@ class GLEditor(EditorInterface):
 
     def cursorSelect(self):
         self.selectAtCursorOnDraw = False
-        self.drawSelectHulls()
+        self.drawSelectHulls(self.selectBehindSelection)
         glFlush()
         glFinish()
         # gl y coordinates start at bottom of window
@@ -394,16 +394,23 @@ class GLEditor(EditorInterface):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
 
-    def drawSelectHulls(self):
+    def drawSelectHulls(self, behindSelection=False):
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
             i = 0
             for o in self.state.objects:
+                if behindSelection and o.isSelected():
+                    i += 1
+                    continue
                 glPushMatrix()
                 self.transformObject(o)
                 o.drawSelectHull(self.objectIndexToColor(i), self.graphicsTools)
                 glPopMatrix()
                 i += 1
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
+            if behindSelection:
+                selectedVertices = [ ]
+                for v in self.state.selectedVertices:
+                    selectedVertices.append(v.vertex)
             glPointSize(8)
             i = 0
             for o in self.state.objects:
@@ -417,6 +424,9 @@ class GLEditor(EditorInterface):
                     glBegin(GL_POINTS)
                     j = 0
                     for v in o.getMesh().getVertices():
+                        if behindSelection and v in selectedVertices:
+                            j += 1
+                            continue
                         color = self.subObjectIndexToColor(i, j)
                         glColor(color[0], color[1], color[2])
                         pos = v.getPosition()
@@ -427,6 +437,10 @@ class GLEditor(EditorInterface):
                 glPopMatrix()
                 i += 1
         elif self.state.selectMode == EditorState.SELECT_FACES:
+            if behindSelection:
+                selectedFaces = [ ]
+                for f in self.state.selectedFaces:
+                    selectedFaces.append(f.face)
             i = 0
             for o in self.state.objects:
                 glPushMatrix()
@@ -435,6 +449,9 @@ class GLEditor(EditorInterface):
                 if o.getMesh() is not None:
                     j = 0
                     for f in o.getMesh().getFaces():
+                        if behindSelection and f in selectedFaces:
+                            j += 1
+                            continue
                         glBegin(GL_POLYGON)
                         color = self.subObjectIndexToColor(i, j)
                         glColor(color[0], color[1], color[2])

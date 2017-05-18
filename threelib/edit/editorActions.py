@@ -50,6 +50,7 @@ class EditorActions:
         # flags
         self.selectAtCursorOnDraw = False
         self.selectMultiple = False
+        self.selectBehindSelection = False
 
 
     def escape(self):
@@ -554,9 +555,10 @@ class EditorActions:
             self.adjustCompleteAction = arrowEndSet
         self.adjustCompleteAction = arrowStartSet
 
-    def selectAtCursor(self, multiple=False):
+    def selectAtCursor(self, multiple=False, behindSelection=False):
         self.selectAtCursorOnDraw = True
         self.selectMultiple = multiple
+        self.selectBehindSelection = behindSelection
 
 
     # Mesh editing:

@@ -603,7 +603,8 @@ class EditorInterface(EditorActions, AppInterface):
                             self.toolbarSelectButton = None
             else: # select
                 multiple = self.editorMain.shiftPressed()
-                self.selectAtCursor(multiple)
+                behindSelection = self.editorMain.ctrlPressed()
+                self.selectAtCursor(multiple, behindSelection)
         if button == 0 or button == 2:
             if self.movingCamera:
                 self.movingCamera = False
