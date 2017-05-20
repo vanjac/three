@@ -39,7 +39,7 @@ stipplePattern = [
 class GLEditor(EditorInterface):
 
     VERTEX_SIZE = 8
-    EDGE_WIDTH = 5
+    EDGE_WIDTH = 6
 
     def __init__(self, mapPath, state=None):
         print("OpenGL 1 Editor")
@@ -369,17 +369,36 @@ class GLEditor(EditorInterface):
             if not self.selectMultiple:
                 self.state.selectedVertices = [ ]
             if objectIndex != -1:
+                edge = False
+                if objectIndex >= 32768:
+                    edge = True
+                    objectIndex -= 32768
                 editorObject = self.state.objects[objectIndex]
-                vertex = editorObject.getMesh().getVertices()[vertexIndex]
-                alreadySelected = False
-                for v in self.state.selectedVertices:
-                    if v.vertex == vertex:
-                        alreadySelected = True
-                        self.state.selectedVertices.remove(v)
-                        break
-                if not alreadySelected:
-                    self.state.selectedVertices.append(
-                        VertexSelection(editorObject, vertex))
+                vertices = editorObject.getMesh().getVertices()
+
+                selectedVertices = [ ]
+
+                if edge:
+                    faceIndex = vertexIndex // 32
+                    vertexIndex %= 32
+                    v2 = vertices[vertexIndex]
+                    face = v2.getReferences()[faceIndex]
+                    v2Index = face.indexOf(v2)
+                    v1 = face.getVertices()[v2Index - 1].vertex
+                    selectedVertices.append(v1)
+                    selectedVertices.append(v2)
+                else:
+                    selectedVertices.append(vertices[vertexIndex])
+                for vertex in selectedVertices:
+                    alreadySelected = False
+                    for v in self.state.selectedVertices:
+                        if v.vertex == vertex:
+                            alreadySelected = True
+                            self.state.selectedVertices.remove(v)
+                            break
+                    if not alreadySelected:
+                        self.state.selectedVertices.append(
+                            VertexSelection(editorObject, vertex))
         elif self.state.selectMode == EditorState.SELECT_FACES:
             objectIndex, faceIndex = self.colorToSubObjectIndex(color)
             if not self.selectMultiple:
@@ -426,9 +445,30 @@ class GLEditor(EditorInterface):
                 o.drawSelectHull((0, 0, 0), self.graphicsTools)
 
                 if o.getMesh() is not None:
+                    vertices = o.getMesh().getVertices()
+
+                    # edges
+                    glLineWidth(GLEditor.EDGE_WIDTH)
+                    for f in o.getMesh().getFaces():
+                        for j in range(0, len(f.getVertices())):
+                            v1 = f.getVertices()[j - 1].vertex
+                            v2 = f.getVertices()[j].vertex
+                            v2Index = vertices.index(v2)
+                            faceIndex = v2.getReferences().index(f)
+                            subId = v2Index + faceIndex * 32
+                            color = self.subObjectIndexToColor(i + 32768, subId)
+                            glColor(color[0], color[1], color[2])
+                            glBegin(GL_LINES)
+                            pos = v1.getPosition()
+                            glVertex(pos.y, pos.z, pos.x)
+                            pos = v2.getPosition()
+                            glVertex(pos.y, pos.z, pos.x)
+                            glEnd()
+                    glLineWidth(1)
+                    # vertex points
                     glBegin(GL_POINTS)
                     j = 0
-                    for v in o.getMesh().getVertices():
+                    for v in vertices:
                         if behindSelection and v in selectedVertices:
                             j += 1
                             continue
