@@ -183,10 +183,64 @@ class EditorActions:
 
 
     def selectMode(self, mode):
+        prevMode = self.state.selectMode
         self.state.selectMode = mode
-        self.state.deselectAll()
-        self.state.selectedVertices = [ ]
-        self.state.selectedFaces = [ ]
+
+        if prevMode == mode:
+            pass
+        elif prevMode == EditorState.SELECT_OBJECTS \
+                and mode == EditorState.SELECT_FACES:
+            self.state.selectedFaces = [ ]
+            for o in self.state.selectedObjects:
+                if o.getMesh() is not None:
+                    for f in o.getMesh().getFaces():
+                        self.state.selectedFaces.append(
+                            FaceSelection(o, f))
+            self.state.deselectAll()
+            self.state.selectedVertices = [ ]
+        elif prevMode == EditorState.SELECT_OBJECTS \
+                and mode == EditorState.SELECT_VERTICES:
+            self.state.selectedVertices = [ ]
+            for o in self.state.selectedObjects:
+                if o.getMesh() is not None:
+                    for v in o.getMesh().getVertices():
+                        self.state.selectedVertices.append(
+                            VertexSelection(o, v))
+            self.state.deselectAll()
+            self.state.selectedFaces = [ ]
+        elif prevMode == EditorState.SELECT_FACES \
+                and mode == EditorState.SELECT_OBJECTS:
+            self.state.deselectAll()
+            for f in self.state.selectedFaces:
+                if f.editorObject not in self.state.selectedObjects:
+                    self.state.select(f.editorObject)
+            self.state.selectedFaces = [ ]
+            self.state.selectedVertices = [ ]
+        elif prevMode == EditorState.SELECT_FACES \
+                and mode == EditorState.SELECT_VERTICES:
+            self.state.selectedVertices = [ ]
+            selectedVertices = [ ]
+            for f in self.state.selectedFaces:
+                for v in f.face.getVertices():
+                    if v.vertex not in selectedVertices:
+                        self.state.selectedVertices.append(
+                            VertexSelection(f.editorObject, v.vertex))
+                        selectedVertices.append(v.vertex)
+            self.state.selectedFaces = [ ]
+            self.state.deselectAll()
+        elif prevMode == EditorState.SELECT_VERTICES \
+                and mode == EditorState.SELECT_OBJECTS:
+            self.state.deselectAll()
+            for v in self.state.selectedVertices:
+                if v.editorObject not in self.state.selectedObjects:
+                    self.state.select(v.editorObject)
+            self.state.selectedVertices = [ ]
+            self.state.selectedFaces = [ ]
+        else: # including vertices -> faces
+            self.state.deselectAll()
+            self.state.selectedVertices = [ ]
+            self.state.selectedFaces = [ ]
+
 
     def createBox(self):
         print("Create box")
