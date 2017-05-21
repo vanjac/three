@@ -41,6 +41,9 @@ class GLEditor(EditorInterface):
     VERTEX_SIZE = 8
     EDGE_WIDTH = 6
 
+    SELECT_MAX_VERTICES = 8388608
+    SELECT_MAX_EDGES_PER_VERTEX = 64
+
     def __init__(self, mapPath, state=None):
         print("OpenGL 1 Editor")
         super().__init__(mapPath, state)
@@ -348,9 +351,13 @@ class GLEditor(EditorInterface):
         # gl y coordinates start at bottom of window
         pixels = glReadPixels(self.editorMain.mouseX(),
                               self.editorMain.windowHeight() \
-                              - self.editorMain.mouseY(),
+                              - self.editorMain.mouseY() - 1,
                               1, 1,  # width, height
                               GL_RGB, GL_UNSIGNED_BYTE)
+        # uncomment to show select colors
+        # glutSwapBuffers()
+        # import time
+        # time.sleep(2)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         return pixels[0], pixels[1], pixels[2]
 
@@ -431,23 +438,40 @@ class GLEditor(EditorInterface):
 
     # return editorObject, list of vertices
     def selectVertex(self):
-        self.drawVertexSelectHulls(self.selectBehindSelection)
+        self.drawObjectFrameSelectHulls(self.selectBehindSelection)
         color = self._readSelectPixel()
-        objectIndex, vertexIndex = self.colorToSubObjectIndex(color)
+        objectIndex = self.colorToObjectIndex(color)
         if objectIndex == -1:
             return None, [ ]
-        edge = False
-        if objectIndex >= 32768:
-            edge = True
-            objectIndex -= 32768
         editorObject = self.state.objects[objectIndex]
+        objectHasSelectedVertices = False
+        for vertex in self.state.selectedVertices:
+            if vertex.editorObject == editorObject:
+                objectHasSelectedVertices = True
         vertices = editorObject.getMesh().getVertices()
 
+        self.drawVertexSelectHulls(editorObject, self.selectBehindSelection)
+        color = self._readSelectPixel()
+        vertexIndex = self.colorToObjectIndex(color)
+        if vertexIndex == -1:
+            if objectHasSelectedVertices and self.selectBehindSelection:
+                # hide object and try again
+                self.state.select(editorObject)
+                ret = self.selectVertex()
+                self.state.deselect(editorObject)
+                return ret
+            else:
+                return None, [ ]
+
+        edge = False
+        if vertexIndex >= GLEditor.SELECT_MAX_VERTICES:
+            edge = True
+            vertexIndex -= GLEditor.SELECT_MAX_VERTICES
         if edge:
-            faceIndex = vertexIndex // 32
-            vertexIndex %= 32
+            vertexFaceIndex = vertexIndex % GLEditor.SELECT_MAX_EDGES_PER_VERTEX
+            vertexIndex //= GLEditor.SELECT_MAX_EDGES_PER_VERTEX
             v2 = vertices[vertexIndex]
-            face = v2.getReferences()[faceIndex]
+            face = v2.getReferences()[vertexFaceIndex]
             v2Index = face.indexOf(v2)
             v1 = face.getVertices()[v2Index - 1].vertex
             return editorObject, [v1, v2]
@@ -467,7 +491,8 @@ class GLEditor(EditorInterface):
             glPopMatrix()
             i += 1
 
-    def drawVertexSelectHulls(self, behindSelection=False):
+    # vertices and edges
+    def drawObjectFrameSelectHulls(self, behindSelection=False):
         if behindSelection:
             selectedVertices = [ ]
             for v in self.state.selectedVertices:
@@ -475,6 +500,8 @@ class GLEditor(EditorInterface):
         glPointSize(GLEditor.VERTEX_SIZE)
         i = 0
         for o in self.state.objects:
+            color = self.objectIndexToColor(i)
+
             glPushMatrix()
             self.transformObject(o)
 
@@ -490,10 +517,6 @@ class GLEditor(EditorInterface):
                     for j in range(0, len(f.getVertices())):
                         v1 = f.getVertices()[j - 1].vertex
                         v2 = f.getVertices()[j].vertex
-                        v2Index = vertices.index(v2)
-                        faceIndex = v2.getReferences().index(f)
-                        subId = v2Index + faceIndex * 32
-                        color = self.subObjectIndexToColor(i + 32768, subId)
                         glColor(color[0], color[1], color[2])
                         glBegin(GL_LINES)
                         pos = v1.getPosition()
@@ -504,20 +527,67 @@ class GLEditor(EditorInterface):
                 glLineWidth(1)
                 # vertex points
                 glBegin(GL_POINTS)
-                j = 0
                 for v in vertices:
                     if behindSelection and v in selectedVertices:
-                        j += 1
                         continue
-                    color = self.subObjectIndexToColor(i, j)
                     glColor(color[0], color[1], color[2])
                     pos = v.getPosition()
                     glVertex(pos.y, pos.z, pos.x)
-                    j += 1
                 glEnd()
 
             glPopMatrix()
             i += 1
+
+    def drawVertexSelectHulls(self, editorObject, behindSelection=False):
+        if behindSelection:
+            selectedVertices = [ ]
+            for v in self.state.selectedVertices:
+                selectedVertices.append(v.vertex)
+        glPointSize(GLEditor.VERTEX_SIZE)
+        glPushMatrix()
+        self.transformObject(editorObject)
+
+        # block selecting vertices through objects
+        editorObject.drawSelectHull((0, 0, 0), self.graphicsTools)
+
+        if editorObject.getMesh() is not None:
+            vertices = editorObject.getMesh().getVertices()
+
+            # edges
+            glLineWidth(GLEditor.EDGE_WIDTH)
+            for f in editorObject.getMesh().getFaces():
+                for i in range(0, len(f.getVertices())):
+                    v1 = f.getVertices()[i - 1].vertex
+                    v2 = f.getVertices()[i].vertex
+                    v2Index = vertices.index(v2)
+                    vertexFaceIndex = v2.getReferences().index(f)
+                    edgeId = vertexFaceIndex \
+                             + v2Index * GLEditor.SELECT_MAX_EDGES_PER_VERTEX
+                    color = self.objectIndexToColor(
+                        edgeId + GLEditor.SELECT_MAX_VERTICES)
+                    glColor(color[0], color[1], color[2])
+                    glBegin(GL_LINES)
+                    pos = v1.getPosition()
+                    glVertex(pos.y, pos.z, pos.x)
+                    pos = v2.getPosition()
+                    glVertex(pos.y, pos.z, pos.x)
+                    glEnd()
+            glLineWidth(1)
+            # vertex points
+            glBegin(GL_POINTS)
+            i = 0
+            for v in vertices:
+                if behindSelection and v in selectedVertices:
+                    i += 1
+                    continue
+                color = self.objectIndexToColor(i)
+                glColor(color[0], color[1], color[2])
+                pos = v.getPosition()
+                glVertex(pos.y, pos.z, pos.x)
+                i += 1
+            glEnd()
+
+        glPopMatrix()
 
     def drawFaceSelectHulls(self, editorObject, behindSelection=False):
         if behindSelection:
@@ -576,31 +646,16 @@ class GLEditor(EditorInterface):
     def objectIndexToColor(self, index):
         index = int(index) + 1
         r = index % 256
-        g = int(index / 256) % 256
-        b = int(index / (256**2)) % 256
-        return float(r) / 256.0, float(g) / 256.0, float(b) / 256.0
-
-    def subObjectIndexToColor(self, objectIndex, subIndex):
-        objectIndex = int(objectIndex) + 1
-        r = int(subIndex) % 256
-        g = objectIndex % 256
-        b = int(objectIndex / 256) % 256
-        return float(r) / 256.0, float(g) / 256.0, float(b) / 256.0
+        g = int(index // 256) % 256
+        b = int(index // 65536) % 256
+        return float(r) / 255.0, float(g) / 255.0, float(b) / 255.0
 
     # return -1 for no object
     def colorToObjectIndex(self, color):
         r = int(color[0])
         g = int(color[1])
         b = int(color[2])
-        return b*(256**2) + g*256 + r - 1
-
-    # returns a tuple of (objectIndex, subIndex)
-    # objectIndex is -1 for nothing selected
-    def colorToSubObjectIndex(self, color):
-        r = int(color[0])
-        g = int(color[1])
-        b = int(color[2])
-        return b*256 + g - 1, r
+        return b*65536 + g*256 + r - 1
 
 
     def _drawToolbar(self):
