@@ -342,70 +342,49 @@ class GLEditor(EditorInterface):
                                  GLUT_BITMAP_8_BY_13, 4, 20)
 
 
-    def cursorSelect(self):
-        self.selectAtCursorOnDraw = False
-        self.drawSelectHulls(self.selectBehindSelection)
+    def _readSelectPixel(self):
         glFlush()
         glFinish()
         # gl y coordinates start at bottom of window
         pixels = glReadPixels(self.editorMain.mouseX(),
                               self.editorMain.windowHeight() \
                               - self.editorMain.mouseY(),
-                              1, 1, # width, height
+                              1, 1,  # width, height
                               GL_RGB, GL_UNSIGNED_BYTE)
-        color = (pixels[0], pixels[1], pixels[2])
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        return pixels[0], pixels[1], pixels[2]
+
+
+    def cursorSelect(self):
+        self.selectAtCursorOnDraw = False
         if self.state.selectMode == EditorState.SELECT_OBJECTS:
-            index = self.colorToObjectIndex(color)
+            o = self.selectObject()
             if not self.selectMultiple:
                 self.state.deselectAll()
-            if index != -1:
-                o = self.state.objects[index]
+            if o is not None:
                 if o in self.state.selectedObjects:
                     self.state.deselect(o)
                 else:
                     self.state.select(o)
         elif self.state.selectMode == EditorState.SELECT_VERTICES:
-            objectIndex, vertexIndex = self.colorToSubObjectIndex(color)
+            editorObject, vertices = self.selectVertex()
             if not self.selectMultiple:
                 self.state.selectedVertices = [ ]
-            if objectIndex != -1:
-                edge = False
-                if objectIndex >= 32768:
-                    edge = True
-                    objectIndex -= 32768
-                editorObject = self.state.objects[objectIndex]
-                vertices = editorObject.getMesh().getVertices()
-
-                selectedVertices = [ ]
-
-                if edge:
-                    faceIndex = vertexIndex // 32
-                    vertexIndex %= 32
-                    v2 = vertices[vertexIndex]
-                    face = v2.getReferences()[faceIndex]
-                    v2Index = face.indexOf(v2)
-                    v1 = face.getVertices()[v2Index - 1].vertex
-                    selectedVertices.append(v1)
-                    selectedVertices.append(v2)
-                else:
-                    selectedVertices.append(vertices[vertexIndex])
-                for vertex in selectedVertices:
-                    alreadySelected = False
-                    for v in self.state.selectedVertices:
-                        if v.vertex == vertex:
-                            alreadySelected = True
-                            self.state.selectedVertices.remove(v)
-                            break
-                    if not alreadySelected:
-                        self.state.selectedVertices.append(
-                            VertexSelection(editorObject, vertex))
+            for vertex in vertices:
+                alreadySelected = False
+                for v in self.state.selectedVertices:
+                    if v.vertex == vertex:
+                        alreadySelected = True
+                        self.state.selectedVertices.remove(v)
+                        break
+                if not alreadySelected:
+                    self.state.selectedVertices.append(
+                        VertexSelection(editorObject, vertex))
         elif self.state.selectMode == EditorState.SELECT_FACES:
-            objectIndex, faceIndex = self.colorToSubObjectIndex(color)
+            editorObject, face = self.selectFace()
             if not self.selectMultiple:
                 self.state.selectedFaces = [ ]
-            if objectIndex != -1:
-                editorObject = self.state.objects[objectIndex]
-                face = editorObject.getMesh().getFaces()[faceIndex]
+            if face is not None:
                 alreadySelected = False
                 for f in self.state.selectedFaces:
                     if f.face == face:
@@ -415,99 +394,156 @@ class GLEditor(EditorInterface):
                 if not alreadySelected:
                     self.state.selectedFaces.append(
                         FaceSelection(editorObject, face))
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+    # return the object at the cursor
+    # if self.selectBehindSelection, ignores selected objects
+    def selectObject(self):
+        self.drawObjectSelectHulls(self.selectBehindSelection)
+        color = self._readSelectPixel()
+        index = self.colorToObjectIndex(color)
+        if index == -1:
+            return None
+        return self.state.objects[index]
+
+    # return editorObject, face
+    def selectFace(self):
+        editorObject = self.selectObject()
+        if editorObject == None:
+            return None, None
+        objectHasSelectedFaces = False
+        for face in self.state.selectedFaces:
+            if face.editorObject == editorObject:
+                objectHasSelectedFaces = True
+
+        self.drawFaceSelectHulls(editorObject, self.selectBehindSelection)
+        color = self._readSelectPixel()
+        faceIndex = self.colorToObjectIndex(color)
+        if faceIndex == -1:
+            if objectHasSelectedFaces and self.selectBehindSelection:
+                # hide object and try again
+                self.state.select(editorObject)
+                ret = self.selectFace()
+                self.state.deselect(editorObject)
+                return ret
+            else:
+                return None, None
+        return editorObject, editorObject.getMesh().getFaces()[faceIndex]
+
+    # return editorObject, list of vertices
+    def selectVertex(self):
+        self.drawVertexSelectHulls(self.selectBehindSelection)
+        color = self._readSelectPixel()
+        objectIndex, vertexIndex = self.colorToSubObjectIndex(color)
+        if objectIndex == -1:
+            return None, [ ]
+        edge = False
+        if objectIndex >= 32768:
+            edge = True
+            objectIndex -= 32768
+        editorObject = self.state.objects[objectIndex]
+        vertices = editorObject.getMesh().getVertices()
+
+        if edge:
+            faceIndex = vertexIndex // 32
+            vertexIndex %= 32
+            v2 = vertices[vertexIndex]
+            face = v2.getReferences()[faceIndex]
+            v2Index = face.indexOf(v2)
+            v1 = face.getVertices()[v2Index - 1].vertex
+            return editorObject, [v1, v2]
+        else:
+            return editorObject, [vertices[vertexIndex]]
 
 
-    def drawSelectHulls(self, behindSelection=False):
-        if self.state.selectMode == EditorState.SELECT_OBJECTS:
+    def drawObjectSelectHulls(self, behindSelection=False):
+        i = 0
+        for o in self.state.objects:
+            if behindSelection and o.isSelected():
+                i += 1
+                continue
+            glPushMatrix()
+            self.transformObject(o)
+            o.drawSelectHull(self.objectIndexToColor(i), self.graphicsTools)
+            glPopMatrix()
+            i += 1
+
+    def drawVertexSelectHulls(self, behindSelection=False):
+        if behindSelection:
+            selectedVertices = [ ]
+            for v in self.state.selectedVertices:
+                selectedVertices.append(v.vertex)
+        glPointSize(GLEditor.VERTEX_SIZE)
+        i = 0
+        for o in self.state.objects:
+            glPushMatrix()
+            self.transformObject(o)
+
+            # block selecting vertices through objects
+            o.drawSelectHull((0, 0, 0), self.graphicsTools)
+
+            if o.getMesh() is not None:
+                vertices = o.getMesh().getVertices()
+
+                # edges
+                glLineWidth(GLEditor.EDGE_WIDTH)
+                for f in o.getMesh().getFaces():
+                    for j in range(0, len(f.getVertices())):
+                        v1 = f.getVertices()[j - 1].vertex
+                        v2 = f.getVertices()[j].vertex
+                        v2Index = vertices.index(v2)
+                        faceIndex = v2.getReferences().index(f)
+                        subId = v2Index + faceIndex * 32
+                        color = self.subObjectIndexToColor(i + 32768, subId)
+                        glColor(color[0], color[1], color[2])
+                        glBegin(GL_LINES)
+                        pos = v1.getPosition()
+                        glVertex(pos.y, pos.z, pos.x)
+                        pos = v2.getPosition()
+                        glVertex(pos.y, pos.z, pos.x)
+                        glEnd()
+                glLineWidth(1)
+                # vertex points
+                glBegin(GL_POINTS)
+                j = 0
+                for v in vertices:
+                    if behindSelection and v in selectedVertices:
+                        j += 1
+                        continue
+                    color = self.subObjectIndexToColor(i, j)
+                    glColor(color[0], color[1], color[2])
+                    pos = v.getPosition()
+                    glVertex(pos.y, pos.z, pos.x)
+                    j += 1
+                glEnd()
+
+            glPopMatrix()
+            i += 1
+
+    def drawFaceSelectHulls(self, editorObject, behindSelection=False):
+        if behindSelection:
+            selectedFaces = [ ]
+            for f in self.state.selectedFaces:
+                selectedFaces.append(f.face)
+        glPushMatrix()
+        self.transformObject(editorObject)
+
+        if editorObject.getMesh() is not None:
             i = 0
-            for o in self.state.objects:
-                if behindSelection and o.isSelected():
+            for f in editorObject.getMesh().getFaces():
+                if behindSelection and f in selectedFaces:
                     i += 1
                     continue
-                glPushMatrix()
-                self.transformObject(o)
-                o.drawSelectHull(self.objectIndexToColor(i), self.graphicsTools)
-                glPopMatrix()
+                glBegin(GL_POLYGON)
+                color = self.objectIndexToColor(i)
+                glColor(color[0], color[1], color[2])
+                for vertex in f.getVertices():
+                    pos = vertex.vertex.getPosition()
+                    glVertex(pos.y, pos.z, pos.x)
+                glEnd()
                 i += 1
-        elif self.state.selectMode == EditorState.SELECT_VERTICES:
-            if behindSelection:
-                selectedVertices = [ ]
-                for v in self.state.selectedVertices:
-                    selectedVertices.append(v.vertex)
-            glPointSize(GLEditor.VERTEX_SIZE)
-            i = 0
-            for o in self.state.objects:
-                glPushMatrix()
-                self.transformObject(o)
 
-                # block selecting vertices through objects
-                o.drawSelectHull((0, 0, 0), self.graphicsTools)
+        glPopMatrix()
 
-                if o.getMesh() is not None:
-                    vertices = o.getMesh().getVertices()
-
-                    # edges
-                    glLineWidth(GLEditor.EDGE_WIDTH)
-                    for f in o.getMesh().getFaces():
-                        for j in range(0, len(f.getVertices())):
-                            v1 = f.getVertices()[j - 1].vertex
-                            v2 = f.getVertices()[j].vertex
-                            v2Index = vertices.index(v2)
-                            faceIndex = v2.getReferences().index(f)
-                            subId = v2Index + faceIndex * 32
-                            color = self.subObjectIndexToColor(i + 32768, subId)
-                            glColor(color[0], color[1], color[2])
-                            glBegin(GL_LINES)
-                            pos = v1.getPosition()
-                            glVertex(pos.y, pos.z, pos.x)
-                            pos = v2.getPosition()
-                            glVertex(pos.y, pos.z, pos.x)
-                            glEnd()
-                    glLineWidth(1)
-                    # vertex points
-                    glBegin(GL_POINTS)
-                    j = 0
-                    for v in vertices:
-                        if behindSelection and v in selectedVertices:
-                            j += 1
-                            continue
-                        color = self.subObjectIndexToColor(i, j)
-                        glColor(color[0], color[1], color[2])
-                        pos = v.getPosition()
-                        glVertex(pos.y, pos.z, pos.x)
-                        j += 1
-                    glEnd()
-
-                glPopMatrix()
-                i += 1
-        elif self.state.selectMode == EditorState.SELECT_FACES:
-            if behindSelection:
-                selectedFaces = [ ]
-                for f in self.state.selectedFaces:
-                    selectedFaces.append(f.face)
-            i = 0
-            for o in self.state.objects:
-                glPushMatrix()
-                self.transformObject(o)
-
-                if o.getMesh() is not None:
-                    j = 0
-                    for f in o.getMesh().getFaces():
-                        if behindSelection and f in selectedFaces:
-                            j += 1
-                            continue
-                        glBegin(GL_POLYGON)
-                        color = self.subObjectIndexToColor(i, j)
-                        glColor(color[0], color[1], color[2])
-                        for vertex in f.getVertices():
-                            pos = vertex.vertex.getPosition()
-                            glVertex(pos.y, pos.z, pos.x)
-                        glEnd()
-                        j += 1
-
-                glPopMatrix()
-                i += 1
 
     # display list
     def drawAxes(self):
