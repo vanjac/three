@@ -517,6 +517,9 @@ class GLEditor(EditorInterface):
                     for j in range(0, len(f.getVertices())):
                         v1 = f.getVertices()[j - 1].vertex
                         v2 = f.getVertices()[j].vertex
+                        if behindSelection and v1 in selectedVertices \
+                                and v2 in selectedVertices:
+                            continue
                         glColor(color[0], color[1], color[2])
                         glBegin(GL_LINES)
                         pos = v1.getPosition()
@@ -559,6 +562,9 @@ class GLEditor(EditorInterface):
                 for i in range(0, len(f.getVertices())):
                     v1 = f.getVertices()[i - 1].vertex
                     v2 = f.getVertices()[i].vertex
+                    if behindSelection and v1 in selectedVertices \
+                            and v2 in selectedVertices:
+                        continue
                     v2Index = vertices.index(v2)
                     vertexFaceIndex = v2.getReferences().index(f)
                     edgeId = vertexFaceIndex \
