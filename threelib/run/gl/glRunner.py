@@ -51,6 +51,8 @@ class GLRunner(GameInterface):
         glMaterialfv(GL_FRONT, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
         glMaterialfv(GL_FRONT, GL_SHININESS, [50.0])
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.0, 0.0, 0.0, 0.0])
+        glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 
         self.pyaudio = pyaudio.PyAudio()
         self.pyaudioStream = None
