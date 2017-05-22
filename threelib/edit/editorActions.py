@@ -283,7 +283,12 @@ class EditorActions:
             mat = face.getMaterial()
             if not mat in newMaterials:
                 newMaterials.append(mat)
-                self.state.world.addMaterial(mat)
+            if not mat in self.state.world.materials:
+                foundMaterial = self.state.world.findMaterial(mat.getName())
+                if foundMaterial is not None:
+                    face.setMaterial(foundMaterial)
+                else:
+                    self.state.world.addMaterial(mat)
         print(len(newMaterials), "materials for this mesh:")
         for mat in newMaterials:
             print(mat.getName())
