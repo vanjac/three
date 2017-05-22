@@ -292,13 +292,55 @@ class EditorActions:
         solidMesh.setMesh(mesh)
         self.createObject(solidMesh)
 
+
+    def importMap(self, name):
+        print("Import map", name)
+        mapPath = files.getMap(name, createIfNotFound=False)
+        if mapPath is None:
+            print("Could not find map", name)
+        map = files.loadMapState(mapPath)
+        if map is None:
+            print("Could not load map", name)
+            return
+
+        for o in map.objects:
+            if o.getMesh() is None:
+                continue
+            for face in o.getMesh().getFaces():
+                mat = face.getMaterial()
+                if not mat in self.state.world.materials:
+                    foundMaterial = self.state.world.findMaterial(mat.getName())
+                    if foundMaterial is not None:
+                        face.setMaterial(foundMaterial)
+                    else:
+                        self.state.world.addMaterial(mat)
+
+        self.createObjects(map.objects)
+
+
     def createObject(self, newObject):
+        self.createObjects([newObject], keepPositionOffset=False)
+
+    def createObjects(self, newObjects, keepPositionOffset=True):
+        if len(newObjects) == 0:
+            return
+
         self.selectMode(EditorState.SELECT_OBJECTS)
         self.state.deselectAll()
-        newObject.setPosition(self.state.createPosition)
-        self.state.objects.append(newObject)
-        self.state.select(newObject)
-        self.setupAdjustMode(TranslateAdjustor(newObject))
+        if keepPositionOffset:
+            for o in newObjects:
+                o.setPosition(o.getPosition() + self.state.createPosition)
+        else:
+            for o in newObjects:
+                o.setPosition(self.state.createPosition)
+        self.state.objects += newObjects
+        for o in newObjects:
+            self.state.select(o)
+        if len(newObjects) == 1:
+            self.setupAdjustMode(TranslateAdjustor(newObjects[0]))
+        else:
+            adjustors = [TranslateAdjustor(o) for o in newObjects]
+            self.setupAdjustMode(MultiTranslateAdjustor(adjustors))
 
         def setCreatePosition():
             self.state.createPosition = \

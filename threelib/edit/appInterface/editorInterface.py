@@ -276,8 +276,18 @@ class EditorInterface(EditorActions, AppInterface):
             self.importMesh(command[2:-1])
             return True
         importRow.addButton(
-            Button(text="Import Mesh", x=0, width=1, keyboardShortcut="im",
+            Button(text="Import Mesh", x=0, width=0.5, keyboardShortcut="im",
                    action=importMesh, requireKeyboard=True))
+
+        def importMap(command):
+            if command[-1] != '\r':
+                return False
+            self.importMap(command[2:-1])
+            return True
+
+        importRow.addButton(
+            Button(text="Import Map", x=0.5, width=0.5, keyboardShortcut="iw",
+                   action=importMap, requireKeyboard=True))
 
     def _setupToolbarAdjust(self, group):
         adjustRow = Row()
