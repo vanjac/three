@@ -19,6 +19,8 @@ class EditorActions:
     Y = 1
     Z = 2
 
+    DIFFERENT_PROPERTIES_STRING = "!DIFFERENT!"
+
     ROTATE_GRID_SIZES = [5.0, 10.0, 15.0, 20.0, 30.0, 40.0, 45.0]
 
     def __init__(self, mapPath, state=None):
@@ -75,12 +77,17 @@ class EditorActions:
             print("Edit world properties")
             props = self.state.worldObject.getProperties()
             self.makePropsFile(props)
-        elif len(self.state.selectedObjects) > 1:
-            print("Cannot edit properties of multiple objects")
         else:
             print("Edit object properties")
-            props = self.state.selectedObjects[0].getProperties()
-            self.makePropsFile(props)
+            combinedProps = { }
+            for o in self.state.selectedObjects:
+                for key, value in o.getProperties().items():
+                    if key not in combinedProps:
+                        combinedProps[key] = value
+                    elif combinedProps[key] != value:
+                        combinedProps[key] = \
+                            EditorActions.DIFFERENT_PROPERTIES_STRING
+            self.makePropsFile(combinedProps)
 
     def makePropsFile(self, props):
         text = ""
@@ -96,17 +103,22 @@ class EditorActions:
         if not self.state.selectMode == EditorState.SELECT_OBJECTS:
             print("Only objects can be updated")
         elif len(self.state.selectedObjects) == 0:
-            print("Update world")
+            print("Update world properties")
             props = self.readPropsFile()
             if props is not None:
                 self.state.worldObject.setProperties(props)
-        elif len(self.state.selectedObjects) > 1:
-            print("Cannot update multiple objects")
         else:
-            print("Update object")
+            print("Update object properties")
             props = self.readPropsFile()
             if props is not None:
-                self.state.selectedObjects[0].setProperties(props)
+                differentKeys = [ ]
+                for key, value in props.items():
+                    if value == EditorActions.DIFFERENT_PROPERTIES_STRING:
+                        differentKeys.append(key)
+                for key in differentKeys:
+                    del props[key]
+                for o in self.state.selectedObjects:
+                    o.setProperties(props)
 
     def readPropsFile(self):
         text = files.readProperties()
