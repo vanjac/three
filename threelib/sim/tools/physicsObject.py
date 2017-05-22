@@ -122,6 +122,8 @@ class PhysicsObject(Entity):
                                   self.position + self.positionChange)
         bottomPoint = self._bottomPoint(collision,
                                         self.position + self.positionChange)
+        if topPoint is None or bottomPoint is None:
+            return
 
         # check wall collision
         if (not self._inBounds(collision, self.position)) \
@@ -296,7 +298,7 @@ class PhysicsObject(Entity):
                                                 maxDistance=self.width / 2.0)
 
     def _extrapolatePoint(self, point, oldPos, newPos):
-        if oldPos == newPos:
+        if oldPos == newPos or point is None:
             return point
 
         diff = newPos - oldPos
