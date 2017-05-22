@@ -314,7 +314,8 @@ class PhysicsObject(Entity):
         if pointInBounds is None:
             return None
         else:
-            return self._extrapolatePoint(collision.topPointAt(pointInBounds), pointInBounds, point)
+            return self._extrapolatePoint(
+                collision.topPointAt(pointInBounds), pointInBounds, point)
 
     def _bottomPoint(self, collision, point):
         pointInBounds = self._inBounds(collision, point)
