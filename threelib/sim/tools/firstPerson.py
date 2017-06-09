@@ -110,7 +110,7 @@ class FirstPersonPlayer(PhysicsObject):
                     deceleration = (self.walkDeceleration ** timeElapsed)
                 self.newFloorXYVelocity *= deceleration
 
-        if self.newCurrentFloor is not None:
+        if self.newCurrentFloor is not None and point is not None:
             # gravity
             if sliding or walking:
                 gravityVelocity = Vector(0, 0, PhysicsObject.GRAVITY) \
